@@ -704,32 +704,31 @@ simulation environment can read. Use the exported files with:
         pass
     
     def generate_rtl_integration_environment(self, output_dir):
-        """Generate RTL Integration Mode environment"""
+        """Generate RTL Integration Mode environment following tim_axi4_vip structure"""
         try:
-            # Create directory structure
-            env_name = "rtl_integration_env"
-            env_path = os.path.join(output_dir, env_name)
+            # Import the new VIP environment generator
+            from vip_environment_generator import VIPEnvironmentGenerator
             
-            # Directory structure for RTL integration
-            dirs = [
-                "tb",           # Testbench files
-                "tb/tests",     # Test cases
-                "tb/sequences", # Test sequences
-                "vip",          # VIP package
-                "vip/agents",   # VIP agents
-                "vip/monitors", # VIP monitors  
-                "interfaces",   # Interface definitions
-                "configs",      # Configuration files
-                "scripts",      # Simulation scripts
-                "docs",         # Documentation
-                "rtl_wrapper"   # RTL wrapper templates
-            ]
+            # Create generator instance
+            generator = VIPEnvironmentGenerator(
+                gui_config=self.gui.current_config,
+                mode="rtl_integration",
+                simulator=self.target_simulator
+            )
             
-            for dir_name in dirs:
-                os.makedirs(os.path.join(env_path, dir_name), exist_ok=True)
+            # Generate the complete environment
+            env_path = generator.generate_environment(output_dir)
             
-            # Generate environment files
-            self._generate_rtl_integration_files(env_path)
+            # If we have generated RTL, copy it to the environment
+            if hasattr(self, 'generated_rtl_path') and os.path.exists(self.generated_rtl_path):
+                import shutil
+                dest_rtl_dir = os.path.join(env_path, "rtl_wrapper", "generated_rtl")
+                if os.path.exists(dest_rtl_dir):
+                    shutil.rmtree(dest_rtl_dir)
+                shutil.copytree(self.generated_rtl_path, dest_rtl_dir)
+                
+                # Update the RTL filelist
+                self._update_rtl_filelist(env_path)
             
             # Update status
             self.env_status_label.config(text="Environment: RTL Integration Mode")
@@ -742,33 +741,20 @@ simulation environment can read. Use the exported files with:
             raise Exception(f"Failed to generate RTL integration environment: {str(e)}")
     
     def generate_vip_standalone_environment(self, output_dir):
-        """Generate VIP Standalone Mode environment"""
+        """Generate VIP Standalone Mode environment following tim_axi4_vip structure"""
         try:
-            # Create directory structure
-            env_name = "vip_standalone_env"
-            env_path = os.path.join(output_dir, env_name)
+            # Import the new VIP environment generator
+            from vip_environment_generator import VIPEnvironmentGenerator
             
-            # Directory structure for standalone VIP
-            dirs = [
-                "tb",              # Testbench files
-                "tb/tests",        # Test cases
-                "tb/sequences",    # Test sequences
-                "vip",             # VIP package
-                "vip/agents",      # VIP agents
-                "vip/monitors",    # VIP monitors
-                "vip/memory_model",# Memory model for standalone testing
-                "interfaces",      # Interface definitions
-                "configs",         # Configuration files
-                "scripts",         # Simulation scripts
-                "docs",            # Documentation
-                "results"          # Test results
-            ]
+            # Create generator instance
+            generator = VIPEnvironmentGenerator(
+                gui_config=self.gui.current_config,
+                mode="vip_standalone",
+                simulator=self.target_simulator
+            )
             
-            for dir_name in dirs:
-                os.makedirs(os.path.join(env_path, dir_name), exist_ok=True)
-            
-            # Generate environment files
-            self._generate_vip_standalone_files(env_path)
+            # Generate the complete environment
+            env_path = generator.generate_environment(output_dir)
             
             # Update status
             self.env_status_label.config(text="Environment: VIP Standalone Mode")
@@ -779,6 +765,27 @@ simulation environment can read. Use the exported files with:
             
         except Exception as e:
             raise Exception(f"Failed to generate VIP standalone environment: {str(e)}")
+    
+    def _update_rtl_filelist(self, env_path):
+        """Update RTL filelist with generated RTL files"""
+        rtl_dir = os.path.join(env_path, "rtl_wrapper", "generated_rtl")
+        filelist_path = os.path.join(env_path, "rtl_wrapper", "rtl_files.f")
+        
+        if os.path.exists(rtl_dir):
+            rtl_files = []
+            # Find all Verilog files
+            for root, dirs, files in os.walk(rtl_dir):
+                for file in files:
+                    if file.endswith('.v') or file.endswith('.sv'):
+                        rel_path = os.path.relpath(os.path.join(root, file), env_path)
+                        rtl_files.append(f"${{VIP_ROOT}}/{rel_path}")
+            
+            # Write filelist
+            with open(filelist_path, 'w') as f:
+                f.write("# Auto-generated RTL file list\n")
+                f.write("# Generated by AMBA Bus Matrix Configuration Tool\n\n")
+                for rtl_file in sorted(rtl_files):
+                    f.write(f"{rtl_file}\n")
     
     def update_config_tree(self):
         """Update VIP configuration tree display"""
