@@ -1060,7 +1060,7 @@ module dut_wrapper #(
         .aclk(clk),
         .aresetn(rst_n),
         
-""" + self._generate_master_connections() + """
+""" + self._generate_master_connections() + ("," if len(self.config.slaves) > 0 else "") + """
         
 """ + self._generate_slave_connections() + """
     );
@@ -1250,17 +1250,15 @@ endmodule : dut_wrapper
         .m{i}_rresp(m{i}_rresp),
         .m{i}_rlast(m{i}_rlast),
         .m{i}_rvalid(m{i}_rvalid),
-        .m{i}_rready(m{i}_rready),""")
+        .m{i}_rready(m{i}_rready)""")
+            if i < len(self.config.masters) - 1:
+                connections[-1] += ","
         return "\n".join(connections)
     
     def _generate_slave_connections(self):
         """Generate slave port connections"""
         connections = []
         for i, slave in enumerate(self.config.slaves):
-            # Add comma after previous connection
-            if i > 0 or len(self.config.masters) > 0:
-                connections[-1] += ","
-                
             connections.append(f"""        // Slave {i} - {slave.name}
         .s{i}_awid(s{i}_awid),
         .s{i}_awaddr(s{i}_awaddr),
@@ -1301,6 +1299,9 @@ endmodule : dut_wrapper
         .s{i}_rlast(s{i}_rlast),
         .s{i}_rvalid(s{i}_rvalid),
         .s{i}_rready(s{i}_rready)""")
+        # Add comma between master and slave connections, and between slaves
+        if len(connections) > 0:
+            connections = [",\n" + conn if i > 0 else conn for i, conn in enumerate(connections)]
         return "\n".join(connections)
     
     def _generate_master_termination(self):
