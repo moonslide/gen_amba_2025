@@ -1,0 +1,35 @@
+AXI4 VIP Test Report
+==================================================
+
+Test Summary:
+  Total Tests: 259
+  Passed: 0
+  Failed: 259
+  Success Rate: 0.0%
+
+Scenario Results:
+------------------------------
+
+BASIC:
+  Transactions: 43
+  Responses: 43
+  Errors: 43
+  Duration: 0.07s
+
+ADVANCED:
+  Transactions: 84
+  Responses: 84
+  Errors: 84
+  Duration: 0.13s
+
+ERROR_INJECTION:
+  Transactions: 4
+  Responses: 4
+  Errors: 4
+  Duration: 0.01s
+
+STRESS:
+  Transactions: 128
+  Responses: 128
+  Errors: 128
+  Duration: 0.24s

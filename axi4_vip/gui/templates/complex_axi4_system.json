@@ -1,0 +1,194 @@
+{
+  "bus_type": "AXI4",
+  "data_width": 128,
+  "addr_width": 40,
+  "arbitration": "QOS",
+  "masters": [
+    {
+      "name": "CPU_Cluster_0",
+      "id_width": 6,
+      "qos_support": true,
+      "exclusive_support": true,
+      "user_width": 4,
+      "priority": 15,
+      "default_prot": 2,
+      "default_cache": 3,
+      "default_region": 0
+    },
+    {
+      "name": "CPU_Cluster_1",
+      "id_width": 6,
+      "qos_support": true,
+      "exclusive_support": true,
+      "user_width": 4,
+      "priority": 14,
+      "default_prot": 2,
+      "default_cache": 3,
+      "default_region": 0
+    },
+    {
+      "name": "GPU",
+      "id_width": 8,
+      "qos_support": true,
+      "exclusive_support": false,
+      "user_width": 8,
+      "priority": 12,
+      "default_prot": 2,
+      "default_cache": 3,
+      "default_region": 0
+    },
+    {
+      "name": "Video_Encoder",
+      "id_width": 4,
+      "qos_support": true,
+      "exclusive_support": false,
+      "user_width": 0,
+      "priority": 10,
+      "default_prot": 2,
+      "default_cache": 3,
+      "default_region": 0
+    },
+    {
+      "name": "Video_Decoder",
+      "id_width": 4,
+      "qos_support": true,
+      "exclusive_support": false,
+      "user_width": 0,
+      "priority": 9,
+      "default_prot": 2,
+      "default_cache": 3,
+      "default_region": 0
+    },
+    {
+      "name": "DMA_Engine_0",
+      "id_width": 4,
+      "qos_support": true,
+      "exclusive_support": false,
+      "user_width": 0,
+      "priority": 8,
+      "default_prot": 0,
+      "default_cache": 0,
+      "default_region": 0
+    },
+    {
+      "name": "DMA_Engine_1",
+      "id_width": 4,
+      "qos_support": true,
+      "exclusive_support": false,
+      "user_width": 0,
+      "priority": 7,
+      "default_prot": 0,
+      "default_cache": 0,
+      "default_region": 0
+    },
+    {
+      "name": "PCIe_Controller",
+      "id_width": 8,
+      "qos_support": true,
+      "exclusive_support": false,
+      "user_width": 16,
+      "priority": 11,
+      "default_prot": 2,
+      "default_cache": 3,
+      "default_region": 0
+    }
+  ],
+  "slaves": [
+    {
+      "name": "DDR4_Channel_0",
+      "base_address": 0,
+      "size": 8388608,
+      "memory_type": "Memory",
+      "read_latency": 20,
+      "write_latency": 10,
+      "priority": 15,
+      "num_regions": 4,
+      "secure_only": false,
+      "privileged_only": false
+    },
+    {
+      "name": "DDR4_Channel_1",
+      "base_address": 8589934592,
+      "size": 8388608,
+      "memory_type": "Memory",
+      "read_latency": 20,
+      "write_latency": 10,
+      "priority": 15,
+      "num_regions": 4,
+      "secure_only": false,
+      "privileged_only": false
+    },
+    {
+      "name": "L3_Cache_SRAM",
+      "base_address": 17179869184,
+      "size": 16384,
+      "memory_type": "Memory",
+      "read_latency": 3,
+      "write_latency": 2,
+      "priority": 14,
+      "num_regions": 2,
+      "secure_only": false,
+      "privileged_only": false
+    },
+    {
+      "name": "Boot_ROM",
+      "base_address": 68719476736,
+      "size": 256,
+      "memory_type": "Memory",
+      "read_latency": 2,
+      "write_latency": 1,
+      "priority": 12,
+      "num_regions": 1,
+      "secure_only": false,
+      "privileged_only": false
+    },
+    {
+      "name": "System_Registers",
+      "base_address": 137438953472,
+      "size": 64,
+      "memory_type": "Peripheral",
+      "read_latency": 1,
+      "write_latency": 1,
+      "priority": 10,
+      "num_regions": 1,
+      "secure_only": false,
+      "privileged_only": true
+    },
+    {
+      "name": "PCIe_Config_Space",
+      "base_address": 274877906944,
+      "size": 65536,
+      "memory_type": "Peripheral",
+      "read_latency": 5,
+      "write_latency": 5,
+      "priority": 11,
+      "num_regions": 4,
+      "secure_only": false,
+      "privileged_only": false
+    },
+    {
+      "name": "Crypto_Engine",
+      "base_address": 549755813888,
+      "size": 256,
+      "memory_type": "Peripheral",
+      "read_latency": 4,
+      "write_latency": 4,
+      "priority": 13,
+      "num_regions": 1,
+      "secure_only": true,
+      "privileged_only": true
+    },
+    {
+      "name": "Debug_APB_Bridge",
+      "base_address": 1099511627776,
+      "size": 1024,
+      "memory_type": "Peripheral",
+      "read_latency": 3,
+      "write_latency": 3,
+      "priority": 8,
+      "num_regions": 1,
+      "secure_only": false,
+      "privileged_only": true
+    }
+  ]
+}
