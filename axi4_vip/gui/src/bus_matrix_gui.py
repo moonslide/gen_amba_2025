@@ -1006,7 +1006,7 @@ class BusMatrixGUI:
         
         # Output directory selection
         output_frame = ttk.LabelFrame(left_panel, text="Output Directory", padding=5)
-        output_frame.grid(row=11, column=0, columnspan=2, sticky="ew", pady=10)
+        output_frame.grid(row=12, column=0, columnspan=2, sticky="ew", pady=10)
         
         self.output_dir_var = tk.StringVar(value=os.path.abspath("output/rtl"))
         ttk.Entry(output_frame, textvariable=self.output_dir_var, width=30).pack(side=tk.LEFT, padx=5)
@@ -1016,7 +1016,7 @@ class BusMatrixGUI:
         # Generate button
         ttk.Button(left_panel, text="Generate Verilog", 
                   command=self.generate_verilog,
-                  style='Accent.TButton').grid(row=12, column=0, columnspan=2, pady=10)
+                  style='Accent.TButton').grid(row=13, column=0, columnspan=2, pady=10)
         
         # Right panel - Visual representation
         right_panel = ttk.LabelFrame(main_frame, text="Bus Matrix Visualization", padding=10)

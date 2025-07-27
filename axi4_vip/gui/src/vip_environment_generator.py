@@ -196,7 +196,12 @@ package axi4_globals_pkg;
             f.write("    slave_config_t slave_configs[NO_OF_SLAVES] = '{\n")
             for i, slave in enumerate(self.config.slaves):
                 end_addr = slave.base_address + (slave.size * 1024) - 1
-                f.write(f"        '{{\"{slave.name}\", 'h{slave.base_address:X}, 'h{end_addr:X}, {slave.size * 1024}}}")
+                memory_size = slave.size * 1024
+                # Use 64-bit size specifier for large memory sizes
+                if memory_size > 2147483647:  # > 2GB
+                    f.write(f"        '{{\"{slave.name}\", 'h{slave.base_address:X}, 'h{end_addr:X}, 64'd{memory_size}}}")
+                else:
+                    f.write(f"        '{{\"{slave.name}\", 'h{slave.base_address:X}, 'h{end_addr:X}, 32'd{memory_size}}}")
                 if i < len(self.config.slaves) - 1:
                     f.write(",")
                 f.write("\n")
@@ -344,11 +349,11 @@ interface axi4_master_agent_bfm #(
 
     import axi4_globals_pkg::*;
     
-    // Master driver BFM instance
-    axi4_master_driver_bfm master_driver_bfm_h;
+    // Master driver BFM instance (interface instantiation)
+    axi4_master_driver_bfm master_driver_bfm_h(aclk, aresetn);
     
-    // Master monitor BFM instance  
-    axi4_master_monitor_bfm master_monitor_bfm_h;
+    // Master monitor BFM instance (interface instantiation)
+    axi4_master_monitor_bfm master_monitor_bfm_h(aclk, aresetn);
 
 endinterface : axi4_master_agent_bfm
 """)
@@ -385,11 +390,11 @@ interface axi4_slave_agent_bfm #(
 
     import axi4_globals_pkg::*;
     
-    // Slave driver BFM instance
-    axi4_slave_driver_bfm slave_driver_bfm_h;
+    // Slave driver BFM instance (interface instantiation)
+    axi4_slave_driver_bfm slave_driver_bfm_h(aclk, aresetn);
     
-    // Slave monitor BFM instance  
-    axi4_slave_monitor_bfm slave_monitor_bfm_h;
+    // Slave monitor BFM instance (interface instantiation) 
+    axi4_slave_monitor_bfm slave_monitor_bfm_h(aclk, aresetn);
 
 endinterface : axi4_slave_agent_bfm
 """)
@@ -430,13 +435,19 @@ package axi4_master_pkg;
         
         // Transaction type
         typedef enum {{WRITE, READ}} tx_type_e;
-        tx_type_e tx_type;
+        rand tx_type_e tx_type;
         
         // Address channel
         rand bit [ADDRESS_WIDTH-1:0] awaddr;
         rand bit [7:0] awlen;
         rand bit [2:0] awsize;
         rand bit [1:0] awburst;
+        rand bit [3:0] awid;
+        rand bit [3:0] awqos;
+        rand bit [3:0] awregion;
+        rand bit awlock;
+        rand bit [3:0] awcache;
+        rand bit [2:0] awprot;
         
         // Data channel
         rand bit [DATA_WIDTH-1:0] wdata[];
@@ -446,6 +457,12 @@ package axi4_master_pkg;
         rand bit [7:0] arlen;
         rand bit [2:0] arsize;
         rand bit [1:0] arburst;
+        rand bit [3:0] arid;
+        rand bit [3:0] arqos;
+        rand bit [3:0] arregion;
+        rand bit arlock;
+        rand bit [3:0] arcache;
+        rand bit [2:0] arprot;
         
         // Read data
         bit [DATA_WIDTH-1:0] rdata[];
@@ -522,6 +539,10 @@ package axi4_master_pkg;
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
             
+            // Get configuration
+            if(!uvm_config_db#(axi4_master_agent_config)::get(this, "", "cfg", cfg))
+                `uvm_fatal("CONFIG", "Cannot get master agent config from uvm_config_db")
+            
             if(cfg.is_active == UVM_ACTIVE) begin
                 sequencer = axi4_master_sequencer::type_id::create("sequencer", this);
                 driver = axi4_master_driver::type_id::create("driver", this);
@@ -574,6 +595,10 @@ package axi4_slave_pkg;
         
         bit is_active = UVM_ACTIVE;
         bit slave_memory_mode_enable = 1;
+        
+        // Address mapping
+        bit [31:0] start_addr = 32'h0;
+        bit [31:0] end_addr = 32'hFFFF_FFFF;
         
         function new(string name = "axi4_slave_agent_config");
             super.new(name);
@@ -634,6 +659,10 @@ package axi4_slave_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+            
+            // Get configuration
+            if(!uvm_config_db#(axi4_slave_agent_config)::get(this, "", "cfg", cfg))
+                `uvm_fatal("CONFIG", "Cannot get slave agent config from uvm_config_db")
             
             if(cfg.is_active == UVM_ACTIVE) begin
                 sequencer = axi4_slave_sequencer::type_id::create("sequencer", this);
@@ -723,6 +752,16 @@ class axi4_master_base_seq extends uvm_sequence #(axi4_master_tx);
         super.new(name);
     endfunction
     
+    // Pre body
+    virtual task pre_body();
+        // Objection handling if needed
+    endtask
+    
+    // Post body  
+    virtual task post_body();
+        // Objection handling if needed
+    endtask
+    
     // Body method
     virtual task body();
         `uvm_info(get_type_name(), "Starting base sequence", UVM_MEDIUM)
@@ -754,9 +793,9 @@ class axi4_master_write_seq extends axi4_master_base_seq;
         
         repeat(num_trans) begin
             `uvm_do_with(tx, {{
-                tx.tx_type == WRITE;
-                tx.awburst == INCR;
-                tx.awsize == SIZE_4B;
+                tx.tx_type == axi4_master_tx::WRITE;
+                tx.awburst == axi4_globals_pkg::INCR;
+                tx.awsize == axi4_globals_pkg::SIZE_4B;
                 tx.awlen == 0;  // Single beat
             }})
         end
@@ -788,9 +827,9 @@ class axi4_master_read_seq extends axi4_master_base_seq;
         
         repeat(num_trans) begin
             `uvm_do_with(tx, {{
-                tx.tx_type == READ;
-                tx.arburst == INCR;
-                tx.arsize == SIZE_4B;
+                tx.tx_type == axi4_master_tx::READ;
+                tx.arburst == axi4_globals_pkg::INCR;
+                tx.arsize == axi4_globals_pkg::SIZE_4B;
                 tx.arlen == 0;  // Single beat
             }})
         end
@@ -826,6 +865,27 @@ endclass : axi4_slave_base_seq
     
     def _generate_virtual_components(self, base_path):
         """Generate virtual sequencer and sequence components"""
+        # Virtual sequencer package (to avoid circular dependency)
+        with open(os.path.join(base_path, "virtual_seqr/axi4_virtual_seqr_pkg.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Sequencer Package
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+package axi4_virtual_seqr_pkg;
+    
+    import uvm_pkg::*;
+    `include "uvm_macros.svh"
+    
+    import axi4_master_pkg::*;
+    import axi4_slave_pkg::*;
+    
+    `include "axi4_virtual_sequencer.sv"
+    
+endpackage : axi4_virtual_seqr_pkg
+""")
+        
         # Virtual sequencer
         with open(os.path.join(base_path, "virtual_seqr/axi4_virtual_sequencer.sv"), "w") as f:
             f.write(f"""//==============================================================================
@@ -843,6 +903,9 @@ class axi4_virtual_sequencer extends uvm_sequencer;
     
     // Slave sequencers
     axi4_slave_sequencer slave_seqr[{len(self.config.slaves)}];
+    
+    // Environment configuration handle (using uvm_object to avoid circular dependency)
+    uvm_object env_cfg;
     
     // Constructor
     function new(string name = "axi4_virtual_sequencer", uvm_component parent = null);
@@ -870,15 +933,19 @@ package axi4_virtual_seq_pkg;
     import axi4_slave_pkg::*;
     import axi4_master_seq_pkg::*;
     import axi4_slave_seq_pkg::*;
+    import axi4_virtual_seqr_pkg::*;
+    import axi4_env_pkg::*;
     
-    // Forward declaration of virtual sequencer
-    typedef class axi4_virtual_sequencer;
-    
-    // Include virtual sequence files
+    // Include virtual sequence files (from current directory)
     `include "axi4_virtual_base_seq.sv"
     `include "axi4_virtual_write_seq.sv"
     `include "axi4_virtual_read_seq.sv"
     `include "axi4_virtual_write_read_seq.sv"
+    `include "axi4_virtual_stress_seq.sv"
+    `include "axi4_virtual_error_seq.sv"
+    `include "axi4_virtual_performance_seq.sv"
+    `include "axi4_virtual_interleaved_seq.sv"
+    `include "axi4_virtual_boundary_seq.sv"
     
 endpackage : axi4_virtual_seq_pkg
 """)
@@ -894,7 +961,17 @@ endpackage : axi4_virtual_seq_pkg
 class axi4_virtual_base_seq extends uvm_sequence;
     
     `uvm_object_utils(axi4_virtual_base_seq)
-    `uvm_declare_p_sequencer(axi4_virtual_sequencer)
+    
+    // Public handle to access the virtual sequencer
+    axi4_virtual_sequencer p_sequencer;
+    
+    // This task is called automatically before body()
+    virtual task pre_start();
+        super.pre_start();
+        if(!$cast(p_sequencer, get_sequencer())) begin
+            `uvm_error("CASTFL", $sformatf("Failed to cast sequencer to axi4_virtual_sequencer"))
+        end
+    endtask
     
     // Constructor
     function new(string name = "axi4_virtual_base_seq");
@@ -1031,6 +1108,7 @@ package axi4_env_pkg;
     import axi4_globals_pkg::*;
     import axi4_master_pkg::*;
     import axi4_slave_pkg::*;
+    import axi4_virtual_seqr_pkg::*;
     
     // Include environment files
     `include "axi4_env_config.sv"
@@ -1066,6 +1144,10 @@ class axi4_env_config extends uvm_object;
     
     // Scoreboard enable
     bit has_scoreboard = 1;
+    
+    // Error injection configuration
+    bit enable_error_injection = 0;
+    real error_rate = 0.01; // 1% error rate
     
     // Constructor
     function new(string name = "axi4_env_config");
@@ -1127,15 +1209,22 @@ class axi4_env extends uvm_env;
         if(!uvm_config_db#(axi4_env_config)::get(this, "", "env_cfg", env_cfg))
             `uvm_fatal("CONFIG", "Cannot get env_cfg from uvm_config_db")
         
+        // Set configurations before creating agents
+        foreach(env_cfg.master_cfg[i]) begin
+            uvm_config_db#(axi4_master_agent_config)::set(this, $sformatf("master_agent[%0d]*", i), "cfg", env_cfg.master_cfg[i]);
+        end
+        
+        foreach(env_cfg.slave_cfg[i]) begin
+            uvm_config_db#(axi4_slave_agent_config)::set(this, $sformatf("slave_agent[%0d]*", i), "cfg", env_cfg.slave_cfg[i]);
+        end
+        
         // Create agents
         foreach(master_agent[i]) begin
             master_agent[i] = axi4_master_agent::type_id::create($sformatf("master_agent[%0d]", i), this);
-            uvm_config_db#(axi4_master_agent_config)::set(this, $sformatf("master_agent[%0d]*", i), "cfg", env_cfg.master_cfg[i]);
         end
         
         foreach(slave_agent[i]) begin
             slave_agent[i] = axi4_slave_agent::type_id::create($sformatf("slave_agent[%0d]", i), this);
-            uvm_config_db#(axi4_slave_agent_config)::set(this, $sformatf("slave_agent[%0d]*", i), "cfg", env_cfg.slave_cfg[i]);
         end
         
         // Create virtual sequencer
@@ -1155,6 +1244,9 @@ class axi4_env extends uvm_env;
     // Connect phase
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
+        
+        // Pass env_cfg to virtual sequencer
+        v_seqr.env_cfg = env_cfg;
         
         // Connect sequencers to virtual sequencer
         foreach(master_agent[i]) begin
@@ -1193,8 +1285,8 @@ class axi4_scoreboard extends uvm_scoreboard;
     `uvm_component_utils(axi4_scoreboard)
     
     // Analysis fifos for masters and slaves
-    uvm_analysis_fifo #(axi4_master_tx) master_fifo[{len(self.config.masters)}];
-    uvm_analysis_fifo #(axi4_slave_tx) slave_fifo[{len(self.config.slaves)}];
+    uvm_tlm_analysis_fifo #(axi4_master_tx) master_fifo[{len(self.config.masters)}];
+    uvm_tlm_analysis_fifo #(axi4_slave_tx) slave_fifo[{len(self.config.slaves)}];
     
     // Constructor
     function new(string name = "axi4_scoreboard", uvm_component parent = null);
@@ -1269,6 +1361,14 @@ package axi4_test_pkg;
     // Include test files
     `include "axi4_base_test.sv"
     `include "axi4_basic_rw_test.sv"
+    `include "axi4_burst_test.sv"
+    `include "axi4_random_test.sv"
+    `include "axi4_stress_test.sv"
+    `include "axi4_qos_test.sv"
+    `include "axi4_error_injection_test.sv"
+    `include "axi4_performance_test.sv"
+    `include "axi4_interleaved_test.sv"
+    `include "axi4_boundary_test.sv"
     
 endpackage : axi4_test_pkg
 """)
@@ -1303,11 +1403,41 @@ class axi4_base_test extends uvm_test;
         // Create environment configuration
         env_cfg = axi4_env_config::type_id::create("env_cfg");
         
+        // Initialize master and slave configurations
+        env_cfg.no_of_masters = {len(self.config.masters)};
+        env_cfg.no_of_slaves = {len(self.config.slaves)};
+        
         // Set configuration
         uvm_config_db#(axi4_env_config)::set(this, "env*", "env_cfg", env_cfg);
         
         // Create environment
         env = axi4_env::type_id::create("env", this);
+    endfunction
+    
+    // Start of simulation phase - control waveform dumping
+    function void start_of_simulation_phase(uvm_phase phase);
+        super.start_of_simulation_phase(phase);
+        
+        // Check for waveform control
+        if ($test$plusargs("enable_wave")) begin
+            `uvm_info(get_type_name(), "Enabling waveform dump", UVM_LOW)
+            // Use direct system tasks instead of hierarchical reference
+            `ifdef DUMP_FSDB
+                $fsdbDumpon();
+            `elsif DUMP_VCD
+                $dumpon();
+            `endif
+        end
+        
+        if ($test$plusargs("disable_wave")) begin
+            `uvm_info(get_type_name(), "Disabling waveform dump", UVM_LOW)
+            // Use direct system tasks instead of hierarchical reference
+            `ifdef DUMP_FSDB
+                $fsdbDumpoff();
+            `elsif DUMP_VCD
+                $dumpoff();
+            `endif
+        end
     endfunction
     
     // End of elaboration phase
@@ -1368,6 +1498,956 @@ class axi4_basic_rw_test extends axi4_base_test;
     
 endclass : axi4_basic_rw_test
 """)
+        
+        # Burst test
+        with open(os.path.join(base_path, "test/axi4_burst_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Burst Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_burst_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_burst_test)
+    
+    // Constructor
+    function new(string name = "axi4_burst_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_master_burst_seq burst_seq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting burst test", UVM_LOW)
+        
+        // Test different burst types and lengths
+        burst_seq = axi4_master_burst_seq::type_id::create("burst_seq");
+        burst_seq.burst_type = axi4_globals_pkg::INCR;
+        burst_seq.burst_length = 16;
+        burst_seq.start(env.master_agent[0].sequencer);
+        
+        #100ns;
+        
+        // WRAP burst
+        burst_seq.burst_type = axi4_globals_pkg::WRAP;
+        burst_seq.burst_length = 8;
+        burst_seq.start(env.master_agent[0].sequencer);
+        
+        `uvm_info(get_type_name(), "Completed burst test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_burst_test
+""")
+        
+        # Random test
+        with open(os.path.join(base_path, "test/axi4_random_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Random Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_random_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_random_test)
+    
+    // Constructor
+    function new(string name = "axi4_random_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_master_random_seq random_seq;
+        int num_transactions = 100;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), $sformatf("Starting random test with %0d transactions", num_transactions), UVM_LOW)
+        
+        // Run random sequences on all masters
+        fork
+            begin
+                random_seq = axi4_master_random_seq::type_id::create("random_seq0");
+                random_seq.num_trans = num_transactions;
+                random_seq.start(env.master_agent[0].sequencer);
+            end
+            begin
+                random_seq = axi4_master_random_seq::type_id::create("random_seq1");
+                random_seq.num_trans = num_transactions;
+                random_seq.start(env.master_agent[1].sequencer);
+            end
+        join
+        
+        `uvm_info(get_type_name(), "Completed random test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_random_test
+""")
+        
+        # Stress test
+        with open(os.path.join(base_path, "test/axi4_stress_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Stress Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_stress_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_stress_test)
+    
+    // Constructor
+    function new(string name = "axi4_stress_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_virtual_stress_seq stress_seq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting stress test", UVM_LOW)
+        
+        // Run stress sequence with heavy traffic
+        stress_seq = axi4_virtual_stress_seq::type_id::create("stress_seq");
+        stress_seq.num_iterations = 500;
+        stress_seq.enable_backpressure = 1;
+        stress_seq.start(env.v_seqr);
+        
+        `uvm_info(get_type_name(), "Completed stress test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_stress_test
+""")
+        
+        # QoS test
+        with open(os.path.join(base_path, "test/axi4_qos_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 QoS Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_qos_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_qos_test)
+    
+    // Constructor
+    function new(string name = "axi4_qos_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_master_qos_seq qos_seq_high, qos_seq_low;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting QoS test", UVM_LOW)
+        
+        // Test QoS arbitration with different priorities
+        fork
+            begin
+                qos_seq_high = axi4_master_qos_seq::type_id::create("qos_seq_high");
+                qos_seq_high.qos_value = 4'hF; // Highest priority
+                qos_seq_high.num_trans = 10;
+                qos_seq_high.start(env.master_agent[0].sequencer);
+            end
+            begin
+                qos_seq_low = axi4_master_qos_seq::type_id::create("qos_seq_low");
+                qos_seq_low.qos_value = 4'h0; // Lowest priority
+                qos_seq_low.num_trans = 10;
+                qos_seq_low.start(env.master_agent[1].sequencer);
+            end
+        join
+        
+        `uvm_info(get_type_name(), "Completed QoS test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_qos_test
+""")
+        
+        # Error injection test
+        with open(os.path.join(base_path, "test/axi4_error_injection_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Error Injection Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_error_injection_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_error_injection_test)
+    
+    // Constructor
+    function new(string name = "axi4_error_injection_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Build phase
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        
+        // Enable error injection in environment
+        env_cfg.enable_error_injection = 1;
+        env_cfg.error_rate = 5; // 5% error rate
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_virtual_error_seq error_seq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting error injection test", UVM_LOW)
+        
+        // Run sequence with error scenarios
+        error_seq = axi4_virtual_error_seq::type_id::create("error_seq");
+        error_seq.test_slave_errors = 1;
+        error_seq.test_decode_errors = 1;
+        error_seq.test_exclusive_errors = 1;
+        error_seq.start(env.v_seqr);
+        
+        `uvm_info(get_type_name(), "Completed error injection test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_error_injection_test
+""")
+        
+        # Performance test
+        with open(os.path.join(base_path, "test/axi4_performance_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Performance Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_performance_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_performance_test)
+    
+    // Performance metrics
+    int total_transactions;
+    real start_time, end_time;
+    real throughput;
+    
+    // Constructor
+    function new(string name = "axi4_performance_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_virtual_performance_seq perf_seq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting performance test", UVM_LOW)
+        
+        start_time = $realtime;
+        
+        // Run performance sequence
+        perf_seq = axi4_virtual_performance_seq::type_id::create("perf_seq");
+        perf_seq.num_iterations = 1000;
+        perf_seq.measure_latency = 1;
+        perf_seq.start(env.v_seqr);
+        
+        end_time = $realtime;
+        total_transactions = perf_seq.num_iterations * 2; // Read + Write
+        throughput = total_transactions / ((end_time - start_time) / 1ns);
+        
+        `uvm_info(get_type_name(), $sformatf("Performance: %0.2f transactions/ns", throughput), UVM_LOW)
+        `uvm_info(get_type_name(), "Completed performance test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_performance_test
+""")
+        
+        # Interleaved test
+        with open(os.path.join(base_path, "test/axi4_interleaved_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Interleaved Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_interleaved_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_interleaved_test)
+    
+    // Constructor
+    function new(string name = "axi4_interleaved_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_virtual_interleaved_seq interleaved_seq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting interleaved test", UVM_LOW)
+        
+        // Test interleaved transactions from multiple masters
+        interleaved_seq = axi4_virtual_interleaved_seq::type_id::create("interleaved_seq");
+        interleaved_seq.enable_data_interleaving = 1;
+        interleaved_seq.num_outstanding = 8;
+        interleaved_seq.start(env.v_seqr);
+        
+        `uvm_info(get_type_name(), "Completed interleaved test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_interleaved_test
+""")
+        
+        # Boundary test
+        with open(os.path.join(base_path, "test/axi4_boundary_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Boundary Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_boundary_test extends axi4_base_test;
+    
+    `uvm_component_utils(axi4_boundary_test)
+    
+    // Constructor
+    function new(string name = "axi4_boundary_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_virtual_boundary_seq boundary_seq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting boundary test", UVM_LOW)
+        
+        // Test boundary conditions
+        boundary_seq = axi4_virtual_boundary_seq::type_id::create("boundary_seq");
+        boundary_seq.test_4k_boundary = 1;
+        boundary_seq.test_slave_boundary = 1;
+        boundary_seq.test_max_burst = 1;
+        boundary_seq.start(env.v_seqr);
+        
+        `uvm_info(get_type_name(), "Completed boundary test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_boundary_test
+""")
+        
+        # Also need to generate the corresponding sequences
+        self._generate_additional_sequences(base_path)
+    
+    def _generate_additional_sequences(self, base_path):
+        """Generate additional sequence files for advanced tests"""
+        # Burst sequence
+        with open(os.path.join(base_path, "seq/master_sequences/axi4_master_burst_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Master Burst Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_master_burst_seq extends axi4_master_base_seq;
+    
+    `uvm_object_utils(axi4_master_burst_seq)
+    
+    // Burst parameters
+    rand axi4_burst_type_e burst_type;
+    rand int burst_length;
+    
+    constraint burst_length_c {{
+        burst_length inside {{1, 2, 4, 8, 16, 32, 64, 128, 256}};
+    }}
+    
+    // Constructor
+    function new(string name = "axi4_master_burst_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        axi4_master_tx tx;
+        
+        `uvm_do_with(tx, {{
+            tx.tx_type == axi4_master_tx::WRITE;
+            tx.awburst == burst_type;
+            tx.awlen == burst_length - 1;
+            tx.awsize == axi4_globals_pkg::SIZE_4B;
+        }})
+    endtask : body
+    
+endclass : axi4_master_burst_seq
+""")
+        
+        # Random sequence
+        with open(os.path.join(base_path, "seq/master_sequences/axi4_master_random_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Master Random Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_master_random_seq extends axi4_master_base_seq;
+    
+    `uvm_object_utils(axi4_master_random_seq)
+    
+    // Constructor
+    function new(string name = "axi4_master_random_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        axi4_master_tx tx;
+        
+        repeat(num_trans) begin
+            `uvm_do(tx)
+        end
+    endtask : body
+    
+endclass : axi4_master_random_seq
+""")
+        
+        # QoS sequence
+        with open(os.path.join(base_path, "seq/master_sequences/axi4_master_qos_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Master QoS Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_master_qos_seq extends axi4_master_base_seq;
+    
+    `uvm_object_utils(axi4_master_qos_seq)
+    
+    // QoS value
+    rand bit [3:0] qos_value;
+    
+    // Constructor
+    function new(string name = "axi4_master_qos_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        axi4_master_tx tx;
+        
+        repeat(num_trans) begin
+            `uvm_do_with(tx, {{
+                tx.awqos == qos_value;
+                tx.arqos == qos_value;
+            }})
+        end
+    endtask : body
+    
+endclass : axi4_master_qos_seq
+""")
+        
+        # Virtual stress sequence
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_stress_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Stress Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_stress_seq extends axi4_virtual_base_seq;
+    
+    `uvm_object_utils(axi4_virtual_stress_seq)
+    
+    // Parameters
+    int num_iterations = 100;
+    bit enable_backpressure = 0;
+    
+    // Constructor
+    function new(string name = "axi4_virtual_stress_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        axi4_master_random_seq random_seq[{len(self.config.masters)}];
+        
+        `uvm_info(get_type_name(), "Starting virtual stress sequence", UVM_MEDIUM)
+        
+        // Start random sequences on all masters concurrently
+        fork
+""")
+            for i in range(len(self.config.masters)):
+                f.write(f"""            begin
+                random_seq[{i}] = axi4_master_random_seq::type_id::create($sformatf("random_seq_%0d", {i}));
+                random_seq[{i}].num_trans = num_iterations;
+                random_seq[{i}].start(p_sequencer.master_seqr[{i}]);
+            end
+""")
+            f.write("""        join
+    endtask : body
+    
+endclass : axi4_virtual_stress_seq
+""")
+        
+        # Virtual error sequence
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_error_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Error Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_error_seq extends axi4_virtual_base_seq;
+    
+    `uvm_object_utils(axi4_virtual_error_seq)
+    
+    // Error scenarios to test
+    bit test_slave_errors = 1;
+    bit test_decode_errors = 1;
+    bit test_exclusive_errors = 1;
+    
+    // Constructor
+    function new(string name = "axi4_virtual_error_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        `uvm_info(get_type_name(), "Starting virtual error sequence", UVM_MEDIUM)
+        
+        // Test different error scenarios
+        if (test_decode_errors) begin
+            // Access unmapped address
+            test_decode_error();
+        end
+        
+        if (test_slave_errors) begin
+            // Force slave errors
+            test_slave_error_response();
+        end
+        
+        if (test_exclusive_errors) begin
+            // Test exclusive access failures
+            test_exclusive_access_error();
+        end
+    endtask : body
+    
+    // Test decode error
+    task test_decode_error();
+        axi4_master_tx tx;
+        
+        `uvm_info(get_type_name(), "Testing decode error", UVM_MEDIUM)
+        
+        `uvm_do_on_with(tx, p_sequencer.master_seqr[0], {{
+            tx.tx_type == axi4_master_tx::WRITE;
+            tx.awaddr == 'hDEADBEEF; // Unmapped address
+        }})
+    endtask
+    
+    // Test slave error response
+    task test_slave_error_response();
+        // Configure slave to return errors
+        `uvm_info(get_type_name(), "Testing slave error response", UVM_MEDIUM)
+        // Implementation depends on slave configuration
+    endtask
+    
+    // Test exclusive access error
+    task test_exclusive_access_error();
+        `uvm_info(get_type_name(), "Testing exclusive access error", UVM_MEDIUM)
+        // Implementation for exclusive access testing
+    endtask
+    
+endclass : axi4_virtual_error_seq
+""")
+        
+        # Virtual performance sequence
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_performance_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Performance Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_performance_seq extends axi4_virtual_base_seq;
+    
+    `uvm_object_utils(axi4_virtual_performance_seq)
+    
+    // Parameters
+    int num_iterations = 100;
+    bit measure_latency = 0;
+    real total_latency = 0;
+    int latency_count = 0;
+    
+    // Constructor
+    function new(string name = "axi4_virtual_performance_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        axi4_master_write_seq write_seq;
+        axi4_master_read_seq read_seq;
+        real start_time, end_time;
+        
+        `uvm_info(get_type_name(), "Starting virtual performance sequence", UVM_MEDIUM)
+        
+        repeat(num_iterations) begin
+            if (measure_latency) start_time = $realtime;
+            
+            // Write
+            write_seq = axi4_master_write_seq::type_id::create("write_seq");
+            write_seq.start(p_sequencer.master_seqr[0]);
+            
+            // Read
+            read_seq = axi4_master_read_seq::type_id::create("read_seq");
+            read_seq.start(p_sequencer.master_seqr[0]);
+            
+            if (measure_latency) begin
+                end_time = $realtime;
+                total_latency += (end_time - start_time);
+                latency_count++;
+            end
+        end
+        
+        if (measure_latency && latency_count > 0) begin
+            `uvm_info(get_type_name(), $sformatf("Average latency: %0.2f ns", total_latency/latency_count/1ns), UVM_LOW)
+        end
+    endtask : body
+    
+endclass : axi4_virtual_performance_seq
+""")
+        
+        # Virtual interleaved sequence
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_interleaved_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Interleaved Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_interleaved_seq extends axi4_virtual_base_seq;
+    
+    `uvm_object_utils(axi4_virtual_interleaved_seq)
+    
+    // Parameters
+    bit enable_data_interleaving = 1;
+    int num_outstanding = 4;
+    
+    // Constructor
+    function new(string name = "axi4_virtual_interleaved_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        `uvm_info(get_type_name(), "Starting virtual interleaved sequence", UVM_MEDIUM)
+        
+        // Start multiple outstanding transactions
+        fork
+            repeat(num_outstanding) begin
+                fork
+                    send_interleaved_write();
+                    send_interleaved_read();
+                join_none
+            end
+        join
+    endtask : body
+    
+    // Send interleaved write
+    task send_interleaved_write();
+        axi4_master_burst_seq burst_seq;
+        
+        burst_seq = axi4_master_burst_seq::type_id::create("burst_seq");
+        burst_seq.burst_type = axi4_globals_pkg::INCR;
+        burst_seq.burst_length = 8;
+        burst_seq.start(p_sequencer.master_seqr[$urandom_range({len(self.config.masters)}-1, 0)]);
+    endtask
+    
+    // Send interleaved read
+    task send_interleaved_read();
+        axi4_master_burst_seq burst_seq;
+        
+        burst_seq = axi4_master_burst_seq::type_id::create("burst_seq");
+        burst_seq.burst_type = axi4_globals_pkg::INCR;
+        burst_seq.burst_length = 8;
+        burst_seq.start(p_sequencer.master_seqr[$urandom_range({len(self.config.masters)}-1, 0)]);
+    endtask
+    
+endclass : axi4_virtual_interleaved_seq
+""")
+        
+        # Virtual boundary sequence
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_boundary_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Boundary Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_boundary_seq extends axi4_virtual_base_seq;
+    
+    `uvm_object_utils(axi4_virtual_boundary_seq)
+    
+    // Test options
+    bit test_4k_boundary = 1;
+    bit test_slave_boundary = 1;
+    bit test_max_burst = 1;
+    
+    // Constructor
+    function new(string name = "axi4_virtual_boundary_seq");
+        super.new(name);
+    endfunction
+    
+    // Body method
+    virtual task body();
+        `uvm_info(get_type_name(), "Starting virtual boundary sequence", UVM_MEDIUM)
+        
+        if (test_4k_boundary) begin
+            test_4k_boundary_crossing();
+        end
+        
+        if (test_slave_boundary) begin
+            test_slave_address_boundary();
+        end
+        
+        if (test_max_burst) begin
+            test_maximum_burst_length();
+        end
+    endtask : body
+    
+    // Test 4K boundary crossing
+    task test_4k_boundary_crossing();
+        axi4_master_tx tx;
+        
+        `uvm_info(get_type_name(), "Testing 4K boundary crossing", UVM_MEDIUM)
+        
+        `uvm_do_on_with(tx, p_sequencer.master_seqr[0], {{
+            tx.tx_type == axi4_master_tx::WRITE;
+            tx.awaddr == 'h0FF0; // Near 4K boundary
+            tx.awlen == 15; // 16 beats
+            tx.awsize == axi4_globals_pkg::SIZE_4B;
+            tx.awburst == axi4_globals_pkg::INCR;
+        }})
+    endtask
+    
+    // Test slave address boundary
+    task test_slave_address_boundary();
+        axi4_master_tx tx;
+        axi4_env_config cfg;
+        
+        `uvm_info(get_type_name(), "Testing slave address boundary", UVM_MEDIUM)
+        
+        // Cast env_cfg to proper type
+        if (!$cast(cfg, p_sequencer.env_cfg)) begin
+            `uvm_error(get_type_name(), "Failed to cast env_cfg to axi4_env_config")
+            return;
+        end
+        
+        // Test access at slave boundaries
+        foreach(cfg.slave_cfg[i]) begin
+            `uvm_do_on_with(tx, p_sequencer.master_seqr[0], {{
+                tx.tx_type == axi4_master_tx::READ;
+                tx.araddr == cfg.slave_cfg[i].end_addr - 8;
+                tx.arlen == 1;
+                tx.arsize == axi4_globals_pkg::SIZE_8B;
+            }})
+        end
+    endtask
+    
+    // Test maximum burst length
+    task test_maximum_burst_length();
+        axi4_master_tx tx;
+        
+        `uvm_info(get_type_name(), "Testing maximum burst length", UVM_MEDIUM)
+        
+        `uvm_do_on_with(tx, p_sequencer.master_seqr[0], {{
+            tx.tx_type == axi4_master_tx::WRITE;
+            tx.awlen == 255; // Maximum burst length for AXI4
+            tx.awsize == axi4_globals_pkg::SIZE_4B;
+            tx.awburst == axi4_globals_pkg::INCR;
+        }})
+    endtask
+    
+endclass : axi4_virtual_boundary_seq
+""")
+        
+        # Update master sequence package to include new sequences
+        self._update_master_seq_package(base_path)
+        
+        # Note: Virtual sequence package already includes all sequences in _generate_virtual_components()
+        # No need to update it again
+    
+    def _generate_fsdb_documentation(self, base_path):
+        """Generate FSDB documentation"""
+        with open(os.path.join(base_path, "doc/FSDB_USAGE.md"), "w") as f:
+            f.write(f"""# FSDB Waveform Dumping Guide
+
+This VIP supports FSDB waveform dumping for debugging with Verdi.
+
+## Quick Start
+
+### 1. Run simulation with FSDB dumping:
+```bash
+make run_fsdb TEST=axi4_basic_rw_test
+```
+
+### 2. View waveform in Verdi:
+```bash
+make verdi
+```
+
+## Manual Control
+
+### Enable FSDB dumping:
+```bash
+make run DUMP_FSDB=1
+```
+
+### Specify custom FSDB file:
+```bash
+make run DUMP_FSDB=1 FSDB_FILE=my_waves.fsdb
+```
+
+### Runtime control with plusargs:
+```bash
+./simv +fsdb_file=custom.fsdb +enable_wave
+```
+
+## Test Control
+
+Tests can control waveform dumping:
+- `+enable_wave` - Enable dumping at start
+- `+disable_wave` - Disable dumping at start
+
+## VCD Alternative
+
+For environments without Verdi:
+```bash
+make run_vcd TEST=axi4_basic_rw_test
+make dve  # View in DVE
+```
+
+## Compilation Requirements
+
+1. Set VERDI_HOME environment variable:
+```bash
+export VERDI_HOME=/path/to/verdi/installation
+```
+
+2. Ensure Verdi PLI libraries are accessible
+
+## Waveform Files
+
+Generated waveforms are stored in:
+- FSDB: `sim/waves/<TEST>_<SEED>.fsdb`
+- VCD: `sim/waves/<TEST>_<SEED>.vcd`
+
+## Selective Dumping
+
+To reduce file size, you can:
+1. Use `hdl_top.enable_wave_dump()` and `hdl_top.disable_wave_dump()` in tests
+2. Modify the `$fsdbDumpvars` scope in hdl_top.sv
+3. Use Verdi commands for selective dumping
+
+## Troubleshooting
+
+### FSDB not generated:
+- Check VERDI_HOME is set correctly
+- Verify +define+DUMP_FSDB is passed during compilation
+- Check for PLI loading errors in simulation log
+
+### Verdi won't open:
+- Ensure Verdi is in PATH
+- Check FSDB file exists in waves directory
+- Verify FSDB file is not corrupted
+""")
+    
+    def _update_master_seq_package(self, base_path):
+        """Update master sequence package to include new sequences"""
+        with open(os.path.join(base_path, "seq/master_sequences/axi4_master_seq_pkg.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Master Sequence Package
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+package axi4_master_seq_pkg;
+    
+    import uvm_pkg::*;
+    `include "uvm_macros.svh"
+    
+    import axi4_globals_pkg::*;
+    import axi4_master_pkg::*;
+    
+    // Include sequence files
+    `include "axi4_master_base_seq.sv"
+    `include "axi4_master_write_seq.sv"
+    `include "axi4_master_read_seq.sv"
+    `include "axi4_master_burst_seq.sv"
+    `include "axi4_master_random_seq.sv"
+    `include "axi4_master_qos_seq.sv"
+    
+endpackage : axi4_master_seq_pkg
+""")
+    
+    def _update_virtual_seq_package(self, base_path):
+        """Update virtual sequence package to include new sequences"""
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_seq_pkg.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Sequence Package
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+package axi4_virtual_seq_pkg;
+    
+    import uvm_pkg::*;
+    `include "uvm_macros.svh"
+    
+    import axi4_globals_pkg::*;
+    import axi4_master_pkg::*;
+    import axi4_slave_pkg::*;
+    import axi4_master_seq_pkg::*;
+    import axi4_slave_seq_pkg::*;
+    import axi4_virtual_seqr_pkg::*;
+    import axi4_env_pkg::*;
+    
+    // Include virtual sequence files
+    `include "axi4_virtual_base_seq.sv"
+    `include "axi4_virtual_write_seq.sv"
+    `include "axi4_virtual_read_seq.sv"
+    `include "axi4_virtual_write_read_seq.sv"
+    `include "axi4_virtual_stress_seq.sv"
+    `include "axi4_virtual_error_seq.sv"
+    `include "axi4_virtual_performance_seq.sv"
+    `include "axi4_virtual_interleaved_seq.sv"
+    `include "axi4_virtual_boundary_seq.sv"
+    
+endpackage : axi4_virtual_seq_pkg
+""")
     
     def _generate_top_files(self, base_path):
         """Generate top-level files"""
@@ -1409,6 +2489,63 @@ module hdl_top;
     
     // Slave agent BFMs
     axi4_slave_agent_bfm slave_bfm[NO_OF_SLAVES](aclk, aresetn);
+    
+    // FSDB dumping
+    `ifdef DUMP_FSDB
+    initial begin
+        $display("[%0t] Starting FSDB dump", $time);
+        $fsdbDumpfile("axi4_vip.fsdb");
+        $fsdbDumpvars(0, hdl_top);
+        $fsdbDumpvars("+struct");
+        $fsdbDumpvars("+mda");
+        $fsdbDumpvars("+all");
+        $fsdbDumpon();
+    end
+    `endif
+    
+    // VCD dumping (alternative)
+    `ifdef DUMP_VCD
+    initial begin
+        $display("[%0t] Starting VCD dump", $time);
+        $dumpfile("axi4_vip.vcd");
+        $dumpvars(0, hdl_top);
+        $dumpon();
+    end
+    `endif
+    
+    // Waveform control tasks
+    task enable_wave_dump();
+        `ifdef DUMP_FSDB
+            $fsdbDumpon();
+            $display("[%0t] FSDB dumping enabled", $time);
+        `elsif DUMP_VCD
+            $dumpon();
+            $display("[%0t] VCD dumping enabled", $time);
+        `else
+            $display("[%0t] No waveform dumping configured. Use +define+DUMP_FSDB or +define+DUMP_VCD", $time);
+        `endif
+    endtask
+    
+    task disable_wave_dump();
+        `ifdef DUMP_FSDB
+            $fsdbDumpoff();
+            $display("[%0t] FSDB dumping disabled", $time);
+        `elsif DUMP_VCD
+            $dumpoff();
+            $display("[%0t] VCD dumping disabled", $time);
+        `endif
+    endtask
+    
+    // Dump control from plusargs
+    initial begin
+        string dump_file;
+        if ($value$plusargs("fsdb_file=%s", dump_file)) begin
+            `ifdef DUMP_FSDB
+                $fsdbDumpfile(dump_file);
+                $display("[%0t] FSDB file set to: %s", $time, dump_file);
+            `endif
+        end
+    end
     
 """)
             if self.mode == "rtl_integration":
@@ -1456,6 +2593,9 @@ endmodule : hvl_top
     
     def _generate_simulation_files(self, base_path):
         """Generate simulation scripts and makefiles"""
+        # Generate FSDB documentation
+        self._generate_fsdb_documentation(base_path)
+        
         # Main Makefile
         with open(os.path.join(base_path, "sim/Makefile"), "w") as f:
             f.write(f"""#==============================================================================
@@ -1490,6 +2630,23 @@ $(shell mkdir -p $(LOG_DIR) $(WAVE_DIR) $(COV_DIR))
 # Common compile options
 COMMON_OPTS = +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
 
+# Waveform dump options
+DUMP_FSDB ?= 0
+DUMP_VCD ?= 0
+FSDB_FILE ?= $(WAVE_DIR)/$(TEST)_$(SEED).fsdb
+VCD_FILE ?= $(WAVE_DIR)/$(TEST)_$(SEED).vcd
+
+# Add waveform defines
+ifeq ($(DUMP_FSDB), 1)
+    COMMON_OPTS += +define+DUMP_FSDB
+    VERDI_HOME ?= /home/eda_tools/synopsys/verdi/W-2024.09-SP1
+    VCS_COMP_OPTS += -P $(VERDI_HOME)/share/PLI/VCS/LINUX64/novas.tab $(VERDI_HOME)/share/PLI/VCS/LINUX64/pli.a
+endif
+
+ifeq ($(DUMP_VCD), 1)
+    COMMON_OPTS += +define+DUMP_VCD
+endif
+
 # VCS options
 VCS_COMP_OPTS = -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps
 VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait
@@ -1497,6 +2654,11 @@ VCS_COMP_OPTS += $(COMMON_OPTS)
 
 VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=UVM_MEDIUM
 VCS_RUN_OPTS += +ntb_random_seed=$(SEED)
+
+# Add FSDB runtime options
+ifeq ($(DUMP_FSDB), 1)
+    VCS_RUN_OPTS += +fsdb_file=$(FSDB_FILE)
+endif
 
 # Questa options
 QUESTA_COMP_OPTS = -64 -sv -mfcu -cuname design_cuname
@@ -1525,6 +2687,24 @@ else ifeq ($(SIM), questa)
 \tvsim -c design_cuname.hvl_top design_cuname.hdl_top $(QUESTA_RUN_OPTS) -do "run -all; quit" -l $(LOG_DIR)/$(TEST)_$(SEED).log
 endif
 
+# Run with FSDB dumping
+run_fsdb:
+\t$(MAKE) run DUMP_FSDB=1
+\t@echo "FSDB file generated: $(FSDB_FILE)"
+
+# Run with VCD dumping
+run_vcd:
+\t$(MAKE) run DUMP_VCD=1
+\t@echo "VCD file generated: $(VCD_FILE)"
+
+# Open waveform in Verdi
+verdi:
+\tverdi -ssf $(FSDB_FILE) &
+
+# Open waveform in DVE
+dve:
+\tdve -vpd $(VCD_FILE) &
+
 clean:
 \trm -rf csrc simv* *.log ucli.key
 \trm -rf work transcript vsim.wlf
@@ -1533,13 +2713,21 @@ clean:
 help:
 \t@echo "Usage: make [target] [options]"
 \t@echo "Targets:"
-\t@echo "  compile - Compile the design"
-\t@echo "  run     - Compile and run simulation"
-\t@echo "  clean   - Clean simulation files"
+\t@echo "  compile    - Compile the design"
+\t@echo "  run        - Compile and run simulation"
+\t@echo "  run_fsdb   - Run with FSDB dumping enabled"
+\t@echo "  run_vcd    - Run with VCD dumping enabled"
+\t@echo "  verdi      - Open FSDB in Verdi"
+\t@echo "  dve        - Open VCD in DVE"
+\t@echo "  clean      - Clean simulation files"
 \t@echo "Options:"
-\t@echo "  SIM={self.simulator}    - Simulator (vcs, questa)"
-\t@echo "  TEST=test_name  - Test to run"
-\t@echo "  SEED=value      - Random seed"
+\t@echo "  SIM={self.simulator}      - Simulator (vcs, questa)"
+\t@echo "  TEST=test_name    - Test to run"
+\t@echo "  SEED=value        - Random seed"
+\t@echo "  DUMP_FSDB=1       - Enable FSDB dumping"
+\t@echo "  DUMP_VCD=1        - Enable VCD dumping"
+\t@echo "  FSDB_FILE=path    - FSDB output file"
+\t@echo "  VCD_FILE=path     - VCD output file"
 """)
         
         # Compile filelist
@@ -1557,6 +2745,8 @@ help:
 +incdir+${{VIP_ROOT}}/slave
 +incdir+${{VIP_ROOT}}/seq/master_sequences
 +incdir+${{VIP_ROOT}}/seq/slave_sequences
++incdir+${{VIP_ROOT}}/virtual_seq
++incdir+${{VIP_ROOT}}/virtual_seqr
 +incdir+${{VIP_ROOT}}/env
 +incdir+${{VIP_ROOT}}/test
 
@@ -1565,6 +2755,12 @@ ${{VIP_ROOT}}/pkg/axi4_globals_pkg.sv
 
 # Interface
 ${{VIP_ROOT}}/intf/axi4_interface/axi4_if.sv
+
+# BFM stub interfaces (must be compiled before agent BFMs)
+${{VIP_ROOT}}/agent/master_agent_bfm/axi4_master_driver_bfm.sv
+${{VIP_ROOT}}/agent/master_agent_bfm/axi4_master_monitor_bfm.sv
+${{VIP_ROOT}}/agent/slave_agent_bfm/axi4_slave_driver_bfm.sv
+${{VIP_ROOT}}/agent/slave_agent_bfm/axi4_slave_monitor_bfm.sv
 
 # Agent BFMs
 ${{VIP_ROOT}}/agent/master_agent_bfm/axi4_master_agent_bfm.sv
@@ -1580,19 +2776,17 @@ ${{VIP_ROOT}}/slave/axi4_slave_pkg.sv
 ${{VIP_ROOT}}/seq/master_sequences/axi4_master_seq_pkg.sv
 ${{VIP_ROOT}}/seq/slave_sequences/axi4_slave_seq_pkg.sv
 
-# Virtual sequencer and sequences
-${{VIP_ROOT}}/virtual_seqr/axi4_virtual_sequencer.sv
+# Virtual sequencer package (after master/slave packages)
+${{VIP_ROOT}}/virtual_seqr/axi4_virtual_seqr_pkg.sv
+
+# Environment package (includes all env components via `include)
+${{VIP_ROOT}}/env/axi4_env_pkg.sv
+
+# Virtual sequence package (must be after env_pkg)
 ${{VIP_ROOT}}/virtual_seq/axi4_virtual_seq_pkg.sv
 
-# Environment package and components
-${{VIP_ROOT}}/env/axi4_env_pkg.sv
-${{VIP_ROOT}}/env/axi4_env_config.sv
-${{VIP_ROOT}}/env/axi4_env.sv
-
-# Test package and tests
+# Test package (includes all tests via `include)
 ${{VIP_ROOT}}/test/axi4_test_pkg.sv
-${{VIP_ROOT}}/test/axi4_base_test.sv
-${{VIP_ROOT}}/test/axi4_basic_rw_test.sv
 
 """)
             if self.mode == "rtl_integration":
@@ -1702,7 +2896,20 @@ make run TEST=axi4_basic_rw_test SEED=12345
         # Create RTL filelist - always create it to avoid file not found errors
         rtl_filelist_path = os.path.join(base_path, "rtl_wrapper/rtl_files.f")
         with open(rtl_filelist_path, "w") as f:
-            f.write("""# RTL files to include
+            # For RTL integration mode, include the necessary RTL files
+            if self.mode == "rtl_integration":
+                num_masters = len(self.config.masters)
+                num_slaves = len(self.config.slaves)
+                f.write(f"""# RTL files to include
+# Generated RTL files for AXI4 interconnect ({num_masters} masters x {num_slaves} slaves)
+
+# Core RTL modules
+${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_address_decoder.v
+${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_arbiter.v
+${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_router.v
+${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_interconnect_m{num_masters}s{num_slaves}.v""")
+            else:
+                f.write("""# RTL files to include
 # Add your RTL files here or they will be auto-populated if using tool-generated RTL
 
 # Example:
@@ -1714,6 +2921,26 @@ make run TEST=axi4_basic_rw_test SEED=12345
 # Placeholder to avoid empty file issues
 # Remove this comment when adding actual RTL files
 """)
+                
+        # Copy RTL files if in rtl_integration mode
+        if self.mode == "rtl_integration":
+            rtl_dir = os.path.join(base_path, "rtl_wrapper/generated_rtl")
+            os.makedirs(rtl_dir, exist_ok=True)
+            
+            # Note: In a real implementation, these RTL files would be generated
+            # by the RTL generator. For now, we'll create placeholder message
+            with open(os.path.join(rtl_dir, "README.txt"), "w") as f:
+                f.write("""RTL files should be placed in this directory.
+
+Required files:
+- axi4_address_decoder.v
+- axi4_arbiter.v  
+- axi4_router.v
+- axi4_interconnect_m{}s{}.v
+
+These can be generated using the gen_amba_axi tool or 
+copied from existing RTL sources.
+""".format(len(self.config.masters), len(self.config.slaves)))
     
     def _get_enhanced_rtl_wrapper(self):
         """Get enhanced RTL wrapper with multi-master/slave support"""
@@ -1741,7 +2968,7 @@ module dut_wrapper #(
 """ + self._generate_master_signals() + """
     
     // Internal signals for all slaves  
-""" + self._generate_slave_signals() + """
+""" + self._generate_slave_signals() + f"""
 
     // Instantiate the generated interconnect
     axi4_interconnect_m{num_masters}s{num_slaves} #(
@@ -1752,9 +2979,9 @@ module dut_wrapper #(
         .aclk(clk),
         .aresetn(rst_n),
         
-""" + self._generate_master_connections() + ("," if len(self.config.slaves) > 0 else "") + """
+""" + self._generate_master_connections() + ("," if len(self.config.slaves) > 0 else "") + f"""
         
-""" + self._generate_slave_connections() + """
+""" + self._generate_slave_connections() + f"""
     );
     
     // Connect VIP to Master 0
