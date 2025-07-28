@@ -1,0 +1,52 @@
+{
+  "bus_type": "AXI4",
+  "data_width": 64,
+  "addr_width": 32,
+  "arbitration": "ROUND_ROBIN",
+  "masters": [
+    {
+      "name": "CPU",
+      "id_width": 4,
+      "priority": 1,
+      "qos_support": true,
+      "exclusive_support": true,
+      "default_prot": 2,
+      "default_cache": 3
+    },
+    {
+      "name": "DMA",
+      "id_width": 4,
+      "priority": 0,
+      "qos_support": true,
+      "exclusive_support": false,
+      "default_prot": 2,
+      "default_cache": 0
+    }
+  ],
+  "slaves": [
+    {
+      "name": "RAM",
+      "base_address": "0x0",
+      "size": 1048576,
+      "memory_type": "Memory",
+      "read_latency": 5,
+      "write_latency": 3
+    },
+    {
+      "name": "ROM",
+      "base_address": "0x10000000",
+      "size": 65536,
+      "memory_type": "Memory",
+      "read_latency": 2,
+      "write_latency": 1
+    },
+    {
+      "name": "UART",
+      "base_address": "0x20000000",
+      "size": 4,
+      "memory_type": "Peripheral",
+      "read_latency": 1,
+      "write_latency": 1
+    }
+  ]
+}

@@ -37,6 +37,9 @@ class VIPEnvironmentGenerator:
         self._generate_simulation_files(env_path)
         self._generate_documentation(env_path)
         
+        # Generate Verdi integration features
+        self._generate_verdi_integration(env_path)
+        
         # For RTL integration, generate wrapper
         if self.mode == "rtl_integration":
             self._generate_rtl_wrapper(env_path)
@@ -2649,7 +2652,8 @@ endif
 
 # VCS options
 VCS_COMP_OPTS = -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps
-VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait
+VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait -lca -kdb
+VCS_COMP_OPTS += +lint=PCWM
 VCS_COMP_OPTS += $(COMMON_OPTS)
 
 VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=UVM_MEDIUM
@@ -2697,9 +2701,18 @@ run_vcd:
 \t$(MAKE) run DUMP_VCD=1
 \t@echo "VCD file generated: $(VCD_FILE)"
 
-# Open waveform in Verdi
+# Open waveform in Verdi with auto-load last run
 verdi:
-\tverdi -ssf $(FSDB_FILE) &
+\t@echo "Auto-loading last run in Verdi..."
+\t@# Find the most recent FSDB file
+\t@LAST_FSDB=$$(ls -t $(WAVE_DIR)/*.fsdb 2>/dev/null | head -1); \
+\tif [ -z "$$LAST_FSDB" ]; then \
+\t\techo "No FSDB files found. Run 'make run_fsdb' first."; \
+\t\texit 1; \
+\tfi; \
+\techo "Loading FSDB: $$LAST_FSDB"; \
+\techo "Loading KDB: ./simv.daidir/kdb"; \
+\tverdi -ssf $$LAST_FSDB -dbdir ./simv.daidir/kdb -nologo &
 
 # Open waveform in DVE
 dve:
@@ -2802,6 +2815,14 @@ ${VIP_ROOT}/top/hdl_top.sv
 ${VIP_ROOT}/top/hvl_top.sv
 """)
     
+    def _generate_verdi_integration(self, base_path):
+        """Generate Verdi integration features"""
+        from verdi_integration import VerdiIntegration
+        
+        verdi = VerdiIntegration()
+        verdi.generate_verdi_scripts(base_path)
+        verdi.generate_verdi_config(base_path)
+        
     def _generate_documentation(self, base_path):
         """Generate documentation"""
         # README
@@ -2993,6 +3014,7 @@ module dut_wrapper #(
     assign m0_awlock  = axi_if.awlock;
     assign m0_awcache = axi_if.awcache;
     assign m0_awprot  = axi_if.awprot;
+    assign m0_awqos   = 4'b0000; // Default QoS value
     assign m0_awvalid = axi_if.awvalid;
     assign axi_if.awready = m0_awready;
     
@@ -3015,6 +3037,7 @@ module dut_wrapper #(
     assign m0_arlock  = axi_if.arlock;
     assign m0_arcache = axi_if.arcache;
     assign m0_arprot  = axi_if.arprot;
+    assign m0_arqos   = 4'b0000; // Default QoS value
     assign m0_arvalid = axi_if.arvalid;
     assign axi_if.arready = m0_arready;
     
@@ -3045,6 +3068,7 @@ endmodule : dut_wrapper
     logic                    m{i}_awlock;
     logic [3:0]              m{i}_awcache;
     logic [2:0]              m{i}_awprot;
+    logic [3:0]              m{i}_awqos;
     logic                    m{i}_awvalid;
     logic                    m{i}_awready;
     
@@ -3067,6 +3091,7 @@ endmodule : dut_wrapper
     logic                    m{i}_arlock;
     logic [3:0]              m{i}_arcache;
     logic [2:0]              m{i}_arprot;
+    logic [3:0]              m{i}_arqos;
     logic                    m{i}_arvalid;
     logic                    m{i}_arready;
     
@@ -3092,6 +3117,7 @@ endmodule : dut_wrapper
     logic                    s{i}_awlock;
     logic [3:0]              s{i}_awcache;
     logic [2:0]              s{i}_awprot;
+    logic [3:0]              s{i}_awqos;
     logic                    s{i}_awvalid;
     logic                    s{i}_awready;
     
@@ -3114,6 +3140,7 @@ endmodule : dut_wrapper
     logic                    s{i}_arlock;
     logic [3:0]              s{i}_arcache;
     logic [2:0]              s{i}_arprot;
+    logic [3:0]              s{i}_arqos;
     logic                    s{i}_arvalid;
     logic                    s{i}_arready;
     
@@ -3139,6 +3166,7 @@ endmodule : dut_wrapper
         .m{i}_awlock(m{i}_awlock),
         .m{i}_awcache(m{i}_awcache),
         .m{i}_awprot(m{i}_awprot),
+        .m{i}_awqos(m{i}_awqos),
         .m{i}_awvalid(m{i}_awvalid),
         .m{i}_awready(m{i}_awready),
         
@@ -3161,6 +3189,7 @@ endmodule : dut_wrapper
         .m{i}_arlock(m{i}_arlock),
         .m{i}_arcache(m{i}_arcache),
         .m{i}_arprot(m{i}_arprot),
+        .m{i}_arqos(m{i}_arqos),
         .m{i}_arvalid(m{i}_arvalid),
         .m{i}_arready(m{i}_arready),
         
@@ -3187,6 +3216,7 @@ endmodule : dut_wrapper
         .s{i}_awlock(s{i}_awlock),
         .s{i}_awcache(s{i}_awcache),
         .s{i}_awprot(s{i}_awprot),
+        .s{i}_awqos(s{i}_awqos),
         .s{i}_awvalid(s{i}_awvalid),
         .s{i}_awready(s{i}_awready),
         
@@ -3209,6 +3239,7 @@ endmodule : dut_wrapper
         .s{i}_arlock(s{i}_arlock),
         .s{i}_arcache(s{i}_arcache),
         .s{i}_arprot(s{i}_arprot),
+        .s{i}_arqos(s{i}_arqos),
         .s{i}_arvalid(s{i}_arvalid),
         .s{i}_arready(s{i}_arready),
         
@@ -3230,10 +3261,41 @@ endmodule : dut_wrapper
             
         termination = ["    // Terminate unused master interfaces"]
         for i in range(1, len(self.config.masters)):
-            termination.append(f"""    assign m{i}_awvalid = 1'b0;
+            termination.append(f"""    // Master {i} termination
+    // Write Address Channel
+    assign m{i}_awid    = {{ID_WIDTH{{1'b0}}}};
+    assign m{i}_awaddr  = {{ADDR_WIDTH{{1'b0}}}};
+    assign m{i}_awlen   = 8'd0;
+    assign m{i}_awsize  = 3'd0;
+    assign m{i}_awburst = 2'b01;
+    assign m{i}_awlock  = 1'b0;
+    assign m{i}_awcache = 4'b0000;
+    assign m{i}_awprot  = 3'b000;
+    assign m{i}_awqos   = 4'b0000;
+    assign m{i}_awvalid = 1'b0;
+    
+    // Write Data Channel
+    assign m{i}_wdata   = {{DATA_WIDTH{{1'b0}}}};
+    assign m{i}_wstrb   = {{(DATA_WIDTH/8){{1'b0}}}};
+    assign m{i}_wlast   = 1'b0;
     assign m{i}_wvalid  = 1'b0;
+    
+    // Write Response Channel
     assign m{i}_bready  = 1'b1;
+    
+    // Read Address Channel
+    assign m{i}_arid    = {{ID_WIDTH{{1'b0}}}};
+    assign m{i}_araddr  = {{ADDR_WIDTH{{1'b0}}}};
+    assign m{i}_arlen   = 8'd0;
+    assign m{i}_arsize  = 3'd0;
+    assign m{i}_arburst = 2'b01;
+    assign m{i}_arlock  = 1'b0;
+    assign m{i}_arcache = 4'b0000;
+    assign m{i}_arprot  = 3'b000;
+    assign m{i}_arqos   = 4'b0000;
     assign m{i}_arvalid = 1'b0;
+    
+    // Read Data Channel
     assign m{i}_rready  = 1'b1;
 """)
         return "\n".join(termination)

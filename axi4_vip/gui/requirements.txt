@@ -1,0 +1,28 @@
+# AMBA Bus Matrix Configuration Tool Requirements
+# Core GUI requirement (usually included with Python)
+# tkinter is typically installed with: 
+#   apt-get install python3-tk (Ubuntu/Debian)
+#   yum install python3-tkinter (CentOS/RHEL)
+
+# For PDF generation (optional)
+reportlab>=3.6.0
+fpdf2>=2.5.0
+
+# For enhanced PDF with charts (optional)
+matplotlib>=3.5.0
+
+# For data handling
+# json (included in Python standard library)
+# os (included in Python standard library)
+# sys (included in Python standard library)
+# datetime (included in Python standard library)
+
+# Development dependencies (optional)
+pytest>=6.2.0
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.910
+
+# Documentation (optional)
+sphinx>=4.3.0
+sphinx-rtd-theme>=1.0.0

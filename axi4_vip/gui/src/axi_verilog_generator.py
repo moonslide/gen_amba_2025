@@ -101,6 +101,10 @@ module axi4_interconnect_m{num_masters}s{num_slaves} #(
             f.write("// Address Decoder Instances\n")
             f.write("//------------------------------------------------------------------------------\n\n")
             
+            # Calculate master_id width
+            import math
+            master_id_width = max(1, int(math.ceil(math.log2(num_masters))))
+            
             for i, master in enumerate(self.config.masters):
                 f.write(f"""axi4_address_decoder #(
     .ADDR_WIDTH(ADDR_WIDTH),
@@ -112,7 +116,7 @@ module axi4_interconnect_m{num_masters}s{num_slaves} #(
     .araddr(m{i}_araddr),
     .arvalid(m{i}_arvalid),
     .arprot(m{i}_arprot),
-    .master_id({i}),
+    .master_id({master_id_width}'d{i}),
     .slave_select(m{i}_slave_select),
     .access_error(m{i}_access_error)
 );
@@ -217,7 +221,7 @@ assign m{i}_rlast  = 1'b1; // Single beat error response
         ports = []
         
         # Write address channel
-        ports.append(f"    input  wire [{master.id_width-1}:0]  {prefix}awid,")
+        ports.append(f"    input  wire [ID_WIDTH-1:0]     {prefix}awid,")
         ports.append(f"    input  wire [ADDR_WIDTH-1:0]        {prefix}awaddr,")
         ports.append(f"    input  wire [7:0]                   {prefix}awlen,")
         ports.append(f"    input  wire [2:0]                   {prefix}awsize,")
@@ -242,7 +246,7 @@ assign m{i}_rlast  = 1'b1; // Single beat error response
         ports.append(f"    output wire                         {prefix}wready,")
         
         # Write response channel
-        ports.append(f"    output wire [{master.id_width-1}:0] {prefix}bid,")
+        ports.append(f"    output wire [ID_WIDTH-1:0]    {prefix}bid,")
         ports.append(f"    output wire [1:0]                   {prefix}bresp,")
         if master.user_width > 0:
             ports.append(f"    output wire [{master.user_width-1}:0] {prefix}buser,")
@@ -250,7 +254,7 @@ assign m{i}_rlast  = 1'b1; // Single beat error response
         ports.append(f"    input  wire                         {prefix}bready,")
         
         # Read address channel
-        ports.append(f"    input  wire [{master.id_width-1}:0]  {prefix}arid,")
+        ports.append(f"    input  wire [ID_WIDTH-1:0]     {prefix}arid,")
         ports.append(f"    input  wire [ADDR_WIDTH-1:0]        {prefix}araddr,")
         ports.append(f"    input  wire [7:0]                   {prefix}arlen,")
         ports.append(f"    input  wire [2:0]                   {prefix}arsize,")
@@ -266,7 +270,7 @@ assign m{i}_rlast  = 1'b1; // Single beat error response
         ports.append(f"    output wire                         {prefix}arready,")
         
         # Read data channel
-        ports.append(f"    output wire [{master.id_width-1}:0] {prefix}rid,")
+        ports.append(f"    output wire [ID_WIDTH-1:0]    {prefix}rid,")
         ports.append(f"    output wire [DATA_WIDTH-1:0]        {prefix}rdata,")
         ports.append(f"    output wire [1:0]                   {prefix}rresp,")
         ports.append(f"    output wire                         {prefix}rlast,")
@@ -454,6 +458,7 @@ endmodule
         num_masters = len(self.config.masters)
         
         with open(filename, 'w') as f:
+            # Write header comment
             f.write(f"""//==============================================================================
 // AXI4 Scalable Arbiter - Compliant with IHI0022D AMBA AXI Protocol Specification
 // 
@@ -466,7 +471,10 @@ endmodule
 // References: ARM IHI0022D, Chapter C6 Interconnect Requirements
 //             Section A8.1 QoS signaling
 //==============================================================================
-
+""")
+            
+            # Write module definition
+            f.write(f"""
 module axi4_arbiter #(
     parameter NUM_MASTERS = {num_masters},
     parameter ARBITRATION = "QOS",      // QOS, FIXED, ROUND_ROBIN, WEIGHTED_ROUND_ROBIN  
@@ -633,8 +641,9 @@ always @(*) begin
         
         default: begin
             // Default to QoS-based arbitration for AXI4 compliance
-            grant_next = {{NUM_MASTERS{{1'b0}}}};
-            grant_valid_next = 1'b0;
+""")
+            f.write("            grant_next = {NUM_MASTERS{1'b0}};\n")
+            f.write("""            grant_valid_next = 1'b0;
         end
     endcase
 end
@@ -645,11 +654,13 @@ end
 
 always @(posedge aclk or negedge aresetn) begin
     if (!aresetn) begin
-        grant <= {{NUM_MASTERS{{1'b0}}}};
+""")
+            f.write("        grant <= {NUM_MASTERS{1'b0}};\n")
+            f.write("""
         grant_master <= 0;
         grant_valid <= 1'b0;
         granted_qos <= 4'b0;
-        granted_id <= {{ID_WIDTH{{1'b0}}}};
+        granted_id <= {ID_WIDTH{1'b0}};
         rr_pointer <= 0;
         
         // Initialize weight counters for WRR
@@ -676,7 +687,10 @@ always @(posedge aclk or negedge aresetn) begin
         end
     end
 end
-
+""")
+            
+            # Write assertions section
+            f.write("""
 //==============================================================================
 // AXI4 Protocol Assertions (for verification)
 //==============================================================================
@@ -686,7 +700,7 @@ end
     always @(posedge aclk) begin
         if (aresetn && grant_valid) begin
             assert ($countones(grant) == 1) 
-                else $error("Multiple grants active simultaneously");
+                else $error('Multiple grants active simultaneously');
         end
     end
     
@@ -694,7 +708,7 @@ end
     always @(posedge aclk) begin
         if (aresetn && grant_valid && QOS_ENABLE) begin
             assert (granted_qos == master_qos_array[grant_master])
-                else $error("Granted QoS mismatch");
+                else $error('Granted QoS mismatch');
         end
     end
 `endif
@@ -875,6 +889,7 @@ endmodule
         """Generate testbench"""
         num_masters = len(self.config.masters)
         num_slaves = len(self.config.slaves)
+        id_width = self.config.masters[0].id_width if self.config.masters else 4
         
         filename = f"{self.output_dir}/tb_axi4_interconnect.v"
         
@@ -889,11 +904,167 @@ module tb_axi4_interconnect;
 
 parameter DATA_WIDTH = {self.config.data_width};
 parameter ADDR_WIDTH = {self.config.addr_width};
+parameter ID_WIDTH = {id_width};
 
 reg aclk;
 reg aresetn;
 
-// Clock generation
+""")
+            
+            # Generate master interface signals
+            for i in range(num_masters):
+                f.write(f"""// Master {i} interface signals
+// Write Address Channel
+wire [ID_WIDTH-1:0]     m{i}_awid;
+wire [ADDR_WIDTH-1:0]   m{i}_awaddr;
+wire [7:0]              m{i}_awlen;
+wire [2:0]              m{i}_awsize;
+wire [1:0]              m{i}_awburst;
+wire                    m{i}_awlock;
+wire [3:0]              m{i}_awcache;
+wire [2:0]              m{i}_awprot;
+wire [3:0]              m{i}_awqos;
+wire                    m{i}_awvalid;
+wire                    m{i}_awready;
+
+// Write Data Channel
+wire [DATA_WIDTH-1:0]   m{i}_wdata;
+wire [DATA_WIDTH/8-1:0] m{i}_wstrb;
+wire                    m{i}_wlast;
+wire                    m{i}_wvalid;
+wire                    m{i}_wready;
+
+// Write Response Channel
+wire [ID_WIDTH-1:0]     m{i}_bid;
+wire [1:0]              m{i}_bresp;
+wire                    m{i}_bvalid;
+wire                    m{i}_bready;
+
+// Read Address Channel
+wire [ID_WIDTH-1:0]     m{i}_arid;
+wire [ADDR_WIDTH-1:0]   m{i}_araddr;
+wire [7:0]              m{i}_arlen;
+wire [2:0]              m{i}_arsize;
+wire [1:0]              m{i}_arburst;
+wire                    m{i}_arlock;
+wire [3:0]              m{i}_arcache;
+wire [2:0]              m{i}_arprot;
+wire [3:0]              m{i}_arqos;
+wire                    m{i}_arvalid;
+wire                    m{i}_arready;
+
+// Read Data Channel
+wire [ID_WIDTH-1:0]     m{i}_rid;
+wire [DATA_WIDTH-1:0]   m{i}_rdata;
+wire [1:0]              m{i}_rresp;
+wire                    m{i}_rlast;
+wire                    m{i}_rvalid;
+wire                    m{i}_rready;
+
+""")
+            
+            # Generate slave interface signals
+            for i in range(num_slaves):
+                f.write(f"""// Slave {i} interface signals
+// Write Address Channel
+wire [ID_WIDTH-1:0]     s{i}_awid;
+wire [ADDR_WIDTH-1:0]   s{i}_awaddr;
+wire [7:0]              s{i}_awlen;
+wire [2:0]              s{i}_awsize;
+wire [1:0]              s{i}_awburst;
+wire                    s{i}_awlock;
+wire [3:0]              s{i}_awcache;
+wire [2:0]              s{i}_awprot;
+wire [3:0]              s{i}_awqos;
+wire                    s{i}_awvalid;
+wire                    s{i}_awready;
+
+// Write Data Channel
+wire [DATA_WIDTH-1:0]   s{i}_wdata;
+wire [DATA_WIDTH/8-1:0] s{i}_wstrb;
+wire                    s{i}_wlast;
+wire                    s{i}_wvalid;
+wire                    s{i}_wready;
+
+// Write Response Channel
+wire [ID_WIDTH-1:0]     s{i}_bid;
+wire [1:0]              s{i}_bresp;
+wire                    s{i}_bvalid;
+wire                    s{i}_bready;
+
+// Read Address Channel
+wire [ID_WIDTH-1:0]     s{i}_arid;
+wire [ADDR_WIDTH-1:0]   s{i}_araddr;
+wire [7:0]              s{i}_arlen;
+wire [2:0]              s{i}_arsize;
+wire [1:0]              s{i}_arburst;
+wire                    s{i}_arlock;
+wire [3:0]              s{i}_arcache;
+wire [2:0]              s{i}_arprot;
+wire [3:0]              s{i}_arqos;
+wire                    s{i}_arvalid;
+wire                    s{i}_arready;
+
+// Read Data Channel
+wire [ID_WIDTH-1:0]     s{i}_rid;
+wire [DATA_WIDTH-1:0]   s{i}_rdata;
+wire [1:0]              s{i}_rresp;
+wire                    s{i}_rlast;
+wire                    s{i}_rvalid;
+wire                    s{i}_rready;
+
+""")
+            
+            # Tie off master inputs to safe values
+            for i in range(num_masters):
+                f.write(f"""// Tie off master {i} inputs
+assign m{i}_awid = {{ID_WIDTH{{1'b0}}}};
+assign m{i}_awaddr = {{ADDR_WIDTH{{1'b0}}}};
+assign m{i}_awlen = 8'd0;
+assign m{i}_awsize = 3'd0;
+assign m{i}_awburst = 2'b01;
+assign m{i}_awlock = 1'b0;
+assign m{i}_awcache = 4'b0000;
+assign m{i}_awprot = 3'b000;
+assign m{i}_awqos = 4'b0000;
+assign m{i}_awvalid = 1'b0;
+assign m{i}_wdata = {{DATA_WIDTH{{1'b0}}}};
+assign m{i}_wstrb = {{(DATA_WIDTH/8){{1'b0}}}};
+assign m{i}_wlast = 1'b0;
+assign m{i}_wvalid = 1'b0;
+assign m{i}_bready = 1'b1;
+assign m{i}_arid = {{ID_WIDTH{{1'b0}}}};
+assign m{i}_araddr = {{ADDR_WIDTH{{1'b0}}}};
+assign m{i}_arlen = 8'd0;
+assign m{i}_arsize = 3'd0;
+assign m{i}_arburst = 2'b01;
+assign m{i}_arlock = 1'b0;
+assign m{i}_arcache = 4'b0000;
+assign m{i}_arprot = 3'b000;
+assign m{i}_arqos = 4'b0000;
+assign m{i}_arvalid = 1'b0;
+assign m{i}_rready = 1'b1;
+
+""")
+            
+            # Tie off slave outputs to safe values
+            for i in range(num_slaves):
+                f.write(f"""// Tie off slave {i} outputs
+assign s{i}_awready = 1'b0;
+assign s{i}_wready = 1'b0;
+assign s{i}_bid = {{ID_WIDTH{{1'b0}}}};
+assign s{i}_bresp = 2'b00;
+assign s{i}_bvalid = 1'b0;
+assign s{i}_arready = 1'b0;
+assign s{i}_rid = {{ID_WIDTH{{1'b0}}}};
+assign s{i}_rdata = {{DATA_WIDTH{{1'b0}}}};
+assign s{i}_rresp = 2'b00;
+assign s{i}_rlast = 1'b0;
+assign s{i}_rvalid = 1'b0;
+
+""")
+            
+            f.write(f"""// Clock generation
 initial begin
     aclk = 0;
     forever #5 aclk = ~aclk;
@@ -909,11 +1080,98 @@ end
 // DUT instantiation
 axi4_interconnect_m{num_masters}s{num_slaves} #(
     .DATA_WIDTH(DATA_WIDTH),
-    .ADDR_WIDTH(ADDR_WIDTH)
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .ID_WIDTH(ID_WIDTH),
+    .USER_WIDTH(1)
 ) dut (
     .aclk(aclk),
-    .aresetn(aresetn)
-    // Connect all interfaces
+    .aresetn(aresetn)""")
+            
+            # Generate master port connections
+            for i in range(num_masters):
+                f.write(f""",
+    // Master {i} interface
+    .m{i}_awid(m{i}_awid),
+    .m{i}_awaddr(m{i}_awaddr),
+    .m{i}_awlen(m{i}_awlen),
+    .m{i}_awsize(m{i}_awsize),
+    .m{i}_awburst(m{i}_awburst),
+    .m{i}_awlock(m{i}_awlock),
+    .m{i}_awcache(m{i}_awcache),
+    .m{i}_awprot(m{i}_awprot),
+    .m{i}_awqos(m{i}_awqos),
+    .m{i}_awvalid(m{i}_awvalid),
+    .m{i}_awready(m{i}_awready),
+    .m{i}_wdata(m{i}_wdata),
+    .m{i}_wstrb(m{i}_wstrb),
+    .m{i}_wlast(m{i}_wlast),
+    .m{i}_wvalid(m{i}_wvalid),
+    .m{i}_wready(m{i}_wready),
+    .m{i}_bid(m{i}_bid),
+    .m{i}_bresp(m{i}_bresp),
+    .m{i}_bvalid(m{i}_bvalid),
+    .m{i}_bready(m{i}_bready),
+    .m{i}_arid(m{i}_arid),
+    .m{i}_araddr(m{i}_araddr),
+    .m{i}_arlen(m{i}_arlen),
+    .m{i}_arsize(m{i}_arsize),
+    .m{i}_arburst(m{i}_arburst),
+    .m{i}_arlock(m{i}_arlock),
+    .m{i}_arcache(m{i}_arcache),
+    .m{i}_arprot(m{i}_arprot),
+    .m{i}_arqos(m{i}_arqos),
+    .m{i}_arvalid(m{i}_arvalid),
+    .m{i}_arready(m{i}_arready),
+    .m{i}_rid(m{i}_rid),
+    .m{i}_rdata(m{i}_rdata),
+    .m{i}_rresp(m{i}_rresp),
+    .m{i}_rlast(m{i}_rlast),
+    .m{i}_rvalid(m{i}_rvalid),
+    .m{i}_rready(m{i}_rready)""")
+            
+            # Generate slave port connections
+            for i in range(num_slaves):
+                f.write(f""",
+    // Slave {i} interface
+    .s{i}_awid(s{i}_awid),
+    .s{i}_awaddr(s{i}_awaddr),
+    .s{i}_awlen(s{i}_awlen),
+    .s{i}_awsize(s{i}_awsize),
+    .s{i}_awburst(s{i}_awburst),
+    .s{i}_awlock(s{i}_awlock),
+    .s{i}_awcache(s{i}_awcache),
+    .s{i}_awprot(s{i}_awprot),
+    .s{i}_awqos(s{i}_awqos),
+    .s{i}_awvalid(s{i}_awvalid),
+    .s{i}_awready(s{i}_awready),
+    .s{i}_wdata(s{i}_wdata),
+    .s{i}_wstrb(s{i}_wstrb),
+    .s{i}_wlast(s{i}_wlast),
+    .s{i}_wvalid(s{i}_wvalid),
+    .s{i}_wready(s{i}_wready),
+    .s{i}_bid(s{i}_bid),
+    .s{i}_bresp(s{i}_bresp),
+    .s{i}_bvalid(s{i}_bvalid),
+    .s{i}_bready(s{i}_bready),
+    .s{i}_arid(s{i}_arid),
+    .s{i}_araddr(s{i}_araddr),
+    .s{i}_arlen(s{i}_arlen),
+    .s{i}_arsize(s{i}_arsize),
+    .s{i}_arburst(s{i}_arburst),
+    .s{i}_arlock(s{i}_arlock),
+    .s{i}_arcache(s{i}_arcache),
+    .s{i}_arprot(s{i}_arprot),
+    .s{i}_arqos(s{i}_arqos),
+    .s{i}_arvalid(s{i}_arvalid),
+    .s{i}_arready(s{i}_arready),
+    .s{i}_rid(s{i}_rid),
+    .s{i}_rdata(s{i}_rdata),
+    .s{i}_rresp(s{i}_rresp),
+    .s{i}_rlast(s{i}_rlast),
+    .s{i}_rvalid(s{i}_rvalid),
+    .s{i}_rready(s{i}_rready)""")
+            
+            f.write(f"""
 );
 
 // Test sequences
@@ -950,7 +1208,7 @@ endmodule
     def _generate_master_ports(self, idx, master):
         """Generate master port declarations"""
         return f"""    // Write Address Channel
-    input  wire [{self.config.masters[0].id_width-1}:0]     m{idx}_awid,
+    input  wire [ID_WIDTH-1:0]     m{idx}_awid,
     input  wire [ADDR_WIDTH-1:0]   m{idx}_awaddr,
     input  wire [7:0]              m{idx}_awlen,
     input  wire [2:0]              m{idx}_awsize,
@@ -970,13 +1228,13 @@ endmodule
     output wire                    m{idx}_wready,
     
     // Write Response Channel
-    output wire [{self.config.masters[0].id_width-1}:0]     m{idx}_bid,
+    output wire [ID_WIDTH-1:0]     m{idx}_bid,
     output wire [1:0]              m{idx}_bresp,
     output wire                    m{idx}_bvalid,
     input  wire                    m{idx}_bready,
     
     // Read Address Channel
-    input  wire [{self.config.masters[0].id_width-1}:0]     m{idx}_arid,
+    input  wire [ID_WIDTH-1:0]     m{idx}_arid,
     input  wire [ADDR_WIDTH-1:0]   m{idx}_araddr,
     input  wire [7:0]              m{idx}_arlen,
     input  wire [2:0]              m{idx}_arsize,
@@ -989,7 +1247,7 @@ endmodule
     output wire                    m{idx}_arready,
     
     // Read Data Channel
-    output wire [{self.config.masters[0].id_width-1}:0]     m{idx}_rid,
+    output wire [ID_WIDTH-1:0]     m{idx}_rid,
     output wire [DATA_WIDTH-1:0]   m{idx}_rdata,
     output wire [1:0]              m{idx}_rresp,
     output wire                    m{idx}_rlast,
@@ -999,7 +1257,7 @@ endmodule
     def _generate_slave_ports(self, idx, slave):
         """Generate slave port declarations"""
         return f"""    // Write Address Channel
-    output wire [{self.config.masters[0].id_width-1}:0]     s{idx}_awid,
+    output wire [ID_WIDTH-1:0]     s{idx}_awid,
     output wire [ADDR_WIDTH-1:0]   s{idx}_awaddr,
     output wire [7:0]              s{idx}_awlen,
     output wire [2:0]              s{idx}_awsize,
@@ -1019,13 +1277,13 @@ endmodule
     input  wire                    s{idx}_wready,
     
     // Write Response Channel
-    input  wire [{self.config.masters[0].id_width-1}:0]     s{idx}_bid,
+    input  wire [ID_WIDTH-1:0]     s{idx}_bid,
     input  wire [1:0]              s{idx}_bresp,
     input  wire                    s{idx}_bvalid,
     output wire                    s{idx}_bready,
     
     // Read Address Channel
-    output wire [{self.config.masters[0].id_width-1}:0]     s{idx}_arid,
+    output wire [ID_WIDTH-1:0]     s{idx}_arid,
     output wire [ADDR_WIDTH-1:0]   s{idx}_araddr,
     output wire [7:0]              s{idx}_arlen,
     output wire [2:0]              s{idx}_arsize,
@@ -1038,7 +1296,7 @@ endmodule
     input  wire                    s{idx}_arready,
     
     // Read Data Channel
-    input  wire [{self.config.masters[0].id_width-1}:0]     s{idx}_rid,
+    input  wire [ID_WIDTH-1:0]     s{idx}_rid,
     input  wire [DATA_WIDTH-1:0]   s{idx}_rdata,
     input  wire [1:0]              s{idx}_rresp,
     input  wire                    s{idx}_rlast,

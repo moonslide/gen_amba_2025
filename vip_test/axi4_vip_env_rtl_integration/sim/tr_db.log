@@ -1,0 +1,11 @@
+  CREATE_STREAM @0 {NAME:interleaved_seq T:Transactions SCOPE:uvm_test_top.env.v_seqr STREAM:4679}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[7].sequencer STREAM:4690}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[6].sequencer STREAM:4699}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[1].sequencer STREAM:4708}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[4].sequencer STREAM:4717}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[2].sequencer STREAM:4726}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[5].sequencer STREAM:4753}
+  CREATE_STREAM @0 {NAME:burst_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[3].sequencer STREAM:4792}
+  CREATE_STREAM @0 {NAME:perf_seq T:Transactions SCOPE:uvm_test_top.env.v_seqr STREAM:4679}
+  CREATE_STREAM @0 {NAME:write_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[0].sequencer STREAM:4690}
+  CREATE_STREAM @100000 {NAME:read_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[0].sequencer STREAM:4925}

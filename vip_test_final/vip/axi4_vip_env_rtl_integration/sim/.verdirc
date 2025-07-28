@@ -1,0 +1,21 @@
+# Verdi Configuration File
+# Auto-generated for AXI4 VIP
+
+# Enable FSDB dumping
+setenv VERDI_FSDB_GATE_DUMPING_ENABLE 1
+
+# Set default window size
+setenv VERDI_WINDOW_WIDTH 1920
+setenv VERDI_WINDOW_HEIGHT 1080
+
+# Enable KDB loading
+setenv VERDI_KDB_ENABLE 1
+
+# Set color scheme
+setenv VERDI_COLOR_SCHEME Modern
+
+# Enable transaction recording
+setenv VERDI_TRANS_RECORDING 1
+
+# Auto-load preferences
+VERDI_HOME = /home/eda_tools/synopsys/verdi/W-2024.09-SP1/
