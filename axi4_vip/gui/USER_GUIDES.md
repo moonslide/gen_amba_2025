@@ -5,11 +5,13 @@
 All previous fragmented user guides have been consolidated into **two comprehensive guides**:
 
 ### 📄 PDF Guide
-**File**: `AMBA_Bus_Matrix_User_Guide.pdf` (378 KB)
-- Complete 65+ page offline documentation
+**File**: `AMBA_Bus_Matrix_User_Guide.pdf` (136 KB)
+- Complete comprehensive offline documentation
+- **IMPROVED LAYOUT** with better readability
+- Minimum 10pt font size (no more small text)
+- Better page distribution (no overcrowded pages)
 - Professional formatting with real GUI screenshots
-- Comprehensive coverage of all features
-- All sections as promised in table of contents
+- All sections properly spaced and organized
 - Easy to print and distribute
 
 ### 🌐 HTML Guide  
