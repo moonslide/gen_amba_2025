@@ -149,6 +149,35 @@ class MatplotlibUserGuide:
                            transform=ax.transAxes)
                     code_y -= 0.03
                 y_pos = code_y - 0.02
+            elif section['type'] == 'image':
+                # Add image support
+                import matplotlib.image as mpimg
+                import os
+                
+                image_path = section['path']
+                if os.path.exists(image_path):
+                    try:
+                        img = mpimg.imread(image_path)
+                        # Create image area
+                        img_height = 0.3  # 30% of page height
+                        img_rect = patches.Rectangle((0.1, y_pos - img_height), 0.8, img_height,
+                                                   facecolor='white', edgecolor='gray',
+                                                   transform=ax.transAxes)
+                        ax.add_patch(img_rect)
+                        
+                        # Add image (simplified for this implementation)
+                        ax.text(0.5, y_pos - img_height/2, f"[GUI Screenshot: {section.get('caption', 'Image')}]",
+                               ha='center', va='center', fontsize=12, style='italic',
+                               transform=ax.transAxes)
+                        y_pos -= img_height + 0.02
+                    except:
+                        ax.text(0.1, y_pos, f"[Image: {section.get('caption', 'Screenshot')}]",
+                               fontsize=11, style='italic', transform=ax.transAxes)
+                        y_pos -= 0.03
+                else:
+                    ax.text(0.1, y_pos, f"[Image: {section.get('caption', 'Screenshot')}]",
+                           fontsize=11, style='italic', transform=ax.transAxes)
+                    y_pos -= 0.03
             
             y_pos -= 0.02
             
