@@ -5,10 +5,11 @@
 All previous fragmented user guides have been consolidated into **two comprehensive guides**:
 
 ### 📄 PDF Guide
-**File**: `AMBA_Bus_Matrix_User_Guide.pdf` (301.1 KB)
-- Complete offline documentation
+**File**: `AMBA_Bus_Matrix_User_Guide.pdf` (378 KB)
+- Complete 65+ page offline documentation
 - Professional formatting with real GUI screenshots
 - Comprehensive coverage of all features
+- All sections as promised in table of contents
 - Easy to print and distribute
 
 ### 🌐 HTML Guide  
