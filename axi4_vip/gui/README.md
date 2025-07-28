@@ -502,7 +502,7 @@ This project is licensed under the BSD 2-Clause License. See [LICENSE](LICENSE) 
 
 ---
 
-For more detailed information, see the [PDF User Guide](userguide.pdf) or run:
+For more detailed information, see the [PDF User Guide](AMBA_Bus_Matrix_User_Guide.pdf) or [HTML User Guide](AMBA_Bus_Matrix_User_Guide.html) or run:
 ```bash
 python3 src/bus_matrix_gui.py --help
 ```
