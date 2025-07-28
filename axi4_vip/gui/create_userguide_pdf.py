@@ -194,22 +194,103 @@ cd axi4_vip/gui""",
         ))
         elements.append(Spacer(1, 0.2*inch))
         
-        elements.append(Paragraph("2.2 Quick Start", styles['SectionTitle']))
-        elements.append(Paragraph("Launch the GUI:", styles['BodyText']))
-        elements.append(Preformatted("./launch_gui.sh", styles['Code']))
+        elements.append(Paragraph("2.2 Launching the GUI", styles['SectionTitle']))
+        elements.append(Paragraph("Start the GUI application:", styles['BodyText']))
+        elements.append(Preformatted("./launch_gui.sh\n# OR\npython3 src/bus_matrix_gui.py", styles['Code']))
         elements.append(Spacer(1, 0.1*inch))
         
-        elements.append(Paragraph(
-            """The GUI will open with a blank canvas. Follow these steps to create your first design:
-            
-1. Select the bus protocol (AXI4 is default)
-2. Click 'Add Master' to add bus masters
-3. Click 'Add Slave' to add bus slaves  
-4. Draw connections between masters and slaves
-5. Configure addresses and parameters
-6. Click 'Generate RTL' to create Verilog files
-7. Click 'Generate VIP' to create verification environment""",
-            styles['BodyText']
+        elements.append(Paragraph("If GUI fails to launch:", styles['BodyText']))
+        troubleshoot_steps = [
+            "Check Python 3.6+ is installed: python3 --version",
+            "Install tkinter if missing: sudo apt-get install python3-tk", 
+            "Make script executable: chmod +x launch_gui.sh"
+        ]
+        for step in troubleshoot_steps:
+            elements.append(Paragraph(f"• {step}", styles['BodyText']))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        elements.append(Paragraph("2.3 Setting Up Bus Matrix - Step by Step", styles['SectionTitle']))
+        elements.append(Paragraph("Complete workflow to build a 2x3 system (CPU+DMA → DDR+SRAM+Peripherals):", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 1: Create New Project", styles['SectionTitle']))
+        step1_items = [
+            "File → New Project (or Ctrl+N)",
+            "Enter project name: \"cpu_dma_system\"",
+            "Select bus type: AXI4 (recommended)",
+            "Set data width: 64 bits (typical choice)"
+        ]
+        for item in step1_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 2: Add Masters", styles['SectionTitle']))
+        step2_items = [
+            "Click \"Add Master\" button in left panel",
+            "Master 1: Name=\"CPU_0\", ID Width=4, Priority=2, QoS=Yes",
+            "Click \"Add Master\" again",
+            "Master 2: Name=\"DMA_0\", ID Width=6, Priority=1, QoS=Yes"
+        ]
+        for item in step2_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 3: Add Slaves (CRITICAL - Address Configuration)", styles['SectionTitle']))
+        step3_items = [
+            "Click \"Add Slave\" button",
+            "Slave 1: Name=\"DDR_Memory\", Base=0x00000000, Size=1GB",
+            "Slave 2: Name=\"SRAM_Cache\", Base=0x40000000, Size=256MB",
+            "Slave 3: Name=\"Peripherals\", Base=0x50000000, Size=256MB"
+        ]
+        for item in step3_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 4: Make Connections", styles['SectionTitle']))
+        step4_items = [
+            "Drag from CPU_0 output port to each slave input port",
+            "Drag from DMA_0 output port to DDR and SRAM (skip peripherals)",
+            "OR use Connection Matrix: View → Connection Matrix"
+        ]
+        for item in step4_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 5: Validate Design", styles['SectionTitle']))
+        step5_items = [
+            "Tools → Validate Design (or Ctrl+V)",
+            "Fix any errors (typically address overlaps) before proceeding"
+        ]
+        for item in step5_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 6: Generate RTL", styles['SectionTitle']))
+        step6_items = [
+            "Generate → Generate RTL (or Ctrl+G)",
+            "Choose output directory (default: output_rtl/)",
+            "Click Generate - creates .v files for synthesis"
+        ]
+        for item in step6_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 7: Generate VIP (Verification IP)", styles['SectionTitle']))
+        step7_items = [
+            "Generate → Generate VIP (or Ctrl+Shift+G)",
+            "Choose output directory (default: vip_output/)",
+            "Creates complete UVM verification environment"
+        ]
+        for item in step7_items:
+            elements.append(Paragraph(f"• {item}", styles['BodyText']))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph("STEP 8: Run VIP Simulation", styles['SectionTitle']))
+        elements.append(Preformatted(
+            """cd vip_output/sim
+make compile && make sim TEST=basic_test
+view results: cat logs/basic_test.log""",
+            styles['Code']
         ))
         elements.append(PageBreak())
         
