@@ -14,7 +14,8 @@ import os
 import sys
 
 # Import all the complete section implementations
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sections_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sections')
+sys.path.append(sections_dir)
 
 # Import section implementations
 from implement_rtl_section_complete import create_complete_rtl_generation_section
