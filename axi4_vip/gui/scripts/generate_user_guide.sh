@@ -1,22 +1,27 @@
-#\!/bin/bash
-# 產生完整用戶指南PDF
+#!/bin/bash
+# Generate complete user guide PDF
 
-echo "正在產生AMBA Bus Matrix完整用戶指南..."
+echo "Generating AMBA Bus Matrix complete user guide..."
 
-cd "$(dirname "$0")/../docs/user_guide_generator"
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+GUI_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+USER_GUIDE_DIR="$GUI_DIR/docs/user_guide_generator"
 
-if [ \! -f "create_complete_guide.py" ]; then
-    echo "錯誤: 找不到PDF產生器"
+# Change to user guide generator directory
+cd "$USER_GUIDE_DIR"
+
+if [ ! -f "create_complete_guide.py" ]; then
+    echo "Error: PDF generator not found at $USER_GUIDE_DIR/create_complete_guide.py"
     exit 1
 fi
 
 python3 create_complete_guide.py
 
 if [ $? -eq 0 ]; then
-    echo "✅ 用戶指南產生成功！"
-    echo "📄 檔案位置: docs/AMBA_Bus_Matrix_Complete_User_Guide.pdf"
+    echo "✅ User guide generated successfully!"
+    echo "📄 File location: $GUI_DIR/docs/AMBA_Bus_Matrix_Complete_User_Guide.pdf"
 else
-    echo "❌ 用戶指南產生失敗"
+    echo "❌ User guide generation failed"
     exit 1
 fi
-EOF < /dev/null
