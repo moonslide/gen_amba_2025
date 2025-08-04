@@ -1,7 +1,7 @@
-Command: /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/./simv +UVM_TESTNAME=axi4_basic_rw_test +UVM_VERBOSITY=UVM_MEDIUM +ntb_random_seed=1 +fsdb_file=./waves/axi4_basic_rw_test_1.fsdb -l ./logs/axi4_basic_rw_test_1.log
+Command: /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/./simv +UVM_TESTNAME=axi4_basic_rw_test +UVM_VERBOSITY=UVM_MEDIUM +ntb_random_seed=1 -l ./logs/axi4_basic_rw_test_1.log
 Chronologic VCS simulator copyright 1991-2024
 Contains Synopsys proprietary information.
-Compiler version W-2024.09-SP1_Full64; Runtime version W-2024.09-SP1_Full64;  Aug  4 12:09 2025
+Compiler version W-2024.09-SP1_Full64; Runtime version W-2024.09-SP1_Full64;  Aug  4 16:11 2025
 UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh(402) @ 0: reporter [UVM/RELNOTES] 
 ----------------------------------------------------------------
 UVM-1.2.Synopsys
@@ -20,54 +20,48 @@ UVM-1.2.Synopsys
 
       (Specify +UVM_NO_RELNOTES to turn off this notice)
 
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(259) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(269) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Enabling BFM driving for signal visibility
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
 [0] HDL Top: BFMs instantiated and connected
 [0] HDL Top: 9 Master BFMs connected to axi_if interfaces
 [0] HDL Top: 9 Slave BFMs connected to slave_if interfaces
 [0] HDL Top: Signal driving is now handled by BFMs
-[0] Using custom FSDB file: ./waves/axi4_basic_rw_test_1.fsdb
-[0] Starting FSDB dump
-*Verdi* Loading libsscore_vcs202409.so
-FSDB Dumper for VCS, Release Verdi_W-2024.09-SP1, Linux x86_64/64bit, 11/30/2024
-(C) 1996 - 2024 by Synopsys, Inc.
-*Verdi* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
-*Verdi* : Create FSDB file './waves/axi4_basic_rw_test_1.fsdb'
-*Verdi* : Begin traversing the scope (hdl_top), layer (0).
-*Verdi* : Enable +all dumping.
-*Verdi* : End of traversing.
-*Verdi* : Begin traversing the SVA assertions, layer (0).
-*Verdi* : End of traversing the SVA assertions.
-*Verdi* : Begin traversing the MDAs, layer (0).
-*Verdi* : Enable +mda and +packedmda dumping.
-*Verdi* : End of traversing the MDAs.
-*Verdi* : fsdbDumpon - All FSDB files at 0 ps.
 UVM_INFO @ 0: reporter [RNTST] Running test axi4_basic_rw_test...
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
-UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(24) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO ../test/axi4_base_test.sv(61) @ 0: uvm_test_top [axi4_basic_rw_test] Configured slave address ranges
 UVM_INFO ../env/axi4_protocol_coverage.sv(19) @ 0: uvm_test_top.env.coverage [axi4_protocol_coverage] Protocol coverage build phase
 UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Building master agent components
 UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Master agent mode:  ACTIVE
@@ -127,355 +121,355 @@ UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.s
 --------------------------------------------------------------------
 Name                         Type                        Size  Value
 --------------------------------------------------------------------
-uvm_test_top                 axi4_basic_rw_test          -     @376 
-  env                        axi4_env                    -     @430 
-    coverage                 axi4_protocol_coverage      -     @771 
-    master_agent[0]          axi4_master_agent           -     @463 
-      driver                 axi4_master_driver          -     @925 
-        rsp_port             uvm_analysis_port           -     @944 
-        seq_item_port        uvm_seq_item_pull_port      -     @934 
-      monitor                axi4_master_monitor         -     @954 
-        item_collected_port  uvm_analysis_port           -     @963 
-      sequencer              axi4_master_sequencer       -     @788 
-        rsp_export           uvm_analysis_export         -     @797 
-        seq_item_export      uvm_seq_item_pull_imp       -     @915 
+uvm_test_top                 axi4_basic_rw_test          -     @394 
+  env                        axi4_env                    -     @450 
+    coverage                 axi4_protocol_coverage      -     @791 
+    master_agent[0]          axi4_master_agent           -     @483 
+      driver                 axi4_master_driver          -     @945 
+        rsp_port             uvm_analysis_port           -     @964 
+        seq_item_port        uvm_seq_item_pull_port      -     @954 
+      monitor                axi4_master_monitor         -     @974 
+        item_collected_port  uvm_analysis_port           -     @983 
+      sequencer              axi4_master_sequencer       -     @808 
+        rsp_export           uvm_analysis_export         -     @817 
+        seq_item_export      uvm_seq_item_pull_imp       -     @935 
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[1]          axi4_master_agent           -     @472 
-      driver                 axi4_master_driver          -     @1116
-        rsp_port             uvm_analysis_port           -     @1135
-        seq_item_port        uvm_seq_item_pull_port      -     @1125
-      monitor                axi4_master_monitor         -     @1145
-        item_collected_port  uvm_analysis_port           -     @1154
-      sequencer              axi4_master_sequencer       -     @979 
-        rsp_export           uvm_analysis_export         -     @988 
-        seq_item_export      uvm_seq_item_pull_imp       -     @1106
+    master_agent[1]          axi4_master_agent           -     @492 
+      driver                 axi4_master_driver          -     @1136
+        rsp_port             uvm_analysis_port           -     @1155
+        seq_item_port        uvm_seq_item_pull_port      -     @1145
+      monitor                axi4_master_monitor         -     @1165
+        item_collected_port  uvm_analysis_port           -     @1174
+      sequencer              axi4_master_sequencer       -     @999 
+        rsp_export           uvm_analysis_export         -     @1008
+        seq_item_export      uvm_seq_item_pull_imp       -     @1126
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[2]          axi4_master_agent           -     @481 
-      driver                 axi4_master_driver          -     @1307
-        rsp_port             uvm_analysis_port           -     @1326
-        seq_item_port        uvm_seq_item_pull_port      -     @1316
-      monitor                axi4_master_monitor         -     @1336
-        item_collected_port  uvm_analysis_port           -     @1345
-      sequencer              axi4_master_sequencer       -     @1170
-        rsp_export           uvm_analysis_export         -     @1179
-        seq_item_export      uvm_seq_item_pull_imp       -     @1297
+    master_agent[2]          axi4_master_agent           -     @501 
+      driver                 axi4_master_driver          -     @1327
+        rsp_port             uvm_analysis_port           -     @1346
+        seq_item_port        uvm_seq_item_pull_port      -     @1336
+      monitor                axi4_master_monitor         -     @1356
+        item_collected_port  uvm_analysis_port           -     @1365
+      sequencer              axi4_master_sequencer       -     @1190
+        rsp_export           uvm_analysis_export         -     @1199
+        seq_item_export      uvm_seq_item_pull_imp       -     @1317
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[3]          axi4_master_agent           -     @490 
-      driver                 axi4_master_driver          -     @1498
-        rsp_port             uvm_analysis_port           -     @1517
-        seq_item_port        uvm_seq_item_pull_port      -     @1507
-      monitor                axi4_master_monitor         -     @1527
-        item_collected_port  uvm_analysis_port           -     @1536
-      sequencer              axi4_master_sequencer       -     @1361
-        rsp_export           uvm_analysis_export         -     @1370
-        seq_item_export      uvm_seq_item_pull_imp       -     @1488
+    master_agent[3]          axi4_master_agent           -     @510 
+      driver                 axi4_master_driver          -     @1518
+        rsp_port             uvm_analysis_port           -     @1537
+        seq_item_port        uvm_seq_item_pull_port      -     @1527
+      monitor                axi4_master_monitor         -     @1547
+        item_collected_port  uvm_analysis_port           -     @1556
+      sequencer              axi4_master_sequencer       -     @1381
+        rsp_export           uvm_analysis_export         -     @1390
+        seq_item_export      uvm_seq_item_pull_imp       -     @1508
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[4]          axi4_master_agent           -     @499 
-      driver                 axi4_master_driver          -     @1689
-        rsp_port             uvm_analysis_port           -     @1708
-        seq_item_port        uvm_seq_item_pull_port      -     @1698
-      monitor                axi4_master_monitor         -     @1718
-        item_collected_port  uvm_analysis_port           -     @1727
-      sequencer              axi4_master_sequencer       -     @1552
-        rsp_export           uvm_analysis_export         -     @1561
-        seq_item_export      uvm_seq_item_pull_imp       -     @1679
+    master_agent[4]          axi4_master_agent           -     @519 
+      driver                 axi4_master_driver          -     @1709
+        rsp_port             uvm_analysis_port           -     @1728
+        seq_item_port        uvm_seq_item_pull_port      -     @1718
+      monitor                axi4_master_monitor         -     @1738
+        item_collected_port  uvm_analysis_port           -     @1747
+      sequencer              axi4_master_sequencer       -     @1572
+        rsp_export           uvm_analysis_export         -     @1581
+        seq_item_export      uvm_seq_item_pull_imp       -     @1699
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[5]          axi4_master_agent           -     @508 
-      driver                 axi4_master_driver          -     @1880
-        rsp_port             uvm_analysis_port           -     @1899
-        seq_item_port        uvm_seq_item_pull_port      -     @1889
-      monitor                axi4_master_monitor         -     @1909
-        item_collected_port  uvm_analysis_port           -     @1918
-      sequencer              axi4_master_sequencer       -     @1743
-        rsp_export           uvm_analysis_export         -     @1752
-        seq_item_export      uvm_seq_item_pull_imp       -     @1870
+    master_agent[5]          axi4_master_agent           -     @528 
+      driver                 axi4_master_driver          -     @1900
+        rsp_port             uvm_analysis_port           -     @1919
+        seq_item_port        uvm_seq_item_pull_port      -     @1909
+      monitor                axi4_master_monitor         -     @1929
+        item_collected_port  uvm_analysis_port           -     @1938
+      sequencer              axi4_master_sequencer       -     @1763
+        rsp_export           uvm_analysis_export         -     @1772
+        seq_item_export      uvm_seq_item_pull_imp       -     @1890
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[6]          axi4_master_agent           -     @517 
-      driver                 axi4_master_driver          -     @2071
-        rsp_port             uvm_analysis_port           -     @2090
-        seq_item_port        uvm_seq_item_pull_port      -     @2080
-      monitor                axi4_master_monitor         -     @2100
-        item_collected_port  uvm_analysis_port           -     @2109
-      sequencer              axi4_master_sequencer       -     @1934
-        rsp_export           uvm_analysis_export         -     @1943
-        seq_item_export      uvm_seq_item_pull_imp       -     @2061
+    master_agent[6]          axi4_master_agent           -     @537 
+      driver                 axi4_master_driver          -     @2091
+        rsp_port             uvm_analysis_port           -     @2110
+        seq_item_port        uvm_seq_item_pull_port      -     @2100
+      monitor                axi4_master_monitor         -     @2120
+        item_collected_port  uvm_analysis_port           -     @2129
+      sequencer              axi4_master_sequencer       -     @1954
+        rsp_export           uvm_analysis_export         -     @1963
+        seq_item_export      uvm_seq_item_pull_imp       -     @2081
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[7]          axi4_master_agent           -     @526 
-      driver                 axi4_master_driver          -     @2262
-        rsp_port             uvm_analysis_port           -     @2281
-        seq_item_port        uvm_seq_item_pull_port      -     @2271
-      monitor                axi4_master_monitor         -     @2291
-        item_collected_port  uvm_analysis_port           -     @2300
-      sequencer              axi4_master_sequencer       -     @2125
-        rsp_export           uvm_analysis_export         -     @2134
-        seq_item_export      uvm_seq_item_pull_imp       -     @2252
+    master_agent[7]          axi4_master_agent           -     @546 
+      driver                 axi4_master_driver          -     @2282
+        rsp_port             uvm_analysis_port           -     @2301
+        seq_item_port        uvm_seq_item_pull_port      -     @2291
+      monitor                axi4_master_monitor         -     @2311
+        item_collected_port  uvm_analysis_port           -     @2320
+      sequencer              axi4_master_sequencer       -     @2145
+        rsp_export           uvm_analysis_export         -     @2154
+        seq_item_export      uvm_seq_item_pull_imp       -     @2272
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[8]          axi4_master_agent           -     @535 
-      driver                 axi4_master_driver          -     @2453
-        rsp_port             uvm_analysis_port           -     @2472
-        seq_item_port        uvm_seq_item_pull_port      -     @2462
-      monitor                axi4_master_monitor         -     @2482
-        item_collected_port  uvm_analysis_port           -     @2491
-      sequencer              axi4_master_sequencer       -     @2316
-        rsp_export           uvm_analysis_export         -     @2325
-        seq_item_export      uvm_seq_item_pull_imp       -     @2443
+    master_agent[8]          axi4_master_agent           -     @555 
+      driver                 axi4_master_driver          -     @2473
+        rsp_port             uvm_analysis_port           -     @2492
+        seq_item_port        uvm_seq_item_pull_port      -     @2482
+      monitor                axi4_master_monitor         -     @2502
+        item_collected_port  uvm_analysis_port           -     @2511
+      sequencer              axi4_master_sequencer       -     @2336
+        rsp_export           uvm_analysis_export         -     @2345
+        seq_item_export      uvm_seq_item_pull_imp       -     @2463
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    scoreboard               axi4_scoreboard             -     @762 
-      master_fifo[0]         uvm_tlm_analysis_fifo #(T)  -     @2501
-        analysis_export      uvm_analysis_imp            -     @2550
-        get_ap               uvm_analysis_port           -     @2540
-        get_peek_export      uvm_get_peek_imp            -     @2520
-        put_ap               uvm_analysis_port           -     @2530
-        put_export           uvm_put_imp                 -     @2510
-      master_fifo[1]         uvm_tlm_analysis_fifo #(T)  -     @2560
-        analysis_export      uvm_analysis_imp            -     @2609
-        get_ap               uvm_analysis_port           -     @2599
-        get_peek_export      uvm_get_peek_imp            -     @2579
-        put_ap               uvm_analysis_port           -     @2589
-        put_export           uvm_put_imp                 -     @2569
-      master_fifo[2]         uvm_tlm_analysis_fifo #(T)  -     @2619
-        analysis_export      uvm_analysis_imp            -     @2668
-        get_ap               uvm_analysis_port           -     @2658
-        get_peek_export      uvm_get_peek_imp            -     @2638
-        put_ap               uvm_analysis_port           -     @2648
-        put_export           uvm_put_imp                 -     @2628
-      master_fifo[3]         uvm_tlm_analysis_fifo #(T)  -     @2678
-        analysis_export      uvm_analysis_imp            -     @2727
-        get_ap               uvm_analysis_port           -     @2717
-        get_peek_export      uvm_get_peek_imp            -     @2697
-        put_ap               uvm_analysis_port           -     @2707
-        put_export           uvm_put_imp                 -     @2687
-      master_fifo[4]         uvm_tlm_analysis_fifo #(T)  -     @2737
-        analysis_export      uvm_analysis_imp            -     @2786
-        get_ap               uvm_analysis_port           -     @2776
-        get_peek_export      uvm_get_peek_imp            -     @2756
-        put_ap               uvm_analysis_port           -     @2766
-        put_export           uvm_put_imp                 -     @2746
-      master_fifo[5]         uvm_tlm_analysis_fifo #(T)  -     @2796
-        analysis_export      uvm_analysis_imp            -     @2845
-        get_ap               uvm_analysis_port           -     @2835
-        get_peek_export      uvm_get_peek_imp            -     @2815
-        put_ap               uvm_analysis_port           -     @2825
-        put_export           uvm_put_imp                 -     @2805
-      master_fifo[6]         uvm_tlm_analysis_fifo #(T)  -     @2855
-        analysis_export      uvm_analysis_imp            -     @2904
-        get_ap               uvm_analysis_port           -     @2894
-        get_peek_export      uvm_get_peek_imp            -     @2874
-        put_ap               uvm_analysis_port           -     @2884
-        put_export           uvm_put_imp                 -     @2864
-      master_fifo[7]         uvm_tlm_analysis_fifo #(T)  -     @2914
-        analysis_export      uvm_analysis_imp            -     @2963
-        get_ap               uvm_analysis_port           -     @2953
-        get_peek_export      uvm_get_peek_imp            -     @2933
-        put_ap               uvm_analysis_port           -     @2943
-        put_export           uvm_put_imp                 -     @2923
-      master_fifo[8]         uvm_tlm_analysis_fifo #(T)  -     @2973
-        analysis_export      uvm_analysis_imp            -     @3022
-        get_ap               uvm_analysis_port           -     @3012
-        get_peek_export      uvm_get_peek_imp            -     @2992
-        put_ap               uvm_analysis_port           -     @3002
-        put_export           uvm_put_imp                 -     @2982
-      slave_fifo[0]          uvm_tlm_analysis_fifo #(T)  -     @3032
-        analysis_export      uvm_analysis_imp            -     @3081
-        get_ap               uvm_analysis_port           -     @3071
-        get_peek_export      uvm_get_peek_imp            -     @3051
-        put_ap               uvm_analysis_port           -     @3061
-        put_export           uvm_put_imp                 -     @3041
-      slave_fifo[1]          uvm_tlm_analysis_fifo #(T)  -     @3091
-        analysis_export      uvm_analysis_imp            -     @3140
-        get_ap               uvm_analysis_port           -     @3130
-        get_peek_export      uvm_get_peek_imp            -     @3110
-        put_ap               uvm_analysis_port           -     @3120
-        put_export           uvm_put_imp                 -     @3100
-      slave_fifo[2]          uvm_tlm_analysis_fifo #(T)  -     @3150
-        analysis_export      uvm_analysis_imp            -     @3199
-        get_ap               uvm_analysis_port           -     @3189
-        get_peek_export      uvm_get_peek_imp            -     @3169
-        put_ap               uvm_analysis_port           -     @3179
-        put_export           uvm_put_imp                 -     @3159
-      slave_fifo[3]          uvm_tlm_analysis_fifo #(T)  -     @3209
-        analysis_export      uvm_analysis_imp            -     @3258
-        get_ap               uvm_analysis_port           -     @3248
-        get_peek_export      uvm_get_peek_imp            -     @3228
-        put_ap               uvm_analysis_port           -     @3238
-        put_export           uvm_put_imp                 -     @3218
-      slave_fifo[4]          uvm_tlm_analysis_fifo #(T)  -     @3268
-        analysis_export      uvm_analysis_imp            -     @3317
-        get_ap               uvm_analysis_port           -     @3307
-        get_peek_export      uvm_get_peek_imp            -     @3287
-        put_ap               uvm_analysis_port           -     @3297
-        put_export           uvm_put_imp                 -     @3277
-      slave_fifo[5]          uvm_tlm_analysis_fifo #(T)  -     @3327
-        analysis_export      uvm_analysis_imp            -     @3376
-        get_ap               uvm_analysis_port           -     @3366
-        get_peek_export      uvm_get_peek_imp            -     @3346
-        put_ap               uvm_analysis_port           -     @3356
-        put_export           uvm_put_imp                 -     @3336
-      slave_fifo[6]          uvm_tlm_analysis_fifo #(T)  -     @3386
-        analysis_export      uvm_analysis_imp            -     @3435
-        get_ap               uvm_analysis_port           -     @3425
-        get_peek_export      uvm_get_peek_imp            -     @3405
-        put_ap               uvm_analysis_port           -     @3415
-        put_export           uvm_put_imp                 -     @3395
-      slave_fifo[7]          uvm_tlm_analysis_fifo #(T)  -     @3445
-        analysis_export      uvm_analysis_imp            -     @3494
-        get_ap               uvm_analysis_port           -     @3484
-        get_peek_export      uvm_get_peek_imp            -     @3464
-        put_ap               uvm_analysis_port           -     @3474
-        put_export           uvm_put_imp                 -     @3454
-      slave_fifo[8]          uvm_tlm_analysis_fifo #(T)  -     @3504
-        analysis_export      uvm_analysis_imp            -     @3553
-        get_ap               uvm_analysis_port           -     @3543
-        get_peek_export      uvm_get_peek_imp            -     @3523
-        put_ap               uvm_analysis_port           -     @3533
-        put_export           uvm_put_imp                 -     @3513
-    slave_agent[0]           axi4_slave_agent            -     @544 
-      driver                 axi4_slave_driver           -     @3706
-        rsp_port             uvm_analysis_port           -     @3725
-        seq_item_port        uvm_seq_item_pull_port      -     @3715
-      monitor                axi4_slave_monitor          -     @3735
-        item_collected_port  uvm_analysis_port           -     @3744
-      sequencer              axi4_slave_sequencer        -     @3569
-        rsp_export           uvm_analysis_export         -     @3578
-        seq_item_export      uvm_seq_item_pull_imp       -     @3696
+    scoreboard               axi4_scoreboard             -     @782 
+      master_fifo[0]         uvm_tlm_analysis_fifo #(T)  -     @2521
+        analysis_export      uvm_analysis_imp            -     @2570
+        get_ap               uvm_analysis_port           -     @2560
+        get_peek_export      uvm_get_peek_imp            -     @2540
+        put_ap               uvm_analysis_port           -     @2550
+        put_export           uvm_put_imp                 -     @2530
+      master_fifo[1]         uvm_tlm_analysis_fifo #(T)  -     @2580
+        analysis_export      uvm_analysis_imp            -     @2629
+        get_ap               uvm_analysis_port           -     @2619
+        get_peek_export      uvm_get_peek_imp            -     @2599
+        put_ap               uvm_analysis_port           -     @2609
+        put_export           uvm_put_imp                 -     @2589
+      master_fifo[2]         uvm_tlm_analysis_fifo #(T)  -     @2639
+        analysis_export      uvm_analysis_imp            -     @2688
+        get_ap               uvm_analysis_port           -     @2678
+        get_peek_export      uvm_get_peek_imp            -     @2658
+        put_ap               uvm_analysis_port           -     @2668
+        put_export           uvm_put_imp                 -     @2648
+      master_fifo[3]         uvm_tlm_analysis_fifo #(T)  -     @2698
+        analysis_export      uvm_analysis_imp            -     @2747
+        get_ap               uvm_analysis_port           -     @2737
+        get_peek_export      uvm_get_peek_imp            -     @2717
+        put_ap               uvm_analysis_port           -     @2727
+        put_export           uvm_put_imp                 -     @2707
+      master_fifo[4]         uvm_tlm_analysis_fifo #(T)  -     @2757
+        analysis_export      uvm_analysis_imp            -     @2806
+        get_ap               uvm_analysis_port           -     @2796
+        get_peek_export      uvm_get_peek_imp            -     @2776
+        put_ap               uvm_analysis_port           -     @2786
+        put_export           uvm_put_imp                 -     @2766
+      master_fifo[5]         uvm_tlm_analysis_fifo #(T)  -     @2816
+        analysis_export      uvm_analysis_imp            -     @2865
+        get_ap               uvm_analysis_port           -     @2855
+        get_peek_export      uvm_get_peek_imp            -     @2835
+        put_ap               uvm_analysis_port           -     @2845
+        put_export           uvm_put_imp                 -     @2825
+      master_fifo[6]         uvm_tlm_analysis_fifo #(T)  -     @2875
+        analysis_export      uvm_analysis_imp            -     @2924
+        get_ap               uvm_analysis_port           -     @2914
+        get_peek_export      uvm_get_peek_imp            -     @2894
+        put_ap               uvm_analysis_port           -     @2904
+        put_export           uvm_put_imp                 -     @2884
+      master_fifo[7]         uvm_tlm_analysis_fifo #(T)  -     @2934
+        analysis_export      uvm_analysis_imp            -     @2983
+        get_ap               uvm_analysis_port           -     @2973
+        get_peek_export      uvm_get_peek_imp            -     @2953
+        put_ap               uvm_analysis_port           -     @2963
+        put_export           uvm_put_imp                 -     @2943
+      master_fifo[8]         uvm_tlm_analysis_fifo #(T)  -     @2993
+        analysis_export      uvm_analysis_imp            -     @3042
+        get_ap               uvm_analysis_port           -     @3032
+        get_peek_export      uvm_get_peek_imp            -     @3012
+        put_ap               uvm_analysis_port           -     @3022
+        put_export           uvm_put_imp                 -     @3002
+      slave_fifo[0]          uvm_tlm_analysis_fifo #(T)  -     @3052
+        analysis_export      uvm_analysis_imp            -     @3101
+        get_ap               uvm_analysis_port           -     @3091
+        get_peek_export      uvm_get_peek_imp            -     @3071
+        put_ap               uvm_analysis_port           -     @3081
+        put_export           uvm_put_imp                 -     @3061
+      slave_fifo[1]          uvm_tlm_analysis_fifo #(T)  -     @3111
+        analysis_export      uvm_analysis_imp            -     @3160
+        get_ap               uvm_analysis_port           -     @3150
+        get_peek_export      uvm_get_peek_imp            -     @3130
+        put_ap               uvm_analysis_port           -     @3140
+        put_export           uvm_put_imp                 -     @3120
+      slave_fifo[2]          uvm_tlm_analysis_fifo #(T)  -     @3170
+        analysis_export      uvm_analysis_imp            -     @3219
+        get_ap               uvm_analysis_port           -     @3209
+        get_peek_export      uvm_get_peek_imp            -     @3189
+        put_ap               uvm_analysis_port           -     @3199
+        put_export           uvm_put_imp                 -     @3179
+      slave_fifo[3]          uvm_tlm_analysis_fifo #(T)  -     @3229
+        analysis_export      uvm_analysis_imp            -     @3278
+        get_ap               uvm_analysis_port           -     @3268
+        get_peek_export      uvm_get_peek_imp            -     @3248
+        put_ap               uvm_analysis_port           -     @3258
+        put_export           uvm_put_imp                 -     @3238
+      slave_fifo[4]          uvm_tlm_analysis_fifo #(T)  -     @3288
+        analysis_export      uvm_analysis_imp            -     @3337
+        get_ap               uvm_analysis_port           -     @3327
+        get_peek_export      uvm_get_peek_imp            -     @3307
+        put_ap               uvm_analysis_port           -     @3317
+        put_export           uvm_put_imp                 -     @3297
+      slave_fifo[5]          uvm_tlm_analysis_fifo #(T)  -     @3347
+        analysis_export      uvm_analysis_imp            -     @3396
+        get_ap               uvm_analysis_port           -     @3386
+        get_peek_export      uvm_get_peek_imp            -     @3366
+        put_ap               uvm_analysis_port           -     @3376
+        put_export           uvm_put_imp                 -     @3356
+      slave_fifo[6]          uvm_tlm_analysis_fifo #(T)  -     @3406
+        analysis_export      uvm_analysis_imp            -     @3455
+        get_ap               uvm_analysis_port           -     @3445
+        get_peek_export      uvm_get_peek_imp            -     @3425
+        put_ap               uvm_analysis_port           -     @3435
+        put_export           uvm_put_imp                 -     @3415
+      slave_fifo[7]          uvm_tlm_analysis_fifo #(T)  -     @3465
+        analysis_export      uvm_analysis_imp            -     @3514
+        get_ap               uvm_analysis_port           -     @3504
+        get_peek_export      uvm_get_peek_imp            -     @3484
+        put_ap               uvm_analysis_port           -     @3494
+        put_export           uvm_put_imp                 -     @3474
+      slave_fifo[8]          uvm_tlm_analysis_fifo #(T)  -     @3524
+        analysis_export      uvm_analysis_imp            -     @3573
+        get_ap               uvm_analysis_port           -     @3563
+        get_peek_export      uvm_get_peek_imp            -     @3543
+        put_ap               uvm_analysis_port           -     @3553
+        put_export           uvm_put_imp                 -     @3533
+    slave_agent[0]           axi4_slave_agent            -     @564 
+      driver                 axi4_slave_driver           -     @3726
+        rsp_port             uvm_analysis_port           -     @3745
+        seq_item_port        uvm_seq_item_pull_port      -     @3735
+      monitor                axi4_slave_monitor          -     @3755
+        item_collected_port  uvm_analysis_port           -     @3764
+      sequencer              axi4_slave_sequencer        -     @3589
+        rsp_export           uvm_analysis_export         -     @3598
+        seq_item_export      uvm_seq_item_pull_imp       -     @3716
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[1]           axi4_slave_agent            -     @553 
-      driver                 axi4_slave_driver           -     @3897
-        rsp_port             uvm_analysis_port           -     @3916
-        seq_item_port        uvm_seq_item_pull_port      -     @3906
-      monitor                axi4_slave_monitor          -     @3926
-        item_collected_port  uvm_analysis_port           -     @3935
-      sequencer              axi4_slave_sequencer        -     @3760
-        rsp_export           uvm_analysis_export         -     @3769
-        seq_item_export      uvm_seq_item_pull_imp       -     @3887
+    slave_agent[1]           axi4_slave_agent            -     @573 
+      driver                 axi4_slave_driver           -     @3917
+        rsp_port             uvm_analysis_port           -     @3936
+        seq_item_port        uvm_seq_item_pull_port      -     @3926
+      monitor                axi4_slave_monitor          -     @3946
+        item_collected_port  uvm_analysis_port           -     @3955
+      sequencer              axi4_slave_sequencer        -     @3780
+        rsp_export           uvm_analysis_export         -     @3789
+        seq_item_export      uvm_seq_item_pull_imp       -     @3907
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[2]           axi4_slave_agent            -     @562 
-      driver                 axi4_slave_driver           -     @4088
-        rsp_port             uvm_analysis_port           -     @4107
-        seq_item_port        uvm_seq_item_pull_port      -     @4097
-      monitor                axi4_slave_monitor          -     @4117
-        item_collected_port  uvm_analysis_port           -     @4126
-      sequencer              axi4_slave_sequencer        -     @3951
-        rsp_export           uvm_analysis_export         -     @3960
-        seq_item_export      uvm_seq_item_pull_imp       -     @4078
+    slave_agent[2]           axi4_slave_agent            -     @582 
+      driver                 axi4_slave_driver           -     @4108
+        rsp_port             uvm_analysis_port           -     @4127
+        seq_item_port        uvm_seq_item_pull_port      -     @4117
+      monitor                axi4_slave_monitor          -     @4137
+        item_collected_port  uvm_analysis_port           -     @4146
+      sequencer              axi4_slave_sequencer        -     @3971
+        rsp_export           uvm_analysis_export         -     @3980
+        seq_item_export      uvm_seq_item_pull_imp       -     @4098
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[3]           axi4_slave_agent            -     @571 
-      driver                 axi4_slave_driver           -     @4279
-        rsp_port             uvm_analysis_port           -     @4298
-        seq_item_port        uvm_seq_item_pull_port      -     @4288
-      monitor                axi4_slave_monitor          -     @4308
-        item_collected_port  uvm_analysis_port           -     @4317
-      sequencer              axi4_slave_sequencer        -     @4142
-        rsp_export           uvm_analysis_export         -     @4151
-        seq_item_export      uvm_seq_item_pull_imp       -     @4269
+    slave_agent[3]           axi4_slave_agent            -     @591 
+      driver                 axi4_slave_driver           -     @4299
+        rsp_port             uvm_analysis_port           -     @4318
+        seq_item_port        uvm_seq_item_pull_port      -     @4308
+      monitor                axi4_slave_monitor          -     @4328
+        item_collected_port  uvm_analysis_port           -     @4337
+      sequencer              axi4_slave_sequencer        -     @4162
+        rsp_export           uvm_analysis_export         -     @4171
+        seq_item_export      uvm_seq_item_pull_imp       -     @4289
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[4]           axi4_slave_agent            -     @580 
-      driver                 axi4_slave_driver           -     @4470
-        rsp_port             uvm_analysis_port           -     @4489
-        seq_item_port        uvm_seq_item_pull_port      -     @4479
-      monitor                axi4_slave_monitor          -     @4499
-        item_collected_port  uvm_analysis_port           -     @4508
-      sequencer              axi4_slave_sequencer        -     @4333
-        rsp_export           uvm_analysis_export         -     @4342
-        seq_item_export      uvm_seq_item_pull_imp       -     @4460
+    slave_agent[4]           axi4_slave_agent            -     @600 
+      driver                 axi4_slave_driver           -     @4490
+        rsp_port             uvm_analysis_port           -     @4509
+        seq_item_port        uvm_seq_item_pull_port      -     @4499
+      monitor                axi4_slave_monitor          -     @4519
+        item_collected_port  uvm_analysis_port           -     @4528
+      sequencer              axi4_slave_sequencer        -     @4353
+        rsp_export           uvm_analysis_export         -     @4362
+        seq_item_export      uvm_seq_item_pull_imp       -     @4480
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[5]           axi4_slave_agent            -     @589 
-      driver                 axi4_slave_driver           -     @4661
-        rsp_port             uvm_analysis_port           -     @4680
-        seq_item_port        uvm_seq_item_pull_port      -     @4670
-      monitor                axi4_slave_monitor          -     @4690
-        item_collected_port  uvm_analysis_port           -     @4699
-      sequencer              axi4_slave_sequencer        -     @4524
-        rsp_export           uvm_analysis_export         -     @4533
-        seq_item_export      uvm_seq_item_pull_imp       -     @4651
+    slave_agent[5]           axi4_slave_agent            -     @609 
+      driver                 axi4_slave_driver           -     @4681
+        rsp_port             uvm_analysis_port           -     @4700
+        seq_item_port        uvm_seq_item_pull_port      -     @4690
+      monitor                axi4_slave_monitor          -     @4710
+        item_collected_port  uvm_analysis_port           -     @4719
+      sequencer              axi4_slave_sequencer        -     @4544
+        rsp_export           uvm_analysis_export         -     @4553
+        seq_item_export      uvm_seq_item_pull_imp       -     @4671
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[6]           axi4_slave_agent            -     @598 
-      driver                 axi4_slave_driver           -     @4852
-        rsp_port             uvm_analysis_port           -     @4871
-        seq_item_port        uvm_seq_item_pull_port      -     @4861
-      monitor                axi4_slave_monitor          -     @4881
-        item_collected_port  uvm_analysis_port           -     @4890
-      sequencer              axi4_slave_sequencer        -     @4715
-        rsp_export           uvm_analysis_export         -     @4724
-        seq_item_export      uvm_seq_item_pull_imp       -     @4842
+    slave_agent[6]           axi4_slave_agent            -     @618 
+      driver                 axi4_slave_driver           -     @4872
+        rsp_port             uvm_analysis_port           -     @4891
+        seq_item_port        uvm_seq_item_pull_port      -     @4881
+      monitor                axi4_slave_monitor          -     @4901
+        item_collected_port  uvm_analysis_port           -     @4910
+      sequencer              axi4_slave_sequencer        -     @4735
+        rsp_export           uvm_analysis_export         -     @4744
+        seq_item_export      uvm_seq_item_pull_imp       -     @4862
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[7]           axi4_slave_agent            -     @607 
-      driver                 axi4_slave_driver           -     @5043
-        rsp_port             uvm_analysis_port           -     @5062
-        seq_item_port        uvm_seq_item_pull_port      -     @5052
-      monitor                axi4_slave_monitor          -     @5072
-        item_collected_port  uvm_analysis_port           -     @5081
-      sequencer              axi4_slave_sequencer        -     @4906
-        rsp_export           uvm_analysis_export         -     @4915
-        seq_item_export      uvm_seq_item_pull_imp       -     @5033
+    slave_agent[7]           axi4_slave_agent            -     @627 
+      driver                 axi4_slave_driver           -     @5063
+        rsp_port             uvm_analysis_port           -     @5082
+        seq_item_port        uvm_seq_item_pull_port      -     @5072
+      monitor                axi4_slave_monitor          -     @5092
+        item_collected_port  uvm_analysis_port           -     @5101
+      sequencer              axi4_slave_sequencer        -     @4926
+        rsp_export           uvm_analysis_export         -     @4935
+        seq_item_export      uvm_seq_item_pull_imp       -     @5053
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[8]           axi4_slave_agent            -     @616 
-      driver                 axi4_slave_driver           -     @5234
-        rsp_port             uvm_analysis_port           -     @5253
-        seq_item_port        uvm_seq_item_pull_port      -     @5243
-      monitor                axi4_slave_monitor          -     @5263
-        item_collected_port  uvm_analysis_port           -     @5272
-      sequencer              axi4_slave_sequencer        -     @5097
-        rsp_export           uvm_analysis_export         -     @5106
-        seq_item_export      uvm_seq_item_pull_imp       -     @5224
+    slave_agent[8]           axi4_slave_agent            -     @636 
+      driver                 axi4_slave_driver           -     @5254
+        rsp_port             uvm_analysis_port           -     @5273
+        seq_item_port        uvm_seq_item_pull_port      -     @5263
+      monitor                axi4_slave_monitor          -     @5283
+        item_collected_port  uvm_analysis_port           -     @5292
+      sequencer              axi4_slave_sequencer        -     @5117
+        rsp_export           uvm_analysis_export         -     @5126
+        seq_item_export      uvm_seq_item_pull_imp       -     @5244
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    v_seqr                   axi4_virtual_sequencer      -     @625 
-      rsp_export             uvm_analysis_export         -     @634 
-      seq_item_export        uvm_seq_item_pull_imp       -     @752 
+    v_seqr                   axi4_virtual_sequencer      -     @645 
+      rsp_export             uvm_analysis_export         -     @654 
+      seq_item_export        uvm_seq_item_pull_imp       -     @772 
       arbitration_queue      array                       0     -    
       lock_queue             array                       0     -    
       num_last_reqs          integral                    32    'd1  
@@ -531,30 +525,26 @@ UVM_INFO ../test/axi4_basic_rw_test.sv(23) @ 0: uvm_test_top [axi4_basic_rw_test
 UVM_INFO ../virtual_seq/axi4_virtual_write_read_seq.sv(21) @ 0: uvm_test_top.env.v_seqr@@vseq [axi4_virtual_write_read_seq] Starting virtual write-read sequence
 UVM_INFO ../virtual_seq/axi4_virtual_write_seq.sv(20) @ 0: uvm_test_top.env.v_seqr@@write_seq [axi4_virtual_write_seq] Starting virtual write sequence
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x0, len=0, size=2, burst=1
-*Verdi* : Begin traversing the scope (hdl_top.dut), layer (0).
-*Verdi* : Enable +all dumping.
-*Verdi* : End of traversing.
-[1000] Added DUT internal signals to FSDB dump
 UVM_INFO ../virtual_seq/axi4_virtual_read_seq.sv(20) @ 100000: uvm_test_top.env.v_seqr@@read_seq [axi4_virtual_read_seq] Starting virtual read sequence
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x0, len=0, size=2, burst=1
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
-UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(35) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(48) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
 UVM_INFO ../test/axi4_basic_rw_test.sv(29) @ 200000: uvm_test_top [axi4_basic_rw_test] Completed basic read/write test
 UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_catcher.svh(705) @ 200000: reporter [UVM/REPORT/CATCHER] 
 --- UVM Report catcher Summary ---
@@ -571,18 +561,18 @@ UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report
 --- UVM Report Summary ---
 
 ** Report counts by severity
-UVM_INFO :  156
+UVM_INFO :  166
 UVM_WARNING :    0
 UVM_ERROR :    0
 UVM_FATAL :    0
 ** Report counts by id
-[AXI_MASTER_DRIVER_BFM]    18
+[AXI_MASTER_DRIVER_BFM]    27
 [AXI_SLAVE_DRIVER_BFM]    27
 [RNTST]     1
 [UVM/RELNOTES]     1
 [UVM/REPORT/CATCHER]     1
 [UVMTOP]     1
-[axi4_basic_rw_test]     2
+[axi4_basic_rw_test]     3
 [axi4_master_agent]    27
 [axi4_master_driver]    11
 [axi4_master_monitor]    18
@@ -597,5 +587,5 @@ $finish called from file "/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.
 $finish at simulation time               200000
            V C S   S i m u l a t i o n   R e p o r t 
 Time: 200000 ps
-CPU Time:      0.690 seconds;       Data structure size:   2.1Mb
-Mon Aug  4 12:09:43 2025
+CPU Time:      0.630 seconds;       Data structure size:   2.1Mb
+Mon Aug  4 16:11:05 2025

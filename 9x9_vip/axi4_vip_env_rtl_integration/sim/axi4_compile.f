@@ -63,3 +63,6 @@ ${VIP_ROOT}/rtl_wrapper/dut_wrapper.sv
 # Top modules
 ${VIP_ROOT}/top/hdl_top.sv
 ${VIP_ROOT}/top/hvl_top.sv
+
+# Connectivity test
+./test_slave_connectivity.sv

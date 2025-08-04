@@ -984,7 +984,7 @@
 0 ../virtual_seq/axi4_boundary_test.sv
 0 ../virtual_seqr/axi4_boundary_test.sv
 0 ../env/axi4_boundary_test.sv
-95
+96
 +define+DUMP_FSDB
 +define+UVM_NO_DEPRECATED
 +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
@@ -1080,6 +1080,7 @@ uvm-1.2
 ../rtl_wrapper/generated_rtl/axi4_interconnect_m9s9.v
 ../top/hdl_top.sv
 ../top/hvl_top.sv
+./test_slave_connectivity.sv
 86
 which_declare=declare -f
 XMODIFIERS=@im=ibus
@@ -1169,38 +1170,38 @@ BASH_FUNC__module_raw%%=() {  unset _mlshdbg;_ if [ "${MODULES_SILENT_SHELL_DEBU
 ARMLMD_LICENSE_FILE=/opt/arm/developmentstudio-2023.0/ds_license.lic
 0
 0
-224
-1754272401 ../test/axi4_boundary_test.sv
-1754272401 ../test/axi4_interleaved_test.sv
-1754272401 ../test/axi4_performance_test.sv
-1754272401 ../test/axi4_error_injection_test.sv
-1754272401 ../test/axi4_qos_test.sv
-1754284168 ../test/axi4_stress_test.sv
-1754272401 ../test/axi4_random_test.sv
-1754272401 ../test/axi4_burst_test.sv
-1754272401 ../test/axi4_basic_rw_test.sv
-1754272401 ../test/axi4_base_test.sv
-1754272401 ../virtual_seq/axi4_virtual_boundary_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_interleaved_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_performance_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_error_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_stress_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_write_read_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_read_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_write_seq.sv
-1754272401 ../virtual_seq/axi4_virtual_base_seq.sv
-1754272401 ../env/axi4_env.sv
-1754272401 ../env/axi4_protocol_coverage.sv
-1754272401 ../env/axi4_scoreboard.sv
-1754272401 ../env/axi4_env_config.sv
-1754272401 ../virtual_seqr/axi4_virtual_sequencer.sv
-1754272401 ../seq/slave_sequences/axi4_slave_base_seq.sv
-1754272401 ../seq/master_sequences/axi4_master_qos_seq.sv
-1754272401 ../seq/master_sequences/axi4_master_random_seq.sv
-1754272401 ../seq/master_sequences/axi4_master_burst_seq.sv
-1754272401 ../seq/master_sequences/axi4_master_read_seq.sv
-1754272401 ../seq/master_sequences/axi4_master_write_seq.sv
-1754272401 ../seq/master_sequences/axi4_master_base_seq.sv
+225
+1754292903 ../test/axi4_boundary_test.sv
+1754292903 ../test/axi4_interleaved_test.sv
+1754292903 ../test/axi4_performance_test.sv
+1754292903 ../test/axi4_error_injection_test.sv
+1754292903 ../test/axi4_qos_test.sv
+1754292903 ../test/axi4_stress_test.sv
+1754292903 ../test/axi4_random_test.sv
+1754292903 ../test/axi4_burst_test.sv
+1754292903 ../test/axi4_basic_rw_test.sv
+1754294983 ../test/axi4_base_test.sv
+1754292903 ../virtual_seq/axi4_virtual_boundary_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_interleaved_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_performance_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_error_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_stress_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_write_read_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_read_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_write_seq.sv
+1754292903 ../virtual_seq/axi4_virtual_base_seq.sv
+1754292902 ../env/axi4_env.sv
+1754292902 ../env/axi4_protocol_coverage.sv
+1754295501 ../env/axi4_scoreboard.sv
+1754292902 ../env/axi4_env_config.sv
+1754292903 ../virtual_seqr/axi4_virtual_sequencer.sv
+1754292902 ../seq/slave_sequences/axi4_slave_base_seq.sv
+1754292902 ../seq/master_sequences/axi4_master_qos_seq.sv
+1754292902 ../seq/master_sequences/axi4_master_random_seq.sv
+1754292902 ../seq/master_sequences/axi4_master_burst_seq.sv
+1754292902 ../seq/master_sequences/axi4_master_read_seq.sv
+1754292902 ../seq/master_sequences/axi4_master_write_seq.sv
+1754292902 ../seq/master_sequences/axi4_master_base_seq.sv
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_pli.svh
 1733030237 /home/eda_tools/synopsys/verdi/W-2024.09-SP1//share/PLI/VCS/include/verdi_trans_recorder_dpi.svh
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_reg_recording.sv
@@ -1362,36 +1363,37 @@ ARMLMD_LICENSE_FILE=/opt/arm/developmentstudio-2023.0/ds_license.lic
 1733289098 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_global_defines.svh
 1733289098 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_version_defines.svh
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh
-1754272401 ../top/hvl_top.sv
-1754280957 ../top/hdl_top.sv
-1754272852 ../rtl_wrapper/generated_rtl/axi4_interconnect_m9s9.v
-1754272894 ../rtl_wrapper/generated_rtl/axi4_router.v
-1754272894 ../rtl_wrapper/generated_rtl/axi4_arbiter.v
-1754272894 ../rtl_wrapper/generated_rtl/axi4_address_decoder.v
-1754273503 ../rtl_wrapper/axi4_interconnect_wrapper.sv
-1754282057 ../rtl_wrapper/dut_wrapper.sv
-1754272401 ../test/axi4_test_pkg.sv
-1754272401 ../virtual_seq/axi4_virtual_seq_pkg.sv
-1754272401 ../env/axi4_env_pkg.sv
-1754272401 ../virtual_seqr/axi4_virtual_seqr_pkg.sv
-1754272401 ../seq/slave_sequences/axi4_slave_seq_pkg.sv
-1754272401 ../seq/master_sequences/axi4_master_seq_pkg.sv
-1754272401 ../slave/axi4_slave_pkg.sv
-1754272963 ../master/axi4_master_pkg.sv
-1754291194 ../agent/slave_agent_bfm/axi4_slave_agent_bfm.sv
-1754291184 ../agent/master_agent_bfm/axi4_master_agent_bfm.sv
-1754291692 ../agent/slave_agent_bfm/axi4_slave_monitor_bfm.sv
-1754292281 ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv
-1754291679 ../agent/master_agent_bfm/axi4_master_monitor_bfm.sv
-1754292256 ../agent/master_agent_bfm/axi4_master_driver_bfm.sv
-1754272401 ../intf/axi4_interface/axi4_if.sv
-1754272401 ../pkg/axi4_globals_pkg.sv
+1754294343 ./test_slave_connectivity.sv
+1754292903 ../top/hvl_top.sv
+1754292903 ../top/hdl_top.sv
+1754292902 ../rtl_wrapper/generated_rtl/axi4_interconnect_m9s9.v
+1754292902 ../rtl_wrapper/generated_rtl/axi4_router.v
+1754292902 ../rtl_wrapper/generated_rtl/axi4_arbiter.v
+1754292902 ../rtl_wrapper/generated_rtl/axi4_address_decoder.v
+1754292902 ../rtl_wrapper/axi4_interconnect_wrapper.sv
+1754292902 ../rtl_wrapper/dut_wrapper.sv
+1754292903 ../test/axi4_test_pkg.sv
+1754292903 ../virtual_seq/axi4_virtual_seq_pkg.sv
+1754292902 ../env/axi4_env_pkg.sv
+1754292903 ../virtual_seqr/axi4_virtual_seqr_pkg.sv
+1754292902 ../seq/slave_sequences/axi4_slave_seq_pkg.sv
+1754292902 ../seq/master_sequences/axi4_master_seq_pkg.sv
+1754292903 ../slave/axi4_slave_pkg.sv
+1754295647 ../master/axi4_master_pkg.sv
+1754292902 ../agent/slave_agent_bfm/axi4_slave_agent_bfm.sv
+1754292902 ../agent/master_agent_bfm/axi4_master_agent_bfm.sv
+1754292902 ../agent/slave_agent_bfm/axi4_slave_monitor_bfm.sv
+1754292902 ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv
+1754292902 ../agent/master_agent_bfm/axi4_master_monitor_bfm.sv
+1754294510 ../agent/master_agent_bfm/axi4_master_driver_bfm.sv
+1754292902 ../intf/axi4_interface/axi4_if.sv
+1754292902 ../pkg/axi4_globals_pkg.sv
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_custom_install_vcs_recorder.sv
 1733289099 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv
-1754273520 ../rtl_wrapper/rtl_files.f
-1754272401 ../sim/axi4_compile.f
+1754292902 ../rtl_wrapper/rtl_files.f
+1754294293 ../sim/axi4_compile.f
 1733030237 /home/eda_tools/synopsys/verdi/W-2024.09-SP1//share/PLI/VCS/LINUX64/verdi.tab
 1733285154 /home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib/vcsdp_lite.tab
 6
@@ -1401,5 +1403,5 @@ ARMLMD_LICENSE_FILE=/opt/arm/developmentstudio-2023.0/ds_license.lic
 1733286010 /home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib/liberrorinf.so
 1733286000 /home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib/libsnpsmalloc.so
 1733285992 /home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib/libvfs.so
-1754292522 simv.daidir
+1754295797 simv.daidir
 -1 partitionlib

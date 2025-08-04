@@ -231,10 +231,10 @@ TclAutoSource =
 cmd_enter_form = FALSE
 SyncBrowserDir = TRUE
 FindBarVisible = 
+recent_commands_Verdi = hbTextCopySignalFullPath,UndoTraceGroup
 ColorTheme = classic
 version = Verdi_W-2024.09-SP1
 recent_commands_nWave = zoomOut,openFile,getSignal
-recent_commands_Verdi = hbTextCopySignalFullPath,UndoTraceGroup
 prevColorTheme = classic
 SignalCaseInSensitive = FALSE
 [GlobalProp]
@@ -384,7 +384,7 @@ openFileDlg = 1379,433,602,483
 tipViewerDlg = 1471,598,398,259
 QwWarnMsgDlg = 1410,718,600,249
 unknownSave = 1854,593,461,245
-QwUserAskDlg = 1508,565,324,125
+QwUserAskDlg = 1923,727,324,125
 [Relationship]
 hideRecursiceNode = FALSE
 [Safety]
@@ -678,39 +678,39 @@ isOneSearchVisible = TRUE
 [VIA.oneSearch.preference.vgifColumnSettingRC.setting0]
 parRuleSets = ""
 [VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column0]
-name = "Severity"
-width = 60
-visualIndex = 2
-isHidden = FALSE
-isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column1]
 name = "Block's First Line"
 width = 120
 visualIndex = 1
 isHidden = TRUE
 isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column2]
-name = "Time"
-width = 60
-visualIndex = 0
-isHidden = FALSE
-isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column3]
-name = "Code"
-width = 60
-visualIndex = 3
-isHidden = TRUE
-isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column4]
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column1]
 name = "Type"
 width = 60
 visualIndex = 4
 isHidden = TRUE
 isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column5]
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column2]
 name = "Message"
 width = 2000
 visualIndex = 5
+isHidden = FALSE
+isUserChangeColumnVisible = FALSE
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column3]
+name = "Time"
+width = 60
+visualIndex = 0
+isHidden = FALSE
+isUserChangeColumnVisible = FALSE
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column4]
+name = "Code"
+width = 60
+visualIndex = 3
+isHidden = TRUE
+isUserChangeColumnVisible = FALSE
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column5]
+name = "Severity"
+width = 60
+visualIndex = 2
 isHidden = FALSE
 isUserChangeColumnVisible = FALSE
 [VIA.ruleHistory]
@@ -790,7 +790,7 @@ scope_to_save_with_macro
 open_file_dir
 open_rc_file_dir
 getSignalForm = 1320 403 800 479 220 387 484 187
-viewPort = 0 25 2520 437 634 65
+viewPort = 0 25 2520 439 634 65
 legendBackground = -c ID_BLACK
 valueBackground = -c ID_BLACK
 curveBackground = -c ID_BLACK
@@ -1333,7 +1333,7 @@ AddImportArgument = FALSE
 LineBreakWithScope = TRUE
 StopAfterCompileOption = -s
 [wave.0]
-viewPort = 0 25 2520 437 634 65
+viewPort = 0 25 2520 439 634 65
 [wave.1]
 viewPort = 127 219 960 332 100 65
 [wave.2]

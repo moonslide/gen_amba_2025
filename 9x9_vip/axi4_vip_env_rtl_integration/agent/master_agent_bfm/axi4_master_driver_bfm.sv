@@ -68,9 +68,24 @@ module axi4_master_driver_bfm #(
         logic [2:0] size;
         logic [1:0] burst;
         logic [ID_WIDTH-1:0] id;
+        int slave_sel;
         
         // Generate transaction parameters
-        addr  = $urandom() & {ADDR_WIDTH{1'b1}};
+        // Select a random slave (0-8) and generate address in its range
+        slave_sel = $urandom_range(0, 8);
+        case (slave_sel)
+            0: addr = 32'h0000_0000 + ($urandom() & 32'h0000_1FFF);
+            1: addr = 32'h0000_2000 + ($urandom() & 32'h0000_1FFF);
+            2: addr = 32'h0000_4000 + ($urandom() & 32'h0000_1FFF);
+            3: addr = 32'h0000_6000 + ($urandom() & 32'h0000_1FFF);
+            4: addr = 32'h0000_8000 + ($urandom() & 32'h0000_1FFF);
+            5: addr = 32'h0000_A000 + ($urandom() & 32'h0000_1FFF);
+            6: addr = 32'h0000_C000 + ($urandom() & 32'h0000_1FFF);
+            7: addr = 32'h0000_E000 + ($urandom() & 32'h0000_1FFF);
+            8: addr = 32'h0001_0000 + ($urandom() & 32'h0000_1FFF);
+            default: addr = 32'h0000_0000 + ($urandom() & 32'h0000_1FFF);
+        endcase
+        
         len   = $urandom_range(0, 15);  // 1-16 beats
         size  = $urandom_range(0, $clog2(DATA_WIDTH/8));  // Up to full data width
         burst = $urandom_range(0, 2);   // FIXED, INCR, WRAP
@@ -137,9 +152,24 @@ module axi4_master_driver_bfm #(
         logic [1:0] burst;
         logic [ID_WIDTH-1:0] id;
         int beat_count;
+        int slave_sel;
         
         // Generate transaction parameters
-        addr  = $urandom() & {ADDR_WIDTH{1'b1}};
+        // Select a random slave (0-8) and generate address in its range
+        slave_sel = $urandom_range(0, 8);
+        case (slave_sel)
+            0: addr = 32'h0000_0000 + ($urandom() & 32'h0000_1FFF);
+            1: addr = 32'h0000_2000 + ($urandom() & 32'h0000_1FFF);
+            2: addr = 32'h0000_4000 + ($urandom() & 32'h0000_1FFF);
+            3: addr = 32'h0000_6000 + ($urandom() & 32'h0000_1FFF);
+            4: addr = 32'h0000_8000 + ($urandom() & 32'h0000_1FFF);
+            5: addr = 32'h0000_A000 + ($urandom() & 32'h0000_1FFF);
+            6: addr = 32'h0000_C000 + ($urandom() & 32'h0000_1FFF);
+            7: addr = 32'h0000_E000 + ($urandom() & 32'h0000_1FFF);
+            8: addr = 32'h0001_0000 + ($urandom() & 32'h0000_1FFF);
+            default: addr = 32'h0000_0000 + ($urandom() & 32'h0000_1FFF);
+        endcase
+        
         len   = $urandom_range(0, 15);  // 1-16 beats
         size  = $urandom_range(0, $clog2(DATA_WIDTH/8));  // Up to full data width
         burst = $urandom_range(0, 2);   // FIXED, INCR, WRAP

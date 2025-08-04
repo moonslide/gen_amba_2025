@@ -30,6 +30,36 @@ class axi4_base_test extends uvm_test;
         env_cfg.no_of_masters = 9;
         env_cfg.no_of_slaves = 9;
         
+        // Configure slave address ranges
+        env_cfg.slave_cfg[0].start_addr = 32'h0000_0000;
+        env_cfg.slave_cfg[0].end_addr   = 32'h0000_1FFF;
+        
+        env_cfg.slave_cfg[1].start_addr = 32'h0000_2000;
+        env_cfg.slave_cfg[1].end_addr   = 32'h0000_3FFF;
+        
+        env_cfg.slave_cfg[2].start_addr = 32'h0000_4000;
+        env_cfg.slave_cfg[2].end_addr   = 32'h0000_5FFF;
+        
+        env_cfg.slave_cfg[3].start_addr = 32'h0000_6000;
+        env_cfg.slave_cfg[3].end_addr   = 32'h0000_7FFF;
+        
+        env_cfg.slave_cfg[4].start_addr = 32'h0000_8000;
+        env_cfg.slave_cfg[4].end_addr   = 32'h0000_9FFF;
+        
+        env_cfg.slave_cfg[5].start_addr = 32'h0000_A000;
+        env_cfg.slave_cfg[5].end_addr   = 32'h0000_BFFF;
+        
+        env_cfg.slave_cfg[6].start_addr = 32'h0000_C000;
+        env_cfg.slave_cfg[6].end_addr   = 32'h0000_DFFF;
+        
+        env_cfg.slave_cfg[7].start_addr = 32'h0000_E000;
+        env_cfg.slave_cfg[7].end_addr   = 32'h0000_FFFF;
+        
+        env_cfg.slave_cfg[8].start_addr = 32'h0001_0000;
+        env_cfg.slave_cfg[8].end_addr   = 32'h0001_1FFF;
+        
+        `uvm_info(get_type_name(), "Configured slave address ranges", UVM_LOW)
+        
         // Set configuration
         uvm_config_db#(axi4_env_config)::set(this, "env*", "env_cfg", env_cfg);
         

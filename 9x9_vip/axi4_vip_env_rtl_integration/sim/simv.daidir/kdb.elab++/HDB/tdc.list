@@ -50,6 +50,7 @@
 ../virtual_seq/axi4_virtual_write_seq.sv
 ../virtual_seqr/axi4_virtual_seqr_pkg.sv
 ../virtual_seqr/axi4_virtual_sequencer.sv
+./test_slave_connectivity.sv
 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_barrier.svh
 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh
 /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_bottomup_phase.svh
