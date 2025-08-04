@@ -3818,6 +3818,11 @@ module axi4_master_driver_bfm #(
     import axi4_globals_pkg::*;
     import uvm_pkg::*;
     
+    // Control signals for BFM operation
+    bit enable_auto_drive = 0;
+    bit bfm_enable = 0;
+    int transaction_count = 0;
+    
     // Driver task to generate AXI transactions for visibility
     task automatic drive_axi_transactions();
         int transaction_id = 0;
@@ -4192,7 +4197,7 @@ module axi4_slave_driver_bfm #(
                 while (!axi_intf.wvalid) @(posedge aclk);
                 
                 // Store data in memory (simplified)
-                logic [ADDR_WIDTH-1:0] beat_addr = pending_awaddr + (write_beat_count * (DATA_WIDTH/8));
+                automatic logic [ADDR_WIDTH-1:0] beat_addr = pending_awaddr + (write_beat_count * (DATA_WIDTH/8));
                 memory[beat_addr] = axi_intf.wdata;
                 
                 `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data beat %0d accepted: addr=0x%08x, data=0x%016x, wstrb=0x%02x", 
