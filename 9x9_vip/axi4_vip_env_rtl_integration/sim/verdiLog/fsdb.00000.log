@@ -1,0 +1,19 @@
+#######################################################################################
+# fsdb.xxxxx.log : log primitive debug message of FSDB Reader
+# This is for R&D to analyze when there are issues happening when FSDB reading
+# The corresponding FSDB file is /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb
+#######################################################################################
+[BASIC]Reader version : Chronologic Simulation VCS Release W-2024.09-SP1_Full64
+[BASIC]simulator version : Chronologic Simulation VCS Release W-2024.09-SP1_Full64
+[BASIC]dumper version : FSDB Dumper for VCS, Release Verdi_W-2024.09-SP1, Linux x86_64/64bit, 11/30/2024
+Async open disabled.
+[THREAD]The MTR thread count is 6
+[READSCOPE]ReadScopeTree calling time is 0
+[READSCOPE]ReadScope_PartialLoad calling time is 0
+[READSCOPE]Scope read by partial load count is 0
+[READSCOPE]Scope read count is 0
+[READSCOPE]Decompressed blk is 0
+[MAXCHAIN]Decompressed cnt 0
+[FSDBGate Info] start
+[FSDBGate Info] Total fhdb_compute_count = 0
+[FSDBGate Info] end

@@ -1,0 +1,97 @@
+@verdi rc file Version 1.0
+[General]
+saveDB = TRUE
+relativePath = FALSE
+saveSingleView = FALSE
+saveNWaveWinId = 
+VerdiVersion = Verdi_W-2024.09-SP1
+[KeyNote]
+Line1 = Automatic Backup 0
+Line2 = Save Open Database Information: Yes
+Line3 = Path Option: Absolute Paths
+Line4 = Windows Option: All Windows
+[OneSearch]
+isExisted = TRUE
+[TestBench]
+ConstrViewShow = 0
+InherViewShow = 0
+FSDBMsgShow = 0
+AnnotationShow = 0
+Console = FALSE
+powerDumped = 0
+[fusa]
+fdb_server = 
+fdb_proj = 
+fdb_campaign = 
+fdb_tool = 
+[hb]
+postSimFile = /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb
+syncTime = 0
+viewport = 0 27 3440 1305 0 0 235 3438
+activeNode = "hdl_top.axi_if[0]"
+activeScope = "hdl_top.axi_if[0]"
+activeFile = "../intf/axi4_interface/axi4_if.sv"
+interactiveMode = False
+viewType = Source
+simulatorMode = False
+sourceBeginLine = 6
+baMode = False
+srcLineNum = True
+AutoWrap = True
+IdentifyFalseLogic = False
+syncSignal = False
+traceMode = Hierarchical
+showTraceInSchema = True
+paMode = False
+funcMode = False
+powerAwareAnnot = True
+safetyAwareAnnot = True
+amsAnnot = True
+DnDtraceCrossHierOnly = True
+leadingZero = False
+signalPane = False
+SourceVerticalScrollLines = 5
+Scope1 = "hdl_top.axi_if[0]"
+Scope2 = "hdl_top.dut.axi_if"
+Scope3 = "hdl_top.dut"
+Scope4 = "hdl_top"
+sdfCheckUndef = FALSE
+simFlow = FALSE
+[hb.design]
+importCmd = "-dbdir" "/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/simv.daidir" 
+invokeDir = /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim
+[hb.sourceTab.1]
+scope = hdl_top.axi_if[0]
+File = /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/intf/axi4_interface/axi4_if.sv
+Line = 7
+[nMemoryManager]
+WaveformFile = /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb
+UserActionNum = 0
+nMemWindowNum = 0
+[wave.0]
+viewPort = 0 25 3440 592 100 65
+primaryWindow = TRUE
+SessionFile = /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/verdiLog/novas_autosave.ses.wave.0
+displayGrid = FALSE
+hierarchicalName = FALSE
+waveformToolTip = FALSE
+snap = TRUE
+displayLeadingZeros = FALSE
+fixDelta = FALSE
+displayCursorMarker = FALSE
+autoUpdate = FALSE
+highlightGlitchs = FALSE
+waveformSyncCursorMarker = FALSE
+waveformSyncHorizontalRange = FALSE
+waveformSyncVerticalscroll = FALSE
+displayErrors = TRUE
+displayMsgSymbols = TRUE
+showMsgDescriptions = TRUE
+autoFit = FALSE
+displayDeltaY = FALSE
+centerCursor = FALSE
+fsaRegMask = TRUE
+fsaCoreMask = TRUE
+fsaSfsmMask = TRUE
+fsaEcrMask = TRUE
+tPropMask = TRUE

@@ -1,0 +1,33 @@
+# Verdi Session File
+# Auto-generated for AXI4 VIP
+
+# Window layout
+verdiWindowResize -win $_Verdi_1 "1920" "1080"
+verdiWindowWorkMode -win $_Verdi_1 -hardwareDebug
+
+# Load signal file
+verdiSetActWin -dock widgetDock_<Signal>
+wvLoadSignalFile "./scripts/axi4_signals.rc"
+
+# Set up waveform window
+wvSetPosition -win $_nWave1 {("G1" 0)}
+wvOpenFile -win $_nWave1 {$(ls -t waves/*.fsdb | head -1)}
+wvGetSignalOpen -win $_nWave1
+wvGetSignalSetScope -win $_nWave1 "/hdl_top"
+
+# Add clock and reset
+wvAddSignal -win $_nWave1 "/hdl_top/aclk" "/hdl_top/aresetn"
+
+# Zoom to fit
+wvZoomAll -win $_nWave1
+
+# Set cursor to time 0
+wvSetCursor -win $_nWave1 0.000000
+
+# Open source browser
+srcHBSelect "hdl_top" -win $_Verdi_1
+srcSetScope -win $_nTrace1 "hdl_top" -delim "."
+srcSelect -win $_nTrace1 -range {1 1 1 1} -backward
+
+# Open UVM browser
+verdiDockWidgetDisplay -dock widgetDock_<UVM>

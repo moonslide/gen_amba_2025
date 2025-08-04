@@ -1,0 +1,1374 @@
+make run DUMP_FSDB=1
+make[1]: Entering directory '/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim'
+VIP_ROOT=.. vcs -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps -debug_access+all +vcs+lic+wait -lca -kdb +lint=PCWM +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR +define+DUMP_FSDB -f ../sim/axi4_compile.f -l ./logs/compile.log
+                         Chronologic VCS (TM)
+       Version W-2024.09-SP1_Full64 -- Mon Aug  4 10:13:52 2025
+
+                    Copyright (c) 1991 - 2024 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+
+Warning-[LCA_FEATURES_ENABLED] Usage warning
+  LCA features enabled by '-lca' argument on the command line.  For more 
+  information regarding list of LCA features please refer to Chapter "LCA 
+  features" in the VCS Release Notes
+
+Parsing design file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_version_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_global_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/snps_macros.svp'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_message_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_phase_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_object_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_printer_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_tlm_defines.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm_imps.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_tlm_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_sequence_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_callback_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_reg_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/macros/uvm_deprecated_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_dpi.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_hdl.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_dpi.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_svcmd_dpi.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_dpi.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_regex.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dpi/uvm_dpi.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_coreservice.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_version.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_object_globals.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_misc.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_object.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_pool.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_queue.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_factory.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_registry.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_spell_chkr.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_resource.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_resource_specializations.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_resource_db.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_config_db.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_printer.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_comparer.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_packer.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_links.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_tr_database.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_tr_stream.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_recorder.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_event_callback.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_event.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_barrier.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_callback.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_callback.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_message.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_catcher.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_server.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_handler.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_object.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_transaction.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_phase.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_domain.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_bottomup_phase.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_topdown_phase.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_task_phase.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_common_phases.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_runtime_phases.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_component.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_component.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_objection.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_heartbeat.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_globals.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_cmdline_processor.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_traversal.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_dap.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_set_get_dap_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_dap.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_simple_lock_dap.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_dap.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_get_to_lock_dap.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_dap.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_set_before_get_dap.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/dap/uvm_dap.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm_ifs.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_sqr_ifs.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_port_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm_imps.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_imps.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_ports.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_exports.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_analysis_port.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm_fifo_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm_fifos.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm_req_rsp.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_sqr_connections.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm1/uvm_tlm.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_pair.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_policies.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_in_order_comparator.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_algorithmic_comparator.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_random_stimulus.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_subscriber.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_monitor.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_driver.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_push_driver.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_scoreboard.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_agent.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_env.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_test.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/comps/uvm_comps.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequence_item.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequencer_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequencer_analysis_fifo.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequencer_param_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequencer.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_push_sequencer.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequence_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequence.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequence_library.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_sequence_builtin.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/seq/uvm_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_defines.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_time.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_generic_payload.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_ifs.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_imps.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_ports.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_exports.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_sockets_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2_sockets.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/tlm2/uvm_tlm2.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_item.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_adapter.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_predictor.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_sequence.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_cbs.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_backdoor.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_field.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_vreg_field.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_indirect.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_fifo.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_file.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_mem_mam.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_vreg.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_mem.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_map.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_block.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_reg_hw_reset_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_reg_bit_bash_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_mem_walk_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_mem_access_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_reg_access_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_reg_mem_shared_access_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_reg_mem_built_in_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/sequences/uvm_reg_mem_hdl_paths_seq.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/snps_uvm_reg_bank.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/reg/uvm_reg_model.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/vcs_uvm_alt.sv'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_pkg.sv'.
+Parsing design file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_custom_install_vcs_recorder.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/msglog.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_custom_install_vcs_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_msglog_report_server.sv'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_custom_install_vcs_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_vcs_recorder.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_vcs_tr_database.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_vcs_tr_stream.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_vcs_tr_database.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_vcs_recorder.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_custom_install_vcs_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_vcs_record_interface.sv'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/vcs/uvm_custom_install_vcs_recorder.sv'.
+Parsing design file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_recorder.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_pli_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_recorder.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_tr_database.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_tr_stream.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_tr_database.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_recorder.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_reg_map_recording.sv'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_message_catcher.svh'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_pli_base.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_message_catcher.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_factory.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/./dpi/uvm_verdi_dpi.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_reg_recording.sv'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/verdi/W-2024.09-SP1//share/PLI/VCS/include/verdi_trans_recorder_dpi.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_verdi_pli.svh'.
+Back to file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'.
+Parsing design file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/verdi/uvm_custom_install_verdi_recorder.sv'
+Parsing design file '../pkg/axi4_globals_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../pkg/axi4_globals_pkg.sv'.
+Parsing design file '../intf/axi4_interface/axi4_if.sv'
+Parsing design file '../agent/master_agent_bfm/axi4_master_driver_bfm.sv'
+Parsing design file '../agent/master_agent_bfm/axi4_master_monitor_bfm.sv'
+Parsing design file '../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv'
+Parsing design file '../agent/slave_agent_bfm/axi4_slave_monitor_bfm.sv'
+Parsing design file '../agent/master_agent_bfm/axi4_master_agent_bfm.sv'
+Parsing design file '../agent/slave_agent_bfm/axi4_slave_agent_bfm.sv'
+Parsing design file '../master/axi4_master_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../master/axi4_master_pkg.sv'.
+Parsing design file '../slave/axi4_slave_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../slave/axi4_slave_pkg.sv'.
+Parsing design file '../seq/master_sequences/axi4_master_seq_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing included file '../seq/master_sequences/axi4_master_base_seq.sv'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing included file '../seq/master_sequences/axi4_master_write_seq.sv'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing included file '../seq/master_sequences/axi4_master_read_seq.sv'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing included file '../seq/master_sequences/axi4_master_burst_seq.sv'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing included file '../seq/master_sequences/axi4_master_random_seq.sv'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing included file '../seq/master_sequences/axi4_master_qos_seq.sv'.
+Back to file '../seq/master_sequences/axi4_master_seq_pkg.sv'.
+Parsing design file '../seq/slave_sequences/axi4_slave_seq_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../seq/slave_sequences/axi4_slave_seq_pkg.sv'.
+Parsing included file '../seq/slave_sequences/axi4_slave_base_seq.sv'.
+Back to file '../seq/slave_sequences/axi4_slave_seq_pkg.sv'.
+Parsing design file '../virtual_seqr/axi4_virtual_seqr_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../virtual_seqr/axi4_virtual_seqr_pkg.sv'.
+Parsing included file '../virtual_seqr/axi4_virtual_sequencer.sv'.
+Back to file '../virtual_seqr/axi4_virtual_seqr_pkg.sv'.
+Parsing design file '../env/axi4_env_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../env/axi4_env_pkg.sv'.
+Parsing included file '../env/axi4_env_config.sv'.
+Back to file '../env/axi4_env_pkg.sv'.
+Parsing included file '../env/axi4_scoreboard.sv'.
+Back to file '../env/axi4_env_pkg.sv'.
+Parsing included file '../env/axi4_protocol_coverage.sv'.
+Back to file '../env/axi4_env_pkg.sv'.
+Parsing included file '../env/axi4_env.sv'.
+Back to file '../env/axi4_env_pkg.sv'.
+Parsing design file '../virtual_seq/axi4_virtual_seq_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_base_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_write_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_read_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_write_read_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_stress_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_error_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_performance_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_interleaved_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing included file '../virtual_seq/axi4_virtual_boundary_seq.sv'.
+Back to file '../virtual_seq/axi4_virtual_seq_pkg.sv'.
+Parsing design file '../test/axi4_test_pkg.sv'
+Parsing included file '/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/uvm_macros.svh'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_base_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_basic_rw_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_burst_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_random_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_stress_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_qos_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_error_injection_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_performance_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_interleaved_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing included file '../test/axi4_boundary_test.sv'.
+Back to file '../test/axi4_test_pkg.sv'.
+Parsing design file '../rtl_wrapper/dut_wrapper.sv'
+Parsing design file '../rtl_wrapper/axi4_interconnect_wrapper.sv'
+Parsing design file '../rtl_wrapper/generated_rtl/axi4_address_decoder.v'
+Parsing design file '../rtl_wrapper/generated_rtl/axi4_arbiter.v'
+Parsing design file '../rtl_wrapper/generated_rtl/axi4_router.v'
+Parsing design file '../rtl_wrapper/generated_rtl/axi4_interconnect_m9s9.v'
+Parsing design file '../top/hdl_top.sv'
+Parsing design file '../top/hvl_top.sv'
+Top Level Modules:
+       uvm_custom_install_recording
+       uvm_custom_install_verdi_recording
+       hdl_top
+       hvl_top
+TimeScale is 1 ns / 1 ps
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s0_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s0_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s0_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s0_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s0_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s0_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s0_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s0_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s1_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s1_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s1_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s1_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s1_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s1_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s1_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s1_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s2_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s2_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s2_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s2_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s2_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s2_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s2_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s2_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s3_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s3_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s3_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s3_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s3_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s3_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s3_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s3_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s4_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s4_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s4_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s4_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s4_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s4_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s4_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s4_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s5_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s5_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s5_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s5_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s5_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s5_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s5_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s5_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s6_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s6_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s6_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s6_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s6_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s6_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s6_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s6_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s7_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s7_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s7_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s7_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s7_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s7_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s7_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s7_rid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s8_awid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s8_awid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s8_bid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s8_bid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s8_arid" of 
+  module "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s8_arid
+  The expression is from module dut_wrapper, instance dut 
+
+
+Lint-[PCWM-L] Port connection width mismatch
+../rtl_wrapper/dut_wrapper.sv, 803
+"axi4_interconnect_m9s9 #(DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) generated_interconnect( .aclk (clk),  .aresetn (rst_n),  .m0_awid (m0_awid),  .m0_awaddr (m0_awaddr),  .m0_awlen (m0_awlen),  .m0_awsize (m0_awsize),  .m0_awburst (m0_awburst),  .m0_awlock (m0_awlock),  .m0_awcache (m0_awcache),  .m0_awprot (m0_awprot),  .m0_awqos (m0_awqos),  .m0_awvalid (m0_awvalid),  .m0_awready (m0_awready),  .m0_wdata (m0_wdata),  .m0_wstrb (m0_wstrb),  .m0_wlast (m0_wlast),  .m0_wvalid (m0_wvalid),  .m0_wready (m0_wready),  .m0_bid (m0_bid),  .m0_bresp (m0_bresp),  .m0_bvalid (m0_bvalid),  .m0_bready (m0_bready),  .m0_arid (m0_arid),  .m0_araddr (m0_araddr),  .m0_arlen (m0_arlen),  .m0_arsize (m0_arsize),  .m0_arburst (m0_arburst),  .m0_arlock (m0_arlock),  .m0_arcache (m0 ... "
+  The following 4-bit expression is connected to 8-bit port "s8_rid" of module
+  "axi4_interconnect_m9s9", instance "generated_interconnect".
+  Expression: s8_rid
+  The expression is from module dut_wrapper, instance dut 
+
+Notice: Ports coerced to inout, use -notice for details
+Starting vcs inline pass...
+29 modules and 0 UDP read.
+recompiling module uvm_custom_install_verdi_recording
+recompiling package axi4_test_pkg
+recompiling module dut_wrapper
+recompiling module axi_arbiter_mtos_m9
+recompiling module axi_mtos_m9
+recompiling module axi_stom_s9
+recompiling module axi_wid
+recompiling module hdl_top
+recompiling module hvl_top
+9 of 29 modules done
+	However, due to incremental compilation, only 9 modules need to be compiled. 
+make[2]: Entering directory '/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/csrc'
+make[2]: Leaving directory '/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/csrc'
+make[2]: Entering directory '/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/csrc'
+rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+if [ -x ../simv ]; then chmod a-x ../simv; fi
+g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib -L/home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1 uvm_dpi.o uvm_verdi_dpi.o   objs/amcQw_d.o   _3605023_archive_1.so _prev_archive_1.so   SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o            -lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive       ./../simv.daidir/vc_hdrs.o  _vcs_pli_stub_.o   /home/eda_tools/synopsys/vcs/W-2024.09-SP1/linux64/lib/vcs_save_restore_new.o /home/eda_tools/synopsys/verdi/W-2024.09-SP1//share/PLI/VCS/LINUX64/pli.a -ldl  -lc -lm -lpthread -ldl 
+../simv up to date
+make[2]: Leaving directory '/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/csrc'
+CPU time: 12.183 seconds to compile + .528 seconds to elab + .921 seconds to link
+Verdi KDB elaboration done and the database successfully generated
+./simv +UVM_TESTNAME=axi4_basic_rw_test +UVM_VERBOSITY=UVM_MEDIUM +ntb_random_seed=1 +fsdb_file=./waves/axi4_basic_rw_test_1.fsdb -l ./logs/axi4_basic_rw_test_1.log
+Info: [VCS_SAVE_RESTORE_INFO] ASLR (Address Space Layout Randomization) is detected on the machine. To enable $save functionality, ASLR will be switched off and simv re-executed.
+Please use '-no_save' simv switch to avoid re-execution or '-suppress=ASLR_DETECTED_INFO' to suppress this message.
+Chronologic VCS simulator copyright 1991-2024
+Contains Synopsys proprietary information.
+Compiler version W-2024.09-SP1_Full64; Runtime version W-2024.09-SP1_Full64;  Aug  4 10:14 2025
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh(402) @ 0: reporter [UVM/RELNOTES] 
+----------------------------------------------------------------
+UVM-1.2.Synopsys
+(C) 2007-2014 Mentor Graphics Corporation
+(C) 2007-2014 Cadence Design Systems, Inc.
+(C) 2006-2014 Synopsys, Inc.
+(C) 2011-2013 Cypress Semiconductor Corp.
+(C) 2013-2014 NVIDIA Corporation
+----------------------------------------------------------------
+
+  ***********       IMPORTANT RELEASE NOTES         ************
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_OBJECT_DO_NOT_NEED_CONSTRUCTOR undefined.
+  See http://www.eda.org/svdb/view.php?id=3770 for more details.
+
+      (Specify +UVM_NO_RELNOTES to turn off this notice)
+
+[0] Starting FSDB dump
+*Verdi* Loading libsscore_vcs202409.so
+FSDB Dumper for VCS, Release Verdi_W-2024.09-SP1, Linux x86_64/64bit, 11/30/2024
+(C) 1996 - 2024 by Synopsys, Inc.
+*Verdi* : Create FSDB file 'axi4_vip.fsdb'
+*Verdi* : Begin traversing the scope (hdl_top), layer (0).
+*Verdi* : Enable +all dumping.
+*Verdi* : End of traversing.
+*Verdi* : Begin traversing the SVA assertions, layer (0).
+*Verdi* : End of traversing the SVA assertions.
+*Verdi* : Begin traversing the MDAs, layer (0).
+*Verdi* : Enable +mda and +packedmda dumping.
+*Verdi* : End of traversing the MDAs.
+*Verdi* : fsdbDumpon - All FSDB files at 0 ps.
+*Verdi* : Create FSDB file './waves/axi4_basic_rw_test_1.fsdb'
+[0] FSDB file set to: ./waves/axi4_basic_rw_test_1.fsdb
+UVM_INFO @ 0: reporter [RNTST] Running test axi4_basic_rw_test...
+UVM_INFO ../env/axi4_protocol_coverage.sv(19) @ 0: uvm_test_top.env.coverage [axi4_protocol_coverage] Protocol coverage build phase
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh(589) @ 0: reporter [UVMTOP] UVM testbench topology:
+--------------------------------------------------------------------
+Name                         Type                        Size  Value
+--------------------------------------------------------------------
+uvm_test_top                 axi4_basic_rw_test          -     @340 
+  env                        axi4_env                    -     @376 
+    coverage                 axi4_protocol_coverage      -     @717 
+    master_agent[0]          axi4_master_agent           -     @409 
+      driver                 axi4_master_driver          -     @871 
+        rsp_port             uvm_analysis_port           -     @890 
+        seq_item_port        uvm_seq_item_pull_port      -     @880 
+      monitor                axi4_master_monitor         -     @900 
+        item_collected_port  uvm_analysis_port           -     @909 
+      sequencer              axi4_master_sequencer       -     @734 
+        rsp_export           uvm_analysis_export         -     @743 
+        seq_item_export      uvm_seq_item_pull_imp       -     @861 
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[1]          axi4_master_agent           -     @418 
+      driver                 axi4_master_driver          -     @1062
+        rsp_port             uvm_analysis_port           -     @1081
+        seq_item_port        uvm_seq_item_pull_port      -     @1071
+      monitor                axi4_master_monitor         -     @1091
+        item_collected_port  uvm_analysis_port           -     @1100
+      sequencer              axi4_master_sequencer       -     @925 
+        rsp_export           uvm_analysis_export         -     @934 
+        seq_item_export      uvm_seq_item_pull_imp       -     @1052
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[2]          axi4_master_agent           -     @427 
+      driver                 axi4_master_driver          -     @1253
+        rsp_port             uvm_analysis_port           -     @1272
+        seq_item_port        uvm_seq_item_pull_port      -     @1262
+      monitor                axi4_master_monitor         -     @1282
+        item_collected_port  uvm_analysis_port           -     @1291
+      sequencer              axi4_master_sequencer       -     @1116
+        rsp_export           uvm_analysis_export         -     @1125
+        seq_item_export      uvm_seq_item_pull_imp       -     @1243
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[3]          axi4_master_agent           -     @436 
+      driver                 axi4_master_driver          -     @1444
+        rsp_port             uvm_analysis_port           -     @1463
+        seq_item_port        uvm_seq_item_pull_port      -     @1453
+      monitor                axi4_master_monitor         -     @1473
+        item_collected_port  uvm_analysis_port           -     @1482
+      sequencer              axi4_master_sequencer       -     @1307
+        rsp_export           uvm_analysis_export         -     @1316
+        seq_item_export      uvm_seq_item_pull_imp       -     @1434
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[4]          axi4_master_agent           -     @445 
+      driver                 axi4_master_driver          -     @1635
+        rsp_port             uvm_analysis_port           -     @1654
+        seq_item_port        uvm_seq_item_pull_port      -     @1644
+      monitor                axi4_master_monitor         -     @1664
+        item_collected_port  uvm_analysis_port           -     @1673
+      sequencer              axi4_master_sequencer       -     @1498
+        rsp_export           uvm_analysis_export         -     @1507
+        seq_item_export      uvm_seq_item_pull_imp       -     @1625
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[5]          axi4_master_agent           -     @454 
+      driver                 axi4_master_driver          -     @1826
+        rsp_port             uvm_analysis_port           -     @1845
+        seq_item_port        uvm_seq_item_pull_port      -     @1835
+      monitor                axi4_master_monitor         -     @1855
+        item_collected_port  uvm_analysis_port           -     @1864
+      sequencer              axi4_master_sequencer       -     @1689
+        rsp_export           uvm_analysis_export         -     @1698
+        seq_item_export      uvm_seq_item_pull_imp       -     @1816
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[6]          axi4_master_agent           -     @463 
+      driver                 axi4_master_driver          -     @2017
+        rsp_port             uvm_analysis_port           -     @2036
+        seq_item_port        uvm_seq_item_pull_port      -     @2026
+      monitor                axi4_master_monitor         -     @2046
+        item_collected_port  uvm_analysis_port           -     @2055
+      sequencer              axi4_master_sequencer       -     @1880
+        rsp_export           uvm_analysis_export         -     @1889
+        seq_item_export      uvm_seq_item_pull_imp       -     @2007
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[7]          axi4_master_agent           -     @472 
+      driver                 axi4_master_driver          -     @2208
+        rsp_port             uvm_analysis_port           -     @2227
+        seq_item_port        uvm_seq_item_pull_port      -     @2217
+      monitor                axi4_master_monitor         -     @2237
+        item_collected_port  uvm_analysis_port           -     @2246
+      sequencer              axi4_master_sequencer       -     @2071
+        rsp_export           uvm_analysis_export         -     @2080
+        seq_item_export      uvm_seq_item_pull_imp       -     @2198
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[8]          axi4_master_agent           -     @481 
+      driver                 axi4_master_driver          -     @2399
+        rsp_port             uvm_analysis_port           -     @2418
+        seq_item_port        uvm_seq_item_pull_port      -     @2408
+      monitor                axi4_master_monitor         -     @2428
+        item_collected_port  uvm_analysis_port           -     @2437
+      sequencer              axi4_master_sequencer       -     @2262
+        rsp_export           uvm_analysis_export         -     @2271
+        seq_item_export      uvm_seq_item_pull_imp       -     @2389
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    scoreboard               axi4_scoreboard             -     @708 
+      master_fifo[0]         uvm_tlm_analysis_fifo #(T)  -     @2447
+        analysis_export      uvm_analysis_imp            -     @2496
+        get_ap               uvm_analysis_port           -     @2486
+        get_peek_export      uvm_get_peek_imp            -     @2466
+        put_ap               uvm_analysis_port           -     @2476
+        put_export           uvm_put_imp                 -     @2456
+      master_fifo[1]         uvm_tlm_analysis_fifo #(T)  -     @2506
+        analysis_export      uvm_analysis_imp            -     @2555
+        get_ap               uvm_analysis_port           -     @2545
+        get_peek_export      uvm_get_peek_imp            -     @2525
+        put_ap               uvm_analysis_port           -     @2535
+        put_export           uvm_put_imp                 -     @2515
+      master_fifo[2]         uvm_tlm_analysis_fifo #(T)  -     @2565
+        analysis_export      uvm_analysis_imp            -     @2614
+        get_ap               uvm_analysis_port           -     @2604
+        get_peek_export      uvm_get_peek_imp            -     @2584
+        put_ap               uvm_analysis_port           -     @2594
+        put_export           uvm_put_imp                 -     @2574
+      master_fifo[3]         uvm_tlm_analysis_fifo #(T)  -     @2624
+        analysis_export      uvm_analysis_imp            -     @2673
+        get_ap               uvm_analysis_port           -     @2663
+        get_peek_export      uvm_get_peek_imp            -     @2643
+        put_ap               uvm_analysis_port           -     @2653
+        put_export           uvm_put_imp                 -     @2633
+      master_fifo[4]         uvm_tlm_analysis_fifo #(T)  -     @2683
+        analysis_export      uvm_analysis_imp            -     @2732
+        get_ap               uvm_analysis_port           -     @2722
+        get_peek_export      uvm_get_peek_imp            -     @2702
+        put_ap               uvm_analysis_port           -     @2712
+        put_export           uvm_put_imp                 -     @2692
+      master_fifo[5]         uvm_tlm_analysis_fifo #(T)  -     @2742
+        analysis_export      uvm_analysis_imp            -     @2791
+        get_ap               uvm_analysis_port           -     @2781
+        get_peek_export      uvm_get_peek_imp            -     @2761
+        put_ap               uvm_analysis_port           -     @2771
+        put_export           uvm_put_imp                 -     @2751
+      master_fifo[6]         uvm_tlm_analysis_fifo #(T)  -     @2801
+        analysis_export      uvm_analysis_imp            -     @2850
+        get_ap               uvm_analysis_port           -     @2840
+        get_peek_export      uvm_get_peek_imp            -     @2820
+        put_ap               uvm_analysis_port           -     @2830
+        put_export           uvm_put_imp                 -     @2810
+      master_fifo[7]         uvm_tlm_analysis_fifo #(T)  -     @2860
+        analysis_export      uvm_analysis_imp            -     @2909
+        get_ap               uvm_analysis_port           -     @2899
+        get_peek_export      uvm_get_peek_imp            -     @2879
+        put_ap               uvm_analysis_port           -     @2889
+        put_export           uvm_put_imp                 -     @2869
+      master_fifo[8]         uvm_tlm_analysis_fifo #(T)  -     @2919
+        analysis_export      uvm_analysis_imp            -     @2968
+        get_ap               uvm_analysis_port           -     @2958
+        get_peek_export      uvm_get_peek_imp            -     @2938
+        put_ap               uvm_analysis_port           -     @2948
+        put_export           uvm_put_imp                 -     @2928
+      slave_fifo[0]          uvm_tlm_analysis_fifo #(T)  -     @2978
+        analysis_export      uvm_analysis_imp            -     @3027
+        get_ap               uvm_analysis_port           -     @3017
+        get_peek_export      uvm_get_peek_imp            -     @2997
+        put_ap               uvm_analysis_port           -     @3007
+        put_export           uvm_put_imp                 -     @2987
+      slave_fifo[1]          uvm_tlm_analysis_fifo #(T)  -     @3037
+        analysis_export      uvm_analysis_imp            -     @3086
+        get_ap               uvm_analysis_port           -     @3076
+        get_peek_export      uvm_get_peek_imp            -     @3056
+        put_ap               uvm_analysis_port           -     @3066
+        put_export           uvm_put_imp                 -     @3046
+      slave_fifo[2]          uvm_tlm_analysis_fifo #(T)  -     @3096
+        analysis_export      uvm_analysis_imp            -     @3145
+        get_ap               uvm_analysis_port           -     @3135
+        get_peek_export      uvm_get_peek_imp            -     @3115
+        put_ap               uvm_analysis_port           -     @3125
+        put_export           uvm_put_imp                 -     @3105
+      slave_fifo[3]          uvm_tlm_analysis_fifo #(T)  -     @3155
+        analysis_export      uvm_analysis_imp            -     @3204
+        get_ap               uvm_analysis_port           -     @3194
+        get_peek_export      uvm_get_peek_imp            -     @3174
+        put_ap               uvm_analysis_port           -     @3184
+        put_export           uvm_put_imp                 -     @3164
+      slave_fifo[4]          uvm_tlm_analysis_fifo #(T)  -     @3214
+        analysis_export      uvm_analysis_imp            -     @3263
+        get_ap               uvm_analysis_port           -     @3253
+        get_peek_export      uvm_get_peek_imp            -     @3233
+        put_ap               uvm_analysis_port           -     @3243
+        put_export           uvm_put_imp                 -     @3223
+      slave_fifo[5]          uvm_tlm_analysis_fifo #(T)  -     @3273
+        analysis_export      uvm_analysis_imp            -     @3322
+        get_ap               uvm_analysis_port           -     @3312
+        get_peek_export      uvm_get_peek_imp            -     @3292
+        put_ap               uvm_analysis_port           -     @3302
+        put_export           uvm_put_imp                 -     @3282
+      slave_fifo[6]          uvm_tlm_analysis_fifo #(T)  -     @3332
+        analysis_export      uvm_analysis_imp            -     @3381
+        get_ap               uvm_analysis_port           -     @3371
+        get_peek_export      uvm_get_peek_imp            -     @3351
+        put_ap               uvm_analysis_port           -     @3361
+        put_export           uvm_put_imp                 -     @3341
+      slave_fifo[7]          uvm_tlm_analysis_fifo #(T)  -     @3391
+        analysis_export      uvm_analysis_imp            -     @3440
+        get_ap               uvm_analysis_port           -     @3430
+        get_peek_export      uvm_get_peek_imp            -     @3410
+        put_ap               uvm_analysis_port           -     @3420
+        put_export           uvm_put_imp                 -     @3400
+      slave_fifo[8]          uvm_tlm_analysis_fifo #(T)  -     @3450
+        analysis_export      uvm_analysis_imp            -     @3499
+        get_ap               uvm_analysis_port           -     @3489
+        get_peek_export      uvm_get_peek_imp            -     @3469
+        put_ap               uvm_analysis_port           -     @3479
+        put_export           uvm_put_imp                 -     @3459
+    slave_agent[0]           axi4_slave_agent            -     @490 
+      driver                 axi4_slave_driver           -     @3652
+        rsp_port             uvm_analysis_port           -     @3671
+        seq_item_port        uvm_seq_item_pull_port      -     @3661
+      monitor                axi4_slave_monitor          -     @3681
+        item_collected_port  uvm_analysis_port           -     @3690
+      sequencer              axi4_slave_sequencer        -     @3515
+        rsp_export           uvm_analysis_export         -     @3524
+        seq_item_export      uvm_seq_item_pull_imp       -     @3642
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[1]           axi4_slave_agent            -     @499 
+      driver                 axi4_slave_driver           -     @3843
+        rsp_port             uvm_analysis_port           -     @3862
+        seq_item_port        uvm_seq_item_pull_port      -     @3852
+      monitor                axi4_slave_monitor          -     @3872
+        item_collected_port  uvm_analysis_port           -     @3881
+      sequencer              axi4_slave_sequencer        -     @3706
+        rsp_export           uvm_analysis_export         -     @3715
+        seq_item_export      uvm_seq_item_pull_imp       -     @3833
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[2]           axi4_slave_agent            -     @508 
+      driver                 axi4_slave_driver           -     @4034
+        rsp_port             uvm_analysis_port           -     @4053
+        seq_item_port        uvm_seq_item_pull_port      -     @4043
+      monitor                axi4_slave_monitor          -     @4063
+        item_collected_port  uvm_analysis_port           -     @4072
+      sequencer              axi4_slave_sequencer        -     @3897
+        rsp_export           uvm_analysis_export         -     @3906
+        seq_item_export      uvm_seq_item_pull_imp       -     @4024
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[3]           axi4_slave_agent            -     @517 
+      driver                 axi4_slave_driver           -     @4225
+        rsp_port             uvm_analysis_port           -     @4244
+        seq_item_port        uvm_seq_item_pull_port      -     @4234
+      monitor                axi4_slave_monitor          -     @4254
+        item_collected_port  uvm_analysis_port           -     @4263
+      sequencer              axi4_slave_sequencer        -     @4088
+        rsp_export           uvm_analysis_export         -     @4097
+        seq_item_export      uvm_seq_item_pull_imp       -     @4215
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[4]           axi4_slave_agent            -     @526 
+      driver                 axi4_slave_driver           -     @4416
+        rsp_port             uvm_analysis_port           -     @4435
+        seq_item_port        uvm_seq_item_pull_port      -     @4425
+      monitor                axi4_slave_monitor          -     @4445
+        item_collected_port  uvm_analysis_port           -     @4454
+      sequencer              axi4_slave_sequencer        -     @4279
+        rsp_export           uvm_analysis_export         -     @4288
+        seq_item_export      uvm_seq_item_pull_imp       -     @4406
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[5]           axi4_slave_agent            -     @535 
+      driver                 axi4_slave_driver           -     @4607
+        rsp_port             uvm_analysis_port           -     @4626
+        seq_item_port        uvm_seq_item_pull_port      -     @4616
+      monitor                axi4_slave_monitor          -     @4636
+        item_collected_port  uvm_analysis_port           -     @4645
+      sequencer              axi4_slave_sequencer        -     @4470
+        rsp_export           uvm_analysis_export         -     @4479
+        seq_item_export      uvm_seq_item_pull_imp       -     @4597
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[6]           axi4_slave_agent            -     @544 
+      driver                 axi4_slave_driver           -     @4798
+        rsp_port             uvm_analysis_port           -     @4817
+        seq_item_port        uvm_seq_item_pull_port      -     @4807
+      monitor                axi4_slave_monitor          -     @4827
+        item_collected_port  uvm_analysis_port           -     @4836
+      sequencer              axi4_slave_sequencer        -     @4661
+        rsp_export           uvm_analysis_export         -     @4670
+        seq_item_export      uvm_seq_item_pull_imp       -     @4788
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[7]           axi4_slave_agent            -     @553 
+      driver                 axi4_slave_driver           -     @4989
+        rsp_port             uvm_analysis_port           -     @5008
+        seq_item_port        uvm_seq_item_pull_port      -     @4998
+      monitor                axi4_slave_monitor          -     @5018
+        item_collected_port  uvm_analysis_port           -     @5027
+      sequencer              axi4_slave_sequencer        -     @4852
+        rsp_export           uvm_analysis_export         -     @4861
+        seq_item_export      uvm_seq_item_pull_imp       -     @4979
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[8]           axi4_slave_agent            -     @562 
+      driver                 axi4_slave_driver           -     @5180
+        rsp_port             uvm_analysis_port           -     @5199
+        seq_item_port        uvm_seq_item_pull_port      -     @5189
+      monitor                axi4_slave_monitor          -     @5209
+        item_collected_port  uvm_analysis_port           -     @5218
+      sequencer              axi4_slave_sequencer        -     @5043
+        rsp_export           uvm_analysis_export         -     @5052
+        seq_item_export      uvm_seq_item_pull_imp       -     @5170
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    v_seqr                   axi4_virtual_sequencer      -     @571 
+      rsp_export             uvm_analysis_export         -     @580 
+      seq_item_export        uvm_seq_item_pull_imp       -     @698 
+      arbitration_queue      array                       0     -    
+      lock_queue             array                       0     -    
+      num_last_reqs          integral                    32    'd1  
+      num_last_rsps          integral                    32    'd1  
+--------------------------------------------------------------------
+
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[0].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[0].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[1].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[1].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[2].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[2].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[3].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[3].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[4].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[4].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[5].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[5].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[6].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[6].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[7].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[7].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[8].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[8].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../test/axi4_basic_rw_test.sv(23) @ 0: uvm_test_top [axi4_basic_rw_test] Starting basic read/write test
+UVM_INFO ../virtual_seq/axi4_virtual_write_read_seq.sv(21) @ 0: uvm_test_top.env.v_seqr@@vseq [axi4_virtual_write_read_seq] Starting virtual write-read sequence
+UVM_INFO ../virtual_seq/axi4_virtual_write_seq.sv(20) @ 0: uvm_test_top.env.v_seqr@@write_seq [axi4_virtual_write_seq] Starting virtual write sequence
+UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x0, len=0, size=2, burst=1
+*Verdi* : Begin traversing the scope (hdl_top.dut), layer (0).
+*Verdi* : Enable +all dumping.
+*Verdi* : End of traversing.
+[1000] Added DUT internal signals to FSDB dump
+UVM_INFO ../virtual_seq/axi4_virtual_read_seq.sv(20) @ 100000: uvm_test_top.env.v_seqr@@read_seq [axi4_virtual_read_seq] Starting virtual read sequence
+UVM_INFO ../master/axi4_master_pkg.sv(92) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x0, len=0, size=2, burst=1
+UVM_INFO ../test/axi4_basic_rw_test.sv(29) @ 200000: uvm_test_top [axi4_basic_rw_test] Completed basic read/write test
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_catcher.svh(705) @ 200000: reporter [UVM/REPORT/CATCHER] 
+--- UVM Report catcher Summary ---
+
+
+Number of demoted UVM_FATAL reports  :    0
+Number of demoted UVM_ERROR reports  :    0
+Number of demoted UVM_WARNING reports:    0
+Number of caught UVM_FATAL reports   :    0
+Number of caught UVM_ERROR reports   :    0
+Number of caught UVM_WARNING reports :    0
+
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_server.svh(904) @ 200000: reporter [UVM/REPORT/SERVER] 
+--- UVM Report Summary ---
+
+** Report counts by severity
+UVM_INFO :  111
+UVM_WARNING :    0
+UVM_ERROR :    0
+UVM_FATAL :    0
+** Report counts by id
+[RNTST]     1
+[UVM/RELNOTES]     1
+[UVM/REPORT/CATCHER]     1
+[UVMTOP]     1
+[axi4_basic_rw_test]     2
+[axi4_master_agent]    27
+[axi4_master_driver]    11
+[axi4_master_monitor]    18
+[axi4_protocol_coverage]     1
+[axi4_slave_agent]    27
+[axi4_slave_monitor]    18
+[axi4_virtual_read_seq]     1
+[axi4_virtual_write_read_seq]     1
+[axi4_virtual_write_seq]     1
+
+$finish called from file "/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh", line 527.
+$finish at simulation time               200000
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 200000 ps
+CPU Time:      0.700 seconds;       Data structure size:   1.4Mb
+Mon Aug  4 10:14:05 2025
+make[1]: Leaving directory '/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim'
+FSDB file generated: ./waves/axi4_basic_rw_test_1.fsdb

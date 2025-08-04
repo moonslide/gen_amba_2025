@@ -1,0 +1,3 @@
+Command Line: /home/eda_tools/synopsys/verdi/W-2024.09-SP1/platform/LINUXAMD64/bin/Novas -ssf axi4_vip.fsdb
+uname(Linux rocky-eda 4.18.0-553.58.1.el8_10.x86_64 #1 SMP Thu Jun 26 15:50:39 UTC 2025 x86_64)
+au time 71.271011 8.441838 1.272664 delta 364146688 364146688 total 1382752256 1382752256
