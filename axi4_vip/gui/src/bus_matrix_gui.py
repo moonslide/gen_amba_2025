@@ -64,6 +64,12 @@ class BusConfig:
     masters: List[MasterConfig]
     slaves: List[SlaveConfig]
     arbitration: str = "QOS"  # FIXED, RR, QOS, WRR
+    # AXI4 feature enables
+    has_qos: bool = True
+    has_cache: bool = True
+    has_prot: bool = True
+    has_region: bool = False
+    has_user: bool = False
     
 class BusMatrixCanvas(tk.Canvas):
     """Canvas for visual bus matrix representation"""
