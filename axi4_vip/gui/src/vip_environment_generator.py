@@ -6,6 +6,7 @@ Generates a complete UVM-based AXI4 VIP environment with proper folder hierarchy
 
 import os
 import json
+import subprocess
 from datetime import datetime
 from dataclasses import asdict
 
@@ -598,15 +599,66 @@ package axi4_master_pkg;
         endfunction
     endclass
     
-    // Driver class (stub)
+    // Driver class with throughput monitoring
     class axi4_master_driver extends uvm_driver #(axi4_master_tx);
         `uvm_component_utils(axi4_master_driver)
         
+        // Transaction counters
+        static int write_count[10];
+        static longint write_bytes[10];
+        static int read_count[10];
+        static longint read_bytes[10];
+        static bit initialized = 0;
+        
+        int agent_id;
+        
         function new(string name = "axi4_master_driver", uvm_component parent = null);
             super.new(name, parent);
+            
+            // Initialize static arrays once
+            if (!initialized) begin
+                foreach(write_count[i]) begin
+                    write_count[i] = 0;
+                    write_bytes[i] = 0;
+                    read_count[i] = 0;
+                    read_bytes[i] = 0;
+                end
+                initialized = 1;
+            end
+        endfunction
+        
+        function void build_phase(uvm_phase phase);
+            super.build_phase(phase);
+            // Extract agent ID from parent's name (the agent that contains this driver)
+            begin
+                string parent_name;
+                uvm_component parent;
+                int idx;
+                
+                parent = get_parent();
+                if (parent != null) begin
+                    parent_name = parent.get_name();
+                    `uvm_info(get_type_name(), $sformatf("Parent name: %s", parent_name), UVM_MEDIUM)
+                    
+                    // Look for pattern like "master_agent[N]" in parent name
+                    for (int i = 0; i < 10; i++) begin
+                        if (parent_name == $sformatf("master_agent[%0d]", i)) begin
+                            agent_id = i;
+                            `uvm_info(get_type_name(), $sformatf("Detected agent ID: %0d", agent_id), UVM_LOW)
+                            break;
+                        end
+                    end
+                end else begin
+                    `uvm_warning(get_type_name(), "Could not determine parent component")
+                end
+            end
         endfunction
         
         virtual task run_phase(uvm_phase phase);
+            int burst_length;
+            int data_width_bytes;
+            int total_bytes;
+            
             `uvm_info(get_type_name(), "Starting master driver run_phase", UVM_LOW)
             forever begin
                 `uvm_info(get_type_name(), "Waiting for next transaction from sequencer", UVM_HIGH)
@@ -632,12 +684,57 @@ package axi4_master_pkg;
                 end
                 
                 `uvm_info(get_type_name(), "Driving transaction to BFM interface", UVM_HIGH)
-                #100ns;
+                
+                // Calculate transaction bytes
+                
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Driving WRITE transaction - addr=0x%0h, len=%0d, id=%0d", 
+                        req.awaddr, req.awlen, req.awid), UVM_MEDIUM)
+                    
+                    // Calculate bytes
+                    burst_length = req.awlen + 1;
+                    data_width_bytes = 1 << req.awsize;
+                    total_bytes = burst_length * data_width_bytes;
+                    
+                    // Update counters
+                    write_count[agent_id]++;
+                    write_bytes[agent_id] += total_bytes;
+                    
+                    // For now, just delay - BFM will drive synthetic transactions
+                    #100ns;
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Driving READ transaction - addr=0x%0h, len=%0d, id=%0d", 
+                        req.araddr, req.arlen, req.arid), UVM_MEDIUM)
+                    
+                    // Calculate bytes  
+                    burst_length = req.arlen + 1;
+                    data_width_bytes = 1 << req.arsize;
+                    total_bytes = burst_length * data_width_bytes;
+                    
+                    // Update counters
+                    read_count[agent_id]++;
+                    read_bytes[agent_id] += total_bytes;
+                    
+                    // For now, just delay - BFM will drive synthetic transactions
+                    #100ns;
+                end
                 
                 `uvm_info(get_type_name(), "Transaction completed, signaling item_done", UVM_HIGH)
                 seq_item_port.item_done();
             end
         endtask
+        
+        // Static function to get transaction counts
+        static function void get_transaction_stats(int master_id, 
+                                                  output int writes, 
+                                                  output longint write_data,
+                                                  output int reads,
+                                                  output longint read_data);
+            writes = write_count[master_id];
+            write_data = write_bytes[master_id];
+            reads = read_count[master_id];
+            read_data = read_bytes[master_id];
+        endfunction
     endclass
     
     // Monitor class - FIXED: No direct interface access
@@ -729,9 +826,23 @@ package axi4_slave_pkg;
     class axi4_slave_tx extends uvm_sequence_item;
         `uvm_object_utils(axi4_slave_tx)
         
+        // Transaction type (mirrors master)
+        typedef enum {{WRITE, READ}} tx_type_e;
+        tx_type_e tx_type;
+        
+        // Address and burst info (copied from master request)
+        bit [ADDRESS_WIDTH-1:0] addr;
+        bit [7:0] burst_length;
+        bit [2:0] burst_size;
+        bit [1:0] burst_type;
+        bit [ID_WIDTH-1:0] id;
+        
         // Response fields
         rand bit [1:0] bresp;
         rand bit [1:0] rresp;
+        
+        // Data size for throughput calculation
+        int data_bytes;
         
         function new(string name = "axi4_slave_tx");
             super.new(name);
@@ -763,43 +874,76 @@ package axi4_slave_pkg;
         endfunction
     endclass
     
-    // Driver class (stub)
+    // Driver class with monitor integration
     class axi4_slave_driver extends uvm_driver #(axi4_slave_tx);
         `uvm_component_utils(axi4_slave_driver)
+        
+        axi4_slave_monitor monitor_h;  // Reference to monitor
         
         function new(string name = "axi4_slave_driver", uvm_component parent = null);
             super.new(name, parent);
         endfunction
         
         virtual task run_phase(uvm_phase phase);
+            axi4_slave_tx trans_clone;
             forever begin
                 seq_item_port.get_next_item(req);
-                `uvm_info(get_type_name(), "Driving response", UVM_MEDIUM)
+                `uvm_info(get_type_name(), $sformatf("Got %s response - addr=0x%0h, len=%0d", 
+                    req.tx_type.name(), req.addr, req.burst_length), UVM_MEDIUM)
+                
+                // Clone transaction for monitor
+                $cast(trans_clone, req.clone());
+                
+                // Simulate response delay
                 #100ns;
+                
+                // Send transaction to monitor for scoreboard reporting
+                if (monitor_h != null) begin
+                    monitor_h.transaction_queue.push_back(trans_clone);
+                end
+                
                 seq_item_port.item_done();
             end
         endtask
     endclass
     
-    // Monitor class - FIXED: No direct interface access
+    // Monitor class - Captures transactions from driver
     class axi4_slave_monitor extends uvm_monitor;
         `uvm_component_utils(axi4_slave_monitor)
         
         uvm_analysis_port #(axi4_slave_tx) item_collected_port;
+        axi4_slave_agent_config cfg;
+        
+        // Transaction capture queue shared with driver
+        axi4_slave_tx transaction_queue[$];
         
         function new(string name = "axi4_slave_monitor", uvm_component parent = null);
             super.new(name, parent);
             item_collected_port = new("item_collected_port", this);
         endfunction
         
+        function void build_phase(uvm_phase phase);
+            super.build_phase(phase);
+            if(!uvm_config_db#(axi4_slave_agent_config)::get(this, "", "cfg", cfg))
+                `uvm_error("CONFIG", "Cannot get cfg from uvm_config_db")
+        endfunction
+        
         virtual task run_phase(uvm_phase phase);
+            axi4_slave_tx trans;
             `uvm_info(get_type_name(), "Starting slave monitor run_phase", UVM_LOW)
-            `uvm_info(get_type_name(), "Monitoring AXI4 slave interface for transactions", UVM_MEDIUM)
             
-            // Monitor stub - just log activity without interface access
             forever begin
-                #100ns;
-                `uvm_info(get_type_name(), "Monitor active - checking for transactions", UVM_HIGH)
+                // Wait for transaction from shared queue (populated by driver)
+                wait(transaction_queue.size() > 0);
+                trans = transaction_queue.pop_front();
+                
+                // Send to analysis port for scoreboard
+                `uvm_info(get_type_name(), 
+                    $sformatf("Collected slave transaction: %s addr=0x%h, len=%0d, id=%0d", 
+                        trans.tx_type.name(), trans.addr, trans.burst_length, trans.id), 
+                    UVM_MEDIUM)
+                    
+                item_collected_port.write(trans);
             end
         endtask
     endclass
@@ -844,6 +988,10 @@ package axi4_slave_pkg;
             if(cfg.is_active == UVM_ACTIVE) begin
                 driver.seq_item_port.connect(sequencer.seq_item_export);
                 `uvm_info(get_type_name(), "Connected driver to sequencer", UVM_HIGH)
+                
+                // Connect driver to monitor for transaction reporting
+                driver.monitor_h = monitor;
+                `uvm_info(get_type_name(), "Connected driver to monitor for transaction capture", UVM_HIGH)
             end
         endfunction
     endclass
@@ -1628,6 +1776,15 @@ class axi4_scoreboard extends uvm_scoreboard;
     // Final phase - report throughput statistics
     function void final_phase(uvm_phase phase);
         super.final_phase(phase);
+        
+        // Get statistics from driver static counters
+        for (int i = 0; i < {len(self.config.masters)}; i++) begin
+            axi4_master_driver::get_transaction_stats(i, 
+                                                     master_write_count[i],
+                                                     master_bytes_written[i],
+                                                     master_read_count[i],
+                                                     master_bytes_read[i]);
+        end
         simulation_end_time = $realtime;
         report_throughput_statistics();
     endfunction
@@ -3243,6 +3400,22 @@ help:
 # Date: {self.timestamp}
 #==============================================================================
 
+# AXI4 Feature Defines (based on bus configuration)
+""")
+            
+            # Add feature defines based on configuration
+            if self.config.has_cache:
+                f.write("+define+AMBA_AXI_CACHE\n")
+            if self.config.has_prot:
+                f.write("+define+AMBA_AXI_PROT\n")
+            if self.config.has_qos:
+                f.write("+define+AMBA_QOS\n")
+            if self.config.has_region:
+                f.write("+define+AMBA_AXI_REGION\n")
+            if self.config.has_user:
+                f.write("+define+AMBA_AXI_USER\n")
+                
+            f.write("""
 # Include directories
 +incdir+${{VIP_ROOT}}/include
 +incdir+${{VIP_ROOT}}/intf
@@ -3419,8 +3592,8 @@ make run TEST=axi4_basic_rw_test SEED=12345
 # Core RTL modules
 ${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_address_decoder.v
 ${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_arbiter.v
-${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_router.v
-${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_interconnect_m{num_masters}s{num_slaves}.v""")
+${{VIP_ROOT}}/rtl_wrapper/generated_rtl/amba_axi_m{num_masters}s{num_slaves}.v
+${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_router.v""")
             else:
                 f.write("""# RTL files to include
 # Add your RTL files here or they will be auto-populated if using tool-generated RTL
@@ -3435,25 +3608,257 @@ ${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_interconnect_m{num_masters}s{num_sl
 # Remove this comment when adding actual RTL files
 """)
                 
-        # Copy RTL files if in rtl_integration mode
+        # Generate RTL files if in rtl_integration mode
         if self.mode == "rtl_integration":
             rtl_dir = os.path.join(base_path, "rtl_wrapper/generated_rtl")
             os.makedirs(rtl_dir, exist_ok=True)
             
-            # Note: In a real implementation, these RTL files would be generated
-            # by the RTL generator. For now, we'll create placeholder message
-            with open(os.path.join(rtl_dir, "README.txt"), "w") as f:
-                f.write("""RTL files should be placed in this directory.
+            # Generate interconnect using gen_amba_axi tool
+            self._generate_interconnect_rtl(rtl_dir)
+    
+    def _generate_interconnect_rtl(self, rtl_dir):
+        """Generate AXI interconnect RTL using gen_amba_axi tool"""
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        
+        # Find gen_amba_axi tool
+        gen_amba_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                                      "../../../../gen_amba_axi/gen_amba_axi"))
+        if not os.path.exists(gen_amba_path):
+            # Try alternative path
+            gen_amba_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                                          "../../../gen_amba_axi/gen_amba_axi"))
+        
+        if not os.path.exists(gen_amba_path):
+            # Create dummy files with TODO comments
+            self._create_dummy_rtl_files(rtl_dir, num_masters, num_slaves)
+            self.warnings.append(f"gen_amba_axi tool not found. Creating dummy RTL files.")
+            return
+        
+        # Generate interconnect
+        interconnect_file = os.path.join(rtl_dir, f"amba_axi_m{num_masters}s{num_slaves}.v")
+        cmd = [gen_amba_path, 
+               f"--master={num_masters}",
+               f"--slave={num_slaves}",
+               f"--output={interconnect_file}"]
+        
+        try:
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
+                                  universal_newlines=True, check=True)
+            print(f"Generated AXI interconnect: {interconnect_file}")
+            
+            # Create other required RTL files
+            self._create_support_rtl_files(rtl_dir, num_masters, num_slaves)
+            
+        except subprocess.CalledProcessError as e:
+            self.warnings.append(f"Failed to generate interconnect: {e.stderr}")
+            self._create_dummy_rtl_files(rtl_dir, num_masters, num_slaves)
+    
+    def _create_support_rtl_files(self, rtl_dir, num_masters, num_slaves):
+        """Create supporting RTL files (address decoder, arbiter, router)"""
+        # Address decoder
+        with open(os.path.join(rtl_dir, "axi4_address_decoder.v"), "w") as f:
+            f.write(self._get_address_decoder_rtl())
+        
+        # Arbiter
+        with open(os.path.join(rtl_dir, "axi4_arbiter.v"), "w") as f:
+            f.write(self._get_arbiter_rtl(num_masters))
+        
+        # Router
+        with open(os.path.join(rtl_dir, "axi4_router.v"), "w") as f:
+            f.write(self._get_router_rtl(num_slaves))
+    
+    def _create_dummy_rtl_files(self, rtl_dir, num_masters, num_slaves):
+        """Create dummy RTL files with TODO comments when gen_amba_axi is not available"""
+        # Dummy interconnect
+        with open(os.path.join(rtl_dir, f"amba_axi_m{num_masters}s{num_slaves}.v"), "w") as f:
+            f.write(f"""// TODO: This is a dummy file. Generate actual interconnect using:
+// ./gen_amba_axi --master={num_masters} --slave={num_slaves} --output=amba_axi_m{num_masters}s{num_slaves}.v
 
-Required files:
-- axi4_address_decoder.v
-- axi4_arbiter.v  
-- axi4_router.v
-- axi4_interconnect_m{}s{}.v
+module amba_axi_m{num_masters}s{num_slaves} #(
+    parameter NUM_MASTER = {num_masters},
+    parameter NUM_SLAVE = {num_slaves},
+    parameter WIDTH_ID = 4,
+    parameter WIDTH_AD = 32,
+    parameter WIDTH_DA = 32
+) (
+    input ARESETn,
+    input ACLK
+    // TODO: Add all AXI ports
+);
+    // TODO: Implement interconnect logic
+endmodule
+""")
+        
+        # Create other support files
+        self._create_support_rtl_files(rtl_dir, num_masters, num_slaves)
+    
+    def _get_address_decoder_rtl(self):
+        """Generate address decoder RTL"""
+        slaves = self.config.slaves
+        return f"""// Address Decoder for AXI4 Interconnect
+// Generated by AMBA Bus Matrix Configuration Tool
 
-These can be generated using the gen_amba_axi tool or 
-copied from existing RTL sources.
-""".format(len(self.config.masters), len(self.config.slaves)))
+module axi4_address_decoder #(
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter NUM_SLAVES = {len(slaves)}
+) (
+    input  logic                    clk,
+    input  logic                    rst_n,
+    input  logic [ADDR_WIDTH-1:0]   awaddr,
+    input  logic                    awvalid,
+    input  logic [ADDR_WIDTH-1:0]   araddr,
+    input  logic                    arvalid,
+    output logic [NUM_SLAVES-1:0]   aw_slave_select,
+    output logic [NUM_SLAVES-1:0]   ar_slave_select,
+    output logic                    aw_decode_error,
+    output logic                    ar_decode_error
+);
+
+    always_comb begin
+        aw_slave_select = '0;
+        aw_decode_error = 1'b0;
+        
+        if (awvalid) begin
+            case (1'b1)
+{self._generate_decoder_cases('awaddr', 'aw')}
+                default: begin
+                    aw_decode_error = 1'b1;
+                end
+            endcase
+        end
+    end
+
+    always_comb begin
+        ar_slave_select = '0;
+        ar_decode_error = 1'b0;
+        
+        if (arvalid) begin
+            case (1'b1)
+{self._generate_decoder_cases('araddr', 'ar')}
+                default: begin
+                    ar_decode_error = 1'b1;
+                end
+            endcase
+        end
+    end
+
+endmodule
+"""
+
+    def _generate_decoder_cases(self, addr_signal, prefix):
+        """Generate case statements for address decoder"""
+        cases = []
+        for i, slave in enumerate(self.config.slaves):
+            base = slave.base_address
+            size = slave.size
+            end_addr = base + size - 1
+            
+            # Ensure addresses fit within the configured address width
+            addr_mask = (1 << self.config.addr_width) - 1
+            base &= addr_mask
+            end_addr &= addr_mask
+            
+            cases.append(f"                ({addr_signal} >= {self.config.addr_width}'h{base:x} && "
+                        f"{addr_signal} <= {self.config.addr_width}'h{end_addr:x}): begin")
+            cases.append(f"                    {prefix}_slave_select[{i}] = 1'b1;")
+            cases.append(f"                end")
+        
+        return '\n'.join(cases)
+
+    def _get_arbiter_rtl(self, num_masters):
+        """Generate arbiter RTL"""
+        return f"""// Arbiter for AXI4 Interconnect
+// Generated by AMBA Bus Matrix Configuration Tool
+
+module axi4_arbiter #(
+    parameter NUM_MASTERS = {num_masters}
+) (
+    input  logic                      clk,
+    input  logic                      rst_n,
+    input  logic [NUM_MASTERS-1:0]    request,
+    input  logic                      ready,
+    output logic [NUM_MASTERS-1:0]    grant,
+    output logic                      valid
+);
+
+    // Round-robin arbitration
+    logic [$clog2(NUM_MASTERS)-1:0] current_master;
+    logic [$clog2(NUM_MASTERS)-1:0] next_master;
+    logic [NUM_MASTERS-1:0]          masked_request;
+    
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            current_master <= '0;
+        end else if (ready && |request) begin
+            current_master <= next_master;
+        end
+    end
+    
+    // Priority masking for round-robin
+    always_comb begin
+        masked_request = request & ~((1 << current_master) - 1);
+        if (masked_request == '0) begin
+            masked_request = request;
+        end
+    end
+    
+    // Find next master
+    always_comb begin
+        next_master = current_master;
+        for (int i = 0; i < NUM_MASTERS; i++) begin
+            if (masked_request[i]) begin
+                next_master = i;
+                break;
+            end
+        end
+    end
+    
+    // Generate grant signals
+    always_comb begin
+        grant = '0;
+        valid = |request;
+        if (|request) begin
+            grant[next_master] = 1'b1;
+        end
+    end
+
+endmodule
+"""
+
+    def _get_router_rtl(self, num_slaves):
+        """Generate router RTL"""
+        return f"""// Router for AXI4 Interconnect
+// Generated by AMBA Bus Matrix Configuration Tool
+
+module axi4_router #(
+    parameter NUM_SLAVES = {num_slaves},
+    parameter DATA_WIDTH = {self.config.data_width}
+) (
+    input  logic                      clk,
+    input  logic                      rst_n,
+    input  logic [NUM_SLAVES-1:0]     slave_select,
+    input  logic [DATA_WIDTH-1:0]     master_data,
+    input  logic                      master_valid,
+    output logic [DATA_WIDTH-1:0]     slave_data[NUM_SLAVES],
+    output logic [NUM_SLAVES-1:0]     slave_valid
+);
+
+    // Route master signals to selected slaves
+    always_comb begin
+        for (int i = 0; i < NUM_SLAVES; i++) begin
+            if (slave_select[i]) begin
+                slave_data[i] = master_data;
+                slave_valid[i] = master_valid;
+            end else begin
+                slave_data[i] = '0;
+                slave_valid[i] = 1'b0;
+            end
+        end
+    end
+
+endmodule
+"""
     
     def _get_enhanced_rtl_wrapper(self):
         """Get enhanced RTL wrapper with full interconnect and proper interface connections"""
@@ -3489,7 +3894,7 @@ module dut_wrapper #(
     axi4_if.master slave_if[NUM_SLAVES]    // Slave interfaces to VIP slave BFMs
 );
 
-    // Instantiate the full {num_masters}x{num_slaves} AXI interconnect
+    // Instantiate the gen_amba_axi generated {num_masters}x{num_slaves} AXI interconnect
     amba_axi_m{num_masters}s{num_slaves} #(
         .NUM_MASTER(NUM_MASTERS),
         .NUM_SLAVE(NUM_SLAVES),
@@ -3871,13 +4276,28 @@ module axi4_master_driver_bfm #(
         logic [ID_WIDTH-1:0] id;
         
         // Generate transaction parameters
-        addr  = $urandom() & {{ADDR_WIDTH{{1'b1}}}};
+        // Select a random slave (0-9) and generate address in its range
+        int slave_sel = $urandom_range(0, 9);
+        case (slave_sel)
+            0: addr = {self.config.addr_width}'h0000000000 + ($urandom() & {self.config.addr_width}'hFFFFFF);      // DDR4_Channel_0: 0x0000000000-0x01FFFFFFFF
+            1: addr = {self.config.addr_width}'h0200000000 + ($urandom() & {self.config.addr_width}'hFFFFFF);      // DDR4_Channel_1: 0x0200000000-0x03FFFFFFFF
+            2: addr = {self.config.addr_width}'h0400000000 + ($urandom() & {self.config.addr_width}'hFFFFFF);      // L3_Cache_SRAM: 0x0400000000-0x0400FFFFFF
+            3: addr = {self.config.addr_width}'h1000000000 + ($urandom() & {self.config.addr_width}'h3FFFF);       // Boot_ROM: 0x1000000000-0x100003FFFF
+            4: addr = {self.config.addr_width}'h2000000000 + ($urandom() & {self.config.addr_width}'hFFFF);        // System_Registers: 0x2000000000-0x200000FFFF
+            5: addr = {self.config.addr_width}'h4000000000 + ($urandom() & {self.config.addr_width}'h3FFFFFF);     // PCIe_Config_Space: 0x4000000000-0x4003FFFFFF
+            6: addr = {self.config.addr_width}'h8000000000 + ($urandom() & {self.config.addr_width}'h3FFFF);       // Crypto_Engine: 0x8000000000-0x800003FFFF
+            7: addr = {self.config.addr_width}'h0800000000 + ($urandom() & {self.config.addr_width}'hFFFFF);       // Debug_APB_Bridge: 0x0800000000-0x08000FFFFF
+            8: addr = {self.config.addr_width}'h0900000000 + ($urandom() & {self.config.addr_width}'hFFFFF);       // Slave0: 0x0900000000-0x09000FFFFF
+            9: addr = {self.config.addr_width}'h0A00000000 + ($urandom() & {self.config.addr_width}'hFFFFF);       // Slave1: 0x0A00000000-0x0A000FFFFF
+            default: addr = {self.config.addr_width}'h0 + ($urandom() & {self.config.addr_width}'hFFFFFF);
+        endcase
+        
         len   = $urandom_range(0, 15);  // 1-16 beats
         size  = $urandom_range(0, $clog2(DATA_WIDTH/8));  // Up to full data width
         burst = $urandom_range(0, 2);   // FIXED, INCR, WRAP
         id    = $urandom_range(0, (1<<ID_WIDTH)-1);
         
-        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Write Transaction %0d: addr=0x%08x, len=%0d, size=%0d, burst=%0d, id=%0d", 
+        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Write Transaction %0d: addr=0x%010x, len=%0d, size=%0d, burst=%0d, id=%0d", 
                   trans_id, addr, len, size, burst, id), UVM_MEDIUM)
         
         // Write Address Phase
@@ -3889,7 +4309,7 @@ module axi4_master_driver_bfm #(
         axi_intf.awburst <= burst;
         axi_intf.awlock  <= 1'b0;
         axi_intf.awcache <= 4'b0000;
-        axi_intf.awprot  <= 3'b000;
+        axi_intf.awprot  <= (slave_sel == 4) ? 3'b001 : 3'b000;  // Set privileged access for System_Registers
         axi_intf.awqos   <= 4'b0000;
         axi_intf.awregion <= 4'b0000;
         axi_intf.awvalid <= 1'b1;
@@ -3940,13 +4360,28 @@ module axi4_master_driver_bfm #(
         int beat_count;
         
         // Generate transaction parameters
-        addr  = $urandom() & {{ADDR_WIDTH{{1'b1}}}};
+        // Select a random slave (0-9) and generate address in its range
+        int slave_sel = $urandom_range(0, 9);
+        case (slave_sel)
+            0: addr = {self.config.addr_width}'h0000000000 + ($urandom() & {self.config.addr_width}'hFFFFFF);      // DDR4_Channel_0: 0x0000000000-0x01FFFFFFFF
+            1: addr = {self.config.addr_width}'h0200000000 + ($urandom() & {self.config.addr_width}'hFFFFFF);      // DDR4_Channel_1: 0x0200000000-0x03FFFFFFFF
+            2: addr = {self.config.addr_width}'h0400000000 + ($urandom() & {self.config.addr_width}'hFFFFFF);      // L3_Cache_SRAM: 0x0400000000-0x0400FFFFFF
+            3: addr = {self.config.addr_width}'h1000000000 + ($urandom() & {self.config.addr_width}'h3FFFF);       // Boot_ROM: 0x1000000000-0x100003FFFF
+            4: addr = {self.config.addr_width}'h2000000000 + ($urandom() & {self.config.addr_width}'hFFFF);        // System_Registers: 0x2000000000-0x200000FFFF
+            5: addr = {self.config.addr_width}'h4000000000 + ($urandom() & {self.config.addr_width}'h3FFFFFF);     // PCIe_Config_Space: 0x4000000000-0x4003FFFFFF
+            6: addr = {self.config.addr_width}'h8000000000 + ($urandom() & {self.config.addr_width}'h3FFFF);       // Crypto_Engine: 0x8000000000-0x800003FFFF
+            7: addr = {self.config.addr_width}'h0800000000 + ($urandom() & {self.config.addr_width}'hFFFFF);       // Debug_APB_Bridge: 0x0800000000-0x08000FFFFF
+            8: addr = {self.config.addr_width}'h0900000000 + ($urandom() & {self.config.addr_width}'hFFFFF);       // Slave0: 0x0900000000-0x09000FFFFF
+            9: addr = {self.config.addr_width}'h0A00000000 + ($urandom() & {self.config.addr_width}'hFFFFF);       // Slave1: 0x0A00000000-0x0A000FFFFF
+            default: addr = {self.config.addr_width}'h0 + ($urandom() & {self.config.addr_width}'hFFFFFF);
+        endcase
+        
         len   = $urandom_range(0, 15);  // 1-16 beats
         size  = $urandom_range(0, $clog2(DATA_WIDTH/8));  // Up to full data width
         burst = $urandom_range(0, 2);   // FIXED, INCR, WRAP
         id    = $urandom_range(0, (1<<ID_WIDTH)-1);
         
-        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Read Transaction %0d: addr=0x%08x, len=%0d, size=%0d, burst=%0d, id=%0d", 
+        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Read Transaction %0d: addr=0x%010x, len=%0d, size=%0d, burst=%0d, id=%0d", 
                   trans_id, addr, len, size, burst, id), UVM_MEDIUM)
         
         // Read Address Phase
@@ -3958,7 +4393,7 @@ module axi4_master_driver_bfm #(
         axi_intf.arburst <= burst;
         axi_intf.arlock  <= 1'b0;
         axi_intf.arcache <= 4'b0000;
-        axi_intf.arprot  <= 3'b000;
+        axi_intf.arprot  <= (slave_sel == 4) ? 3'b001 : 3'b000;  // Set privileged access for System_Registers
         axi_intf.arqos   <= 4'b0000;
         axi_intf.arregion <= 4'b0000;
         axi_intf.arvalid <= 1'b1;
@@ -4155,10 +4590,10 @@ module axi4_slave_driver_bfm #(
             repeat($urandom_range(0, aw_response_delay)) @(posedge aclk);
             axi_intf.awready <= 1'b1;
             
-            // Wait for valid address
-            while (!axi_intf.awvalid) @(posedge aclk);
+            // Wait for valid address and ready handshake
+            while (!(axi_intf.awvalid && axi_intf.awready)) @(posedge aclk);
             
-            // Capture address information
+            // Capture address information during the handshake (signals are stable)
             pending_awid = axi_intf.awid;
             pending_awaddr = axi_intf.awaddr;
             pending_awlen = axi_intf.awlen;
@@ -4166,7 +4601,7 @@ module axi4_slave_driver_bfm #(
             pending_awburst = axi_intf.awburst;
             write_addr_pending = 1'b1;
             
-            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write address accepted: id=%0d, addr=0x%08x, len=%0d", 
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write address accepted: id=%0d, addr=0x%010x, len=%0d", 
                       pending_awid, pending_awaddr, pending_awlen), UVM_MEDIUM)
             
             @(posedge aclk);
@@ -4200,7 +4635,7 @@ module axi4_slave_driver_bfm #(
                 automatic logic [ADDR_WIDTH-1:0] beat_addr = pending_awaddr + (write_beat_count * (DATA_WIDTH/8));
                 memory[beat_addr] = axi_intf.wdata;
                 
-                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data beat %0d accepted: addr=0x%08x, data=0x%016x, wstrb=0x%02x", 
+                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data beat %0d accepted: addr=0x%010x, data=0x%016x, wstrb=0x%02x", 
                           write_beat_count, beat_addr, axi_intf.wdata, axi_intf.wstrb), UVM_HIGH)
                 
                 write_beat_count++;
@@ -4259,10 +4694,10 @@ module axi4_slave_driver_bfm #(
             repeat($urandom_range(0, ar_response_delay)) @(posedge aclk);
             axi_intf.arready <= 1'b1;
             
-            // Wait for valid address
-            while (!axi_intf.arvalid) @(posedge aclk);
+            // Wait for valid address and ready handshake
+            while (!(axi_intf.arvalid && axi_intf.arready)) @(posedge aclk);
             
-            // Capture address information
+            // Capture address information during the handshake (signals are stable)
             pending_arid = axi_intf.arid;
             pending_araddr = axi_intf.araddr;
             pending_arlen = axi_intf.arlen;
@@ -4270,7 +4705,7 @@ module axi4_slave_driver_bfm #(
             pending_arburst = axi_intf.arburst;
             read_addr_pending = 1'b1;
             
-            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read address accepted: id=%0d, addr=0x%08x, len=%0d", 
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read address accepted: id=%0d, addr=0x%010x, len=%0d", 
                       pending_arid, pending_araddr, pending_arlen), UVM_MEDIUM)
             
             @(posedge aclk);
@@ -4312,7 +4747,7 @@ module axi4_slave_driver_bfm #(
                 axi_intf.rlast <= (read_beat_count == pending_arlen);
                 axi_intf.rvalid <= 1'b1;
                 
-                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read data beat %0d sent: id=%0d, addr=0x%08x, data=0x%016x, last=%0b", 
+                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read data beat %0d sent: id=%0d, addr=0x%010x, data=0x%016x, last=%0b", 
                           read_beat_count, pending_arid, beat_addr, read_data, axi_intf.rlast), UVM_HIGH)
                 
                 // Wait for rready
@@ -4365,48 +4800,99 @@ endmodule : axi4_slave_driver_bfm
         num_slaves = len(self.config.slaves)
         connections = []
         
-        # Generate master connections
+        # Generate master connections  
         for i in range(num_masters):
-            connections.append(f"""        // Master {i} connections
+            # Base connections always present
+            master_conn = f"""        // Master {i} connections
         .M{i}_AWID(master_if[{i}].awid),
         .M{i}_AWADDR(master_if[{i}].awaddr),
         .M{i}_AWLEN(master_if[{i}].awlen),
         .M{i}_AWSIZE(master_if[{i}].awsize),
         .M{i}_AWBURST(master_if[{i}].awburst),
-        .M{i}_AWLOCK(master_if[{i}].awlock),
-        .M{i}_AWCACHE(master_if[{i}].awcache),
-        .M{i}_AWPROT(master_if[{i}].awprot),
-        .M{i}_AWQOS(master_if[{i}].awqos),
-        .M{i}_AWREGION(master_if[{i}].awregion),
+        .M{i}_AWLOCK(master_if[{i}].awlock)"""
+        
+            # Add optional AW channel signals
+            if self.config.has_cache:
+                master_conn += f",\n        .M{i}_AWCACHE(master_if[{i}].awcache)"
+            if self.config.has_prot:
+                master_conn += f",\n        .M{i}_AWPROT(master_if[{i}].awprot)"
+            if self.config.has_qos:
+                master_conn += f",\n        .M{i}_AWQOS(master_if[{i}].awqos)"
+            if self.config.has_region:
+                master_conn += f",\n        .M{i}_AWREGION(master_if[{i}].awregion)"
+            if self.config.has_user:
+                master_conn += f",\n        .M{i}_AWUSER(master_if[{i}].awuser)"
+                
+            # AW handshake
+            master_conn += f""",
         .M{i}_AWVALID(master_if[{i}].awvalid),
         .M{i}_AWREADY(master_if[{i}].awready),
+        
+        // Write data channel
         .M{i}_WDATA(master_if[{i}].wdata),
         .M{i}_WSTRB(master_if[{i}].wstrb),
-        .M{i}_WLAST(master_if[{i}].wlast),
+        .M{i}_WLAST(master_if[{i}].wlast)"""
+        
+            if self.config.has_user:
+                master_conn += f",\n        .M{i}_WUSER(master_if[{i}].wuser)"
+                
+            # W handshake
+            master_conn += f""",
         .M{i}_WVALID(master_if[{i}].wvalid),
         .M{i}_WREADY(master_if[{i}].wready),
+        
+        // Write response channel
         .M{i}_BID(master_if[{i}].bid),
-        .M{i}_BRESP(master_if[{i}].bresp),
+        .M{i}_BRESP(master_if[{i}].bresp)"""
+        
+            if self.config.has_user:
+                master_conn += f",\n        .M{i}_BUSER(master_if[{i}].buser)"
+                
+            # B handshake
+            master_conn += f""",
         .M{i}_BVALID(master_if[{i}].bvalid),
         .M{i}_BREADY(master_if[{i}].bready),
+        
+        // Read address channel
         .M{i}_ARID(master_if[{i}].arid),
         .M{i}_ARADDR(master_if[{i}].araddr),
         .M{i}_ARLEN(master_if[{i}].arlen),
         .M{i}_ARSIZE(master_if[{i}].arsize),
         .M{i}_ARBURST(master_if[{i}].arburst),
-        .M{i}_ARLOCK(master_if[{i}].arlock),
-        .M{i}_ARCACHE(master_if[{i}].arcache),
-        .M{i}_ARPROT(master_if[{i}].arprot),
-        .M{i}_ARQOS(master_if[{i}].arqos),
-        .M{i}_ARREGION(master_if[{i}].arregion),
+        .M{i}_ARLOCK(master_if[{i}].arlock)"""
+        
+            # Add optional AR channel signals
+            if self.config.has_cache:
+                master_conn += f",\n        .M{i}_ARCACHE(master_if[{i}].arcache)"
+            if self.config.has_prot:
+                master_conn += f",\n        .M{i}_ARPROT(master_if[{i}].arprot)"
+            if self.config.has_qos:
+                master_conn += f",\n        .M{i}_ARQOS(master_if[{i}].arqos)"
+            if self.config.has_region:
+                master_conn += f",\n        .M{i}_ARREGION(master_if[{i}].arregion)"
+            if self.config.has_user:
+                master_conn += f",\n        .M{i}_ARUSER(master_if[{i}].aruser)"
+                
+            # AR handshake
+            master_conn += f""",
         .M{i}_ARVALID(master_if[{i}].arvalid),
         .M{i}_ARREADY(master_if[{i}].arready),
+        
+        // Read data channel
         .M{i}_RID(master_if[{i}].rid),
         .M{i}_RDATA(master_if[{i}].rdata),
         .M{i}_RRESP(master_if[{i}].rresp),
-        .M{i}_RLAST(master_if[{i}].rlast),
+        .M{i}_RLAST(master_if[{i}].rlast)"""
+        
+            if self.config.has_user:
+                master_conn += f",\n        .M{i}_RUSER(master_if[{i}].ruser)"
+                
+            # R handshake
+            master_conn += f""",
         .M{i}_RVALID(master_if[{i}].rvalid),
-        .M{i}_RREADY(master_if[{i}].rready)""")
+        .M{i}_RREADY(master_if[{i}].rready)"""
+        
+            connections.append(master_conn)
             
             # Add comma if not the last connection
             if i < num_masters - 1 or num_slaves > 0:
@@ -4414,47 +4900,98 @@ endmodule : axi4_slave_driver_bfm
         
         # Generate slave connections  
         for i in range(num_slaves):
-            connections.append(f"""        
+            # Base connections always present
+            slave_conn = f"""        
         // Slave {i} connections
         .S{i}_AWID(slave_if[{i}].awid),
         .S{i}_AWADDR(slave_if[{i}].awaddr),
         .S{i}_AWLEN(slave_if[{i}].awlen),
         .S{i}_AWSIZE(slave_if[{i}].awsize),
         .S{i}_AWBURST(slave_if[{i}].awburst),
-        .S{i}_AWLOCK(slave_if[{i}].awlock),
-        .S{i}_AWCACHE(slave_if[{i}].awcache),
-        .S{i}_AWPROT(slave_if[{i}].awprot),
-        .S{i}_AWQOS(slave_if[{i}].awqos),
-        .S{i}_AWREGION(slave_if[{i}].awregion),
+        .S{i}_AWLOCK(slave_if[{i}].awlock)"""
+        
+            # Add optional AW channel signals
+            if self.config.has_cache:
+                slave_conn += f",\n        .S{i}_AWCACHE(slave_if[{i}].awcache)"
+            if self.config.has_prot:
+                slave_conn += f",\n        .S{i}_AWPROT(slave_if[{i}].awprot)"
+            if self.config.has_qos:
+                slave_conn += f",\n        .S{i}_AWQOS(slave_if[{i}].awqos)"
+            if self.config.has_region:
+                slave_conn += f",\n        .S{i}_AWREGION(slave_if[{i}].awregion)"
+            if self.config.has_user:
+                slave_conn += f",\n        .S{i}_AWUSER(slave_if[{i}].awuser)"
+                
+            # AW handshake
+            slave_conn += f""",
         .S{i}_AWVALID(slave_if[{i}].awvalid),
         .S{i}_AWREADY(slave_if[{i}].awready),
+        
+        // Write data channel
         .S{i}_WDATA(slave_if[{i}].wdata),
         .S{i}_WSTRB(slave_if[{i}].wstrb),
-        .S{i}_WLAST(slave_if[{i}].wlast),
+        .S{i}_WLAST(slave_if[{i}].wlast)"""
+        
+            if self.config.has_user:
+                slave_conn += f",\n        .S{i}_WUSER(slave_if[{i}].wuser)"
+                
+            # W handshake
+            slave_conn += f""",
         .S{i}_WVALID(slave_if[{i}].wvalid),
         .S{i}_WREADY(slave_if[{i}].wready),
+        
+        // Write response channel
         .S{i}_BID(slave_if[{i}].bid),
-        .S{i}_BRESP(slave_if[{i}].bresp),
+        .S{i}_BRESP(slave_if[{i}].bresp)"""
+        
+            if self.config.has_user:
+                slave_conn += f",\n        .S{i}_BUSER(slave_if[{i}].buser)"
+                
+            # B handshake
+            slave_conn += f""",
         .S{i}_BVALID(slave_if[{i}].bvalid),
         .S{i}_BREADY(slave_if[{i}].bready),
+        
+        // Read address channel
         .S{i}_ARID(slave_if[{i}].arid),
         .S{i}_ARADDR(slave_if[{i}].araddr),
         .S{i}_ARLEN(slave_if[{i}].arlen),
         .S{i}_ARSIZE(slave_if[{i}].arsize),
         .S{i}_ARBURST(slave_if[{i}].arburst),
-        .S{i}_ARLOCK(slave_if[{i}].arlock),
-        .S{i}_ARCACHE(slave_if[{i}].arcache),
-        .S{i}_ARPROT(slave_if[{i}].arprot),  
-        .S{i}_ARQOS(slave_if[{i}].arqos),
-        .S{i}_ARREGION(slave_if[{i}].arregion),
+        .S{i}_ARLOCK(slave_if[{i}].arlock)"""
+        
+            # Add optional AR channel signals
+            if self.config.has_cache:
+                slave_conn += f",\n        .S{i}_ARCACHE(slave_if[{i}].arcache)"
+            if self.config.has_prot:
+                slave_conn += f",\n        .S{i}_ARPROT(slave_if[{i}].arprot)"
+            if self.config.has_qos:
+                slave_conn += f",\n        .S{i}_ARQOS(slave_if[{i}].arqos)"
+            if self.config.has_region:
+                slave_conn += f",\n        .S{i}_ARREGION(slave_if[{i}].arregion)"
+            if self.config.has_user:
+                slave_conn += f",\n        .S{i}_ARUSER(slave_if[{i}].aruser)"
+                
+            # AR handshake
+            slave_conn += f""",
         .S{i}_ARVALID(slave_if[{i}].arvalid),
         .S{i}_ARREADY(slave_if[{i}].arready),
+        
+        // Read data channel
         .S{i}_RID(slave_if[{i}].rid),
         .S{i}_RDATA(slave_if[{i}].rdata),
         .S{i}_RRESP(slave_if[{i}].rresp),
-        .S{i}_RLAST(slave_if[{i}].rlast),
+        .S{i}_RLAST(slave_if[{i}].rlast)"""
+        
+            if self.config.has_user:
+                slave_conn += f",\n        .S{i}_RUSER(slave_if[{i}].ruser)"
+                
+            # R handshake
+            slave_conn += f""",
         .S{i}_RVALID(slave_if[{i}].rvalid),
-        .S{i}_RREADY(slave_if[{i}].rready)""")
+        .S{i}_RREADY(slave_if[{i}].rready)"""
+        
+            connections.append(slave_conn)
             
             # Add comma if not the last connection
             if i < num_slaves - 1:
@@ -4503,8 +5040,8 @@ module hdl_top;
         aresetn = 1;
     end
     
-    // AXI4 interfaces
-    axi4_if axi_if[NO_OF_MASTERS](aclk, aresetn);
+    // AXI4 interfaces - override default ID_WIDTH to match RTL interconnect
+    axi4_if #(.ID_WIDTH(ID_WIDTH), .ADDR_WIDTH(ADDRESS_WIDTH), .DATA_WIDTH(DATA_WIDTH)) axi_if[NO_OF_MASTERS](aclk, aresetn);
     
     // Master agent BFMs - connected to AXI interfaces
     genvar i;
@@ -4523,11 +5060,11 @@ module hdl_top;
     endgenerate
     
     // Additional slave interfaces for slave BFMs (connected to DUT outputs)
-    // Slave interfaces need wider ID width to accommodate master ID concatenation
+    // Note: This RTL interconnect uses same ID width for slaves as masters
     axi4_if #(
         .ADDR_WIDTH(ADDRESS_WIDTH),
         .DATA_WIDTH(DATA_WIDTH),
-        .ID_WIDTH(ID_WIDTH+$clog2(NO_OF_MASTERS))  // Extended ID width for slaves
+        .ID_WIDTH(ID_WIDTH)  // Same ID width as masters for this RTL interconnect
     ) slave_if[NO_OF_SLAVES](aclk, aresetn);
     
     // Slave agent BFMs - connected to slave interfaces
@@ -4536,7 +5073,7 @@ module hdl_top;
             axi4_slave_agent_bfm #(
                 .ADDR_WIDTH(ADDRESS_WIDTH),
                 .DATA_WIDTH(DATA_WIDTH),
-                .ID_WIDTH({slave_id_width})  // Slave ID includes master routing
+                .ID_WIDTH(ID_WIDTH)  // Match the RTL interconnect ID width
             ) slave_bfm (
                 .aclk(aclk),
                 .aresetn(aresetn),
@@ -4687,9 +5224,9 @@ endmodule : hdl_top
             end_addr = base_addr + size
             
             if i == 0:
-                mapping_logic.append(f"        if (record.address < 32'h{end_addr:X})")
+                mapping_logic.append(f"        if (record.address < 64'h{end_addr:X})")
             else:
-                mapping_logic.append(f"        else if (record.address < 32'h{end_addr:X})")
+                mapping_logic.append(f"        else if (record.address < 64'h{end_addr:X})")
             
             mapping_logic.append(f"            record.path_info = $sformatf(\"M%0d->S{i} (0x%0h)\", master_id, record.address);")
         
@@ -4698,3 +5235,57 @@ endmodule : hdl_top
         mapping_logic.append("            record.path_info = $sformatf(\"M%0d->UNMAPPED (0x%0h)\", master_id, record.address);")
         
         return "\n".join(mapping_logic)
+
+
+# Command line interface
+if __name__ == "__main__":
+    import argparse
+    from bus_config import BusConfig, Master, Slave
+    
+    parser = argparse.ArgumentParser(description='Generate AXI4 VIP Environment')
+    parser.add_argument('--masters', type=int, default=2, help='Number of masters')
+    parser.add_argument('--slaves', type=int, default=2, help='Number of slaves')
+    parser.add_argument('--output', type=str, required=True, help='Output directory')
+    parser.add_argument('--mode', type=str, default='rtl_integration', 
+                        choices=['rtl_integration', 'vip_standalone'],
+                        help='Generation mode')
+    parser.add_argument('--simulator', type=str, default='vcs',
+                        choices=['vcs', 'questa', 'xcelium'],
+                        help='Target simulator')
+    
+    args = parser.parse_args()
+    
+    # Create configuration
+    config = BusConfig()
+    
+    # Add masters
+    for i in range(args.masters):
+        master = Master(
+            name=f"Master_{i}",
+            id_width=4,
+            user_width=0,
+            priority=0,
+            qos_support=True,
+            exclusive_support=True
+        )
+        config.add_master(master)
+    
+    # Add slaves with address allocation
+    base_addr = 0x0
+    for i in range(args.slaves):
+        slave = Slave(
+            name=f"Slave_{i}",
+            base_address=base_addr,
+            size=128 * 1024,  # 128KB per slave
+            memory_type="Memory",
+            read_latency=1,
+            write_latency=1
+        )
+        config.add_slave(slave)
+        base_addr += slave.size * 1024
+    
+    # Create and run generator
+    generator = VIPEnvironmentGenerator(config, args.mode, args.simulator)
+    generator.generate_environment(args.output)
+    
+    print(f"VIP environment generated successfully in {args.output}")

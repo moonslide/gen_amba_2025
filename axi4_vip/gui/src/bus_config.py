@@ -56,6 +56,12 @@ class BusConfig:
         self.data_width: int = 64
         self.addr_width: int = 32
         self.arbitration: str = "QOS"
+        # AXI4 feature enables
+        self.has_qos: bool = True
+        self.has_cache: bool = True
+        self.has_prot: bool = True
+        self.has_region: bool = False
+        self.has_user: bool = False
         
     def add_master(self, master: Master):
         """Add a master to the configuration"""
