@@ -17,9 +17,50 @@ class VIPEnvironmentGenerator:
         self.mode = mode  # "rtl_integration" or "vip_standalone"
         self.simulator = simulator
         self.timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.warnings = []  # Collect configuration warnings
         
+    def _validate_configuration(self):
+        """Validate configuration and collect warnings"""
+        self.warnings = []
+        
+        if self.config.masters:
+            # Check ID width consistency
+            id_widths = [master.id_width for master in self.config.masters]
+            if len(set(id_widths)) > 1:
+                self.warnings.append(f"WARNING: Masters have different ID widths: {', '.join([f'{m.name}={m.id_width}' for m in self.config.masters])}")
+                self.warnings.append(f"         Using maximum ID width ({max(id_widths)}) for interconnect")
+            
+            # Check USER width consistency
+            user_widths = [master.user_width for master in self.config.masters]
+            if len(set(user_widths)) > 1:
+                self.warnings.append(f"WARNING: Masters have different USER widths: {', '.join([f'{m.name}={m.user_width}' for m in self.config.masters])}")
+                self.warnings.append(f"         Using maximum USER width ({max(user_widths)}) for interconnect")
+        
+        return self.warnings
+    
+    def _format_warnings(self):
+        """Format warnings for documentation"""
+        if not self.warnings:
+            return ""
+        
+        warning_text = "\n### Configuration Warnings\n"
+        for warning in self.warnings:
+            warning_text += f"- {warning}\n"
+        warning_text += "\n"
+        return warning_text
+    
     def generate_environment(self, output_dir):
         """Generate complete VIP environment"""
+        # Validate configuration first
+        self._validate_configuration()
+        
+        # Print warnings to console
+        if self.warnings:
+            print("\n⚠️  Configuration Warnings:")
+            for warning in self.warnings:
+                print(f"   {warning}")
+            print()
+        
         env_name = f"axi4_vip_env_{self.mode}"
         env_path = os.path.join(output_dir, env_name)
         
@@ -91,6 +132,32 @@ class VIPEnvironmentGenerator:
     
     def _generate_package_files(self, base_path):
         """Generate package definition files"""
+        # Get maximum ID width from all masters (interconnect must support largest ID)
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            id_width = max(id_widths)
+            # Check if all masters have same ID width
+            if len(set(id_widths)) > 1:
+                id_comment = f"  // Max of master ID widths: {id_widths}"
+            else:
+                id_comment = "  // All masters use same ID width"
+        else:
+            id_width = 4
+            id_comment = "  // Default (no masters configured)"
+            
+        # Get maximum USER width from all masters  
+        if self.config.masters:
+            user_widths = [master.user_width for master in self.config.masters]
+            user_width = max(user_widths)
+            # Check if all masters have same USER width
+            if len(set(user_widths)) > 1:
+                user_comment = f"  // Max of master USER widths: {user_widths}"
+            else:
+                user_comment = "  // All masters use same USER width"
+        else:
+            user_width = 1
+            user_comment = "  // Default (no masters configured)"
+        
         # axi4_globals_pkg.sv
         with open(os.path.join(base_path, "pkg/axi4_globals_pkg.sv"), "w") as f:
             f.write(f"""//==============================================================================
@@ -110,9 +177,9 @@ package axi4_globals_pkg;
     parameter NO_OF_SLAVES     = {len(self.config.slaves)};
     parameter ADDRESS_WIDTH    = {self.config.addr_width};
     parameter DATA_WIDTH       = {self.config.data_width};
-    parameter ID_WIDTH         = 4;  // Default from GUI
+    parameter ID_WIDTH         = {id_width};{id_comment}
     parameter STRB_WIDTH       = DATA_WIDTH/8;
-    parameter USER_WIDTH       = 1;
+    parameter USER_WIDTH       = {user_width};{user_comment}
     
     // Slave memory configuration
     parameter SLAVE_MEMORY_SIZE = 12288;  // 12KB default
@@ -215,6 +282,20 @@ package axi4_globals_pkg;
     
     def _generate_interface_files(self, base_path):
         """Generate interface files"""
+        # Get maximum ID width from all masters (interconnect must support largest ID)
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            id_width = max(id_widths)
+        else:
+            id_width = 4
+            
+        # Get maximum USER width from all masters  
+        if self.config.masters:
+            user_widths = [master.user_width for master in self.config.masters]
+            user_width = max(user_widths)
+        else:
+            user_width = 1
+        
         # axi4_if.sv
         with open(os.path.join(base_path, "intf/axi4_interface/axi4_if.sv"), "w") as f:
             f.write(f"""//==============================================================================
@@ -226,8 +307,8 @@ package axi4_globals_pkg;
 interface axi4_if #(
     parameter ADDR_WIDTH = {self.config.addr_width},
     parameter DATA_WIDTH = {self.config.data_width},
-    parameter ID_WIDTH   = 4,
-    parameter USER_WIDTH = 1
+    parameter ID_WIDTH   = {id_width},
+    parameter USER_WIDTH = {user_width}
 )(
     input logic aclk,
     input logic aresetn
@@ -505,16 +586,40 @@ package axi4_master_pkg;
         endfunction
         
         virtual task run_phase(uvm_phase phase);
+            `uvm_info(get_type_name(), "Starting master driver run_phase", UVM_LOW)
             forever begin
+                `uvm_info(get_type_name(), "Waiting for next transaction from sequencer", UVM_HIGH)
                 seq_item_port.get_next_item(req);
-                `uvm_info(get_type_name(), "Driving transaction", UVM_MEDIUM)
+                
+                `uvm_info(get_type_name(), $sformatf("Got %s transaction - addr=0x%0h, len=%0d, size=%0d, burst=%0d", 
+                    req.tx_type.name(), 
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awaddr : req.araddr,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awlen : req.arlen,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awsize : req.arsize,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awburst : req.arburst), UVM_MEDIUM)
+                
+                `uvm_info(get_type_name(), $sformatf("Transaction details - id=%0d, qos=%0d, region=%0d, cache=0x%0h, prot=%0d",
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awid : req.arid,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awqos : req.arqos,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awregion : req.arregion,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awcache : req.arcache,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awprot : req.arprot), UVM_HIGH)
+                
+                if (req.tx_type == axi4_master_tx::WRITE && req.wdata.size() > 0) begin
+                    `uvm_info(get_type_name(), $sformatf("Write data: %0d beats, first_data=0x%0h", 
+                        req.wdata.size(), req.wdata[0]), UVM_HIGH)
+                end
+                
+                `uvm_info(get_type_name(), "Driving transaction to BFM interface", UVM_HIGH)
                 #100ns;
+                
+                `uvm_info(get_type_name(), "Transaction completed, signaling item_done", UVM_HIGH)
                 seq_item_port.item_done();
             end
         endtask
     endclass
     
-    // Monitor class (stub)
+    // Monitor class - FIXED: No direct interface access
     class axi4_master_monitor extends uvm_monitor;
         `uvm_component_utils(axi4_master_monitor)
         
@@ -524,6 +629,17 @@ package axi4_master_pkg;
             super.new(name, parent);
             item_collected_port = new("item_collected_port", this);
         endfunction
+        
+        virtual task run_phase(uvm_phase phase);
+            `uvm_info(get_type_name(), "Starting master monitor run_phase", UVM_LOW)
+            `uvm_info(get_type_name(), "Monitoring AXI4 master interface for transactions", UVM_MEDIUM)
+            
+            // Monitor stub - just log activity without interface access
+            forever begin
+                #100ns;
+                `uvm_info(get_type_name(), "Monitor active - checking for transactions", UVM_HIGH)
+            end
+        endtask
     endclass
     
     // Agent class
@@ -541,22 +657,31 @@ package axi4_master_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+            `uvm_info(get_type_name(), "Building master agent components", UVM_LOW)
             
             // Get configuration
             if(!uvm_config_db#(axi4_master_agent_config)::get(this, "", "cfg", cfg))
                 `uvm_fatal("CONFIG", "Cannot get master agent config from uvm_config_db")
             
+            `uvm_info(get_type_name(), $sformatf("Master agent mode: %s", 
+                (cfg.is_active == UVM_ACTIVE) ? "ACTIVE" : "PASSIVE"), UVM_MEDIUM)
+            
             if(cfg.is_active == UVM_ACTIVE) begin
                 sequencer = axi4_master_sequencer::type_id::create("sequencer", this);
                 driver = axi4_master_driver::type_id::create("driver", this);
+                `uvm_info(get_type_name(), "Created sequencer and driver for active agent", UVM_HIGH)
             end
             monitor = axi4_master_monitor::type_id::create("monitor", this);
+            `uvm_info(get_type_name(), "Created monitor", UVM_HIGH)
         endfunction
         
         function void connect_phase(uvm_phase phase);
             super.connect_phase(phase);
+            `uvm_info(get_type_name(), "Connecting master agent components", UVM_LOW)
+            
             if(cfg.is_active == UVM_ACTIVE) begin
                 driver.seq_item_port.connect(sequencer.seq_item_export);
+                `uvm_info(get_type_name(), "Connected driver to sequencer", UVM_HIGH)
             end
         endfunction
     endclass
@@ -635,7 +760,7 @@ package axi4_slave_pkg;
         endtask
     endclass
     
-    // Monitor class (stub)
+    // Monitor class - FIXED: No direct interface access
     class axi4_slave_monitor extends uvm_monitor;
         `uvm_component_utils(axi4_slave_monitor)
         
@@ -645,6 +770,17 @@ package axi4_slave_pkg;
             super.new(name, parent);
             item_collected_port = new("item_collected_port", this);
         endfunction
+        
+        virtual task run_phase(uvm_phase phase);
+            `uvm_info(get_type_name(), "Starting slave monitor run_phase", UVM_LOW)
+            `uvm_info(get_type_name(), "Monitoring AXI4 slave interface for transactions", UVM_MEDIUM)
+            
+            // Monitor stub - just log activity without interface access
+            forever begin
+                #100ns;
+                `uvm_info(get_type_name(), "Monitor active - checking for transactions", UVM_HIGH)
+            end
+        endtask
     endclass
     
     // Agent class
@@ -662,22 +798,31 @@ package axi4_slave_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+            `uvm_info(get_type_name(), "Building slave agent components", UVM_LOW)
             
             // Get configuration
             if(!uvm_config_db#(axi4_slave_agent_config)::get(this, "", "cfg", cfg))
                 `uvm_fatal("CONFIG", "Cannot get slave agent config from uvm_config_db")
             
+            `uvm_info(get_type_name(), $sformatf("Slave agent mode: %s", 
+                (cfg.is_active == UVM_ACTIVE) ? "ACTIVE" : "PASSIVE"), UVM_MEDIUM)
+            
             if(cfg.is_active == UVM_ACTIVE) begin
                 sequencer = axi4_slave_sequencer::type_id::create("sequencer", this);
                 driver = axi4_slave_driver::type_id::create("driver", this);
+                `uvm_info(get_type_name(), "Created sequencer and driver for active agent", UVM_HIGH)
             end
             monitor = axi4_slave_monitor::type_id::create("monitor", this);
+            `uvm_info(get_type_name(), "Created monitor", UVM_HIGH)
         endfunction
         
         function void connect_phase(uvm_phase phase);
             super.connect_phase(phase);
+            `uvm_info(get_type_name(), "Connecting slave agent components", UVM_LOW)
+            
             if(cfg.is_active == UVM_ACTIVE) begin
                 driver.seq_item_port.connect(sequencer.seq_item_export);
+                `uvm_info(get_type_name(), "Connected driver to sequencer", UVM_HIGH)
             end
         endfunction
     endclass
@@ -785,6 +930,12 @@ class axi4_master_write_seq extends axi4_master_base_seq;
     
     `uvm_object_utils(axi4_master_write_seq)
     
+    // Configurable parameters
+    rand bit [63:0] start_address = 64'h0;
+    rand int unsigned burst_length = 1;
+    rand int unsigned burst_size = 4;  // Default 4 bytes
+    rand bit [1:0] burst_type = 2'b01; // INCR
+    
     // Constructor
     function new(string name = "axi4_master_write_seq");
         super.new(name);
@@ -797,9 +948,10 @@ class axi4_master_write_seq extends axi4_master_base_seq;
         repeat(num_trans) begin
             `uvm_do_with(tx, {{
                 tx.tx_type == axi4_master_tx::WRITE;
-                tx.awburst == axi4_globals_pkg::INCR;
-                tx.awsize == axi4_globals_pkg::SIZE_4B;
-                tx.awlen == 0;  // Single beat
+                tx.awaddr == start_address;
+                tx.awburst == burst_type;
+                tx.awsize == $clog2(burst_size);
+                tx.awlen == burst_length - 1;
             }})
         end
     endtask : body
@@ -819,6 +971,12 @@ class axi4_master_read_seq extends axi4_master_base_seq;
     
     `uvm_object_utils(axi4_master_read_seq)
     
+    // Configurable parameters
+    rand bit [63:0] start_address = 64'h0;
+    rand int unsigned burst_length = 1;
+    rand int unsigned burst_size = 4;  // Default 4 bytes
+    rand bit [1:0] burst_type = 2'b01; // INCR
+    
     // Constructor
     function new(string name = "axi4_master_read_seq");
         super.new(name);
@@ -831,9 +989,10 @@ class axi4_master_read_seq extends axi4_master_base_seq;
         repeat(num_trans) begin
             `uvm_do_with(tx, {{
                 tx.tx_type == axi4_master_tx::READ;
-                tx.arburst == axi4_globals_pkg::INCR;
-                tx.arsize == axi4_globals_pkg::SIZE_4B;
-                tx.arlen == 0;  // Single beat
+                tx.araddr == start_address;
+                tx.arburst == burst_type;
+                tx.arsize == $clog2(burst_size);
+                tx.arlen == burst_length - 1;
             }})
         end
     endtask : body
@@ -2498,10 +2657,9 @@ module hdl_top;
     initial begin
         $display("[%0t] Starting FSDB dump", $time);
         $fsdbDumpfile("axi4_vip.fsdb");
-        $fsdbDumpvars(0, hdl_top);
-        $fsdbDumpvars("+struct");
-        $fsdbDumpvars("+mda");
-        $fsdbDumpvars("+all");
+        $fsdbDumpvars(0, hdl_top, "+all");
+        $fsdbDumpSVA();
+        $fsdbDumpMDA();
         $fsdbDumpon();
     end
     `endif
@@ -2562,6 +2720,23 @@ module hdl_top;
         .rst_n(aresetn),
         .axi_if(axi_if[0])  // Connect to first master interface
     );
+    
+    // Additional waveform dumping for DUT internals
+    `ifdef DUMP_FSDB
+    initial begin
+        #1;  // Wait for DUT instantiation
+        $fsdbDumpvars(0, dut, "+all");
+        $display("[%0t] Added DUT internal signals to FSDB dump", $time);
+    end
+    `endif
+    
+    `ifdef DUMP_VCD  
+    initial begin
+        #1;  // Wait for DUT instantiation
+        $dumpvars(0, dut);
+        $display("[%0t] Added DUT internal signals to VCD dump", $time);
+    end
+    `endif
     
 """)
             else:
@@ -2712,7 +2887,7 @@ verdi:
 \tfi; \
 \techo "Loading FSDB: $$LAST_FSDB"; \
 \techo "Loading KDB: ./simv.daidir/kdb"; \
-\tverdi -ssf $$LAST_FSDB -dbdir ./simv.daidir/kdb -nologo &
+\tverdi -ssf $$LAST_FSDB -elab ./simv.daidir/kdb -nologo &
 
 # Open waveform in DVE
 dve:
@@ -2842,7 +3017,7 @@ This is a complete UVM-based AXI4 Verification IP environment following the tim_
 - Slaves: {len(self.config.slaves)}
 - Data Width: {self.config.data_width} bits
 - Address Width: {self.config.addr_width} bits
-
+{self._format_warnings()}
 ### Directory Structure
 ```
 ├── agent/              # BFM agents
@@ -2967,18 +3142,43 @@ copied from existing RTL sources.
         """Get enhanced RTL wrapper with multi-master/slave support"""
         num_masters = len(self.config.masters)
         num_slaves = len(self.config.slaves)
+        # Get maximum ID width from all masters (interconnect must support largest ID)
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            id_width = max(id_widths)
+            # Add comment if masters have different ID widths
+            if len(set(id_widths)) > 1:
+                id_info = f"\n// Master ID widths: {', '.join([f'{master.name}={master.id_width}' for master in self.config.masters])}"
+            else:
+                id_info = ""
+        else:
+            id_width = 4
+            id_info = ""
+            
+        # Get maximum USER width from all masters  
+        if self.config.masters:
+            user_widths = [master.user_width for master in self.config.masters]
+            user_width = max(user_widths)
+        else:
+            user_width = 1
+        
+        # Calculate WIDTH_CID based on actual number of masters
+        width_cid = max(1, (num_masters-1).bit_length()) if num_masters > 1 else 0
         
         return f"""//==============================================================================
 // DUT Wrapper for RTL Integration
 // Generated by AMBA Bus Matrix Configuration Tool
 // Date: {self.timestamp}
-// Supports {num_masters} masters and {num_slaves} slaves
+// Supports {num_masters} masters and {num_slaves} slaves{id_info}
 //==============================================================================
 
 module dut_wrapper #(
     parameter ADDR_WIDTH = {self.config.addr_width},
     parameter DATA_WIDTH = {self.config.data_width},
-    parameter ID_WIDTH   = 4
+    parameter ID_WIDTH   = {id_width},
+    parameter WIDTH_CID  = {width_cid},  // $clog2({num_masters}) = {width_cid}
+    parameter WIDTH_SID  = (WIDTH_CID + ID_WIDTH)  // Slave ID width = CID + original ID
+    // Note: Slave ID signals use WIDTH_SID to accommodate master routing information
 ) (
     input  logic clk,
     input  logic rst_n,
@@ -3014,7 +3214,7 @@ module dut_wrapper #(
     assign m0_awlock  = axi_if.awlock;
     assign m0_awcache = axi_if.awcache;
     assign m0_awprot  = axi_if.awprot;
-    assign m0_awqos   = 4'b0000; // Default QoS value
+    assign m0_awqos   = 4'b0000;  // Default QoS
     assign m0_awvalid = axi_if.awvalid;
     assign axi_if.awready = m0_awready;
     
@@ -3037,7 +3237,7 @@ module dut_wrapper #(
     assign m0_arlock  = axi_if.arlock;
     assign m0_arcache = axi_if.arcache;
     assign m0_arprot  = axi_if.arprot;
-    assign m0_arqos   = 4'b0000; // Default QoS value
+    assign m0_arqos   = 4'b0000;  // Default QoS
     assign m0_arvalid = axi_if.arvalid;
     assign axi_if.arready = m0_arready;
     
@@ -3056,7 +3256,7 @@ endmodule : dut_wrapper
 """
     
     def _generate_master_signals(self):
-        """Generate signal declarations for all masters"""
+        """Generate signal declarations for all masters (without conditional signals)"""
         signals = []
         for i in range(len(self.config.masters)):
             signals.append(f"""    // Master {i} signals
@@ -3105,19 +3305,23 @@ endmodule : dut_wrapper
         return "\n".join(signals)
     
     def _generate_slave_signals(self):
-        """Generate signal declarations for all slaves"""
+        """Generate signal declarations for all slaves (without conditional signals)"""
         signals = []
+        num_masters = len(self.config.masters)
+        # Calculate slave ID width: ID_WIDTH + $clog2(num_masters)
+        slave_id_width_expr = f"ID_WIDTH+$clog2({num_masters})" if num_masters > 1 else "ID_WIDTH"
+        
         for i in range(len(self.config.slaves)):
-            signals.append(f"""    // Slave {i} signals
-    logic [ID_WIDTH-1:0]     s{i}_awid;
+            signals.append(f"""    // Slave {i} signals (slave ID width = {slave_id_width_expr})
+    logic [{slave_id_width_expr}-1:0]    s{i}_awid;
+    logic [3:0]              s{i}_awcache;
+    logic [2:0]              s{i}_awprot;
+    logic [3:0]              s{i}_awqos;
     logic [ADDR_WIDTH-1:0]   s{i}_awaddr;
     logic [7:0]              s{i}_awlen;
     logic [2:0]              s{i}_awsize;
     logic [1:0]              s{i}_awburst;
     logic                    s{i}_awlock;
-    logic [3:0]              s{i}_awcache;
-    logic [2:0]              s{i}_awprot;
-    logic [3:0]              s{i}_awqos;
     logic                    s{i}_awvalid;
     logic                    s{i}_awready;
     
@@ -3127,24 +3331,24 @@ endmodule : dut_wrapper
     logic                    s{i}_wvalid;
     logic                    s{i}_wready;
     
-    logic [ID_WIDTH-1:0]     s{i}_bid;
+    logic [{slave_id_width_expr}-1:0]    s{i}_bid;
     logic [1:0]              s{i}_bresp;
     logic                    s{i}_bvalid;
     logic                    s{i}_bready;
     
-    logic [ID_WIDTH-1:0]     s{i}_arid;
+    logic [{slave_id_width_expr}-1:0]    s{i}_arid;
+    logic [3:0]              s{i}_arcache;
+    logic [2:0]              s{i}_arprot;
+    logic [3:0]              s{i}_arqos;
     logic [ADDR_WIDTH-1:0]   s{i}_araddr;
     logic [7:0]              s{i}_arlen;
     logic [2:0]              s{i}_arsize;
     logic [1:0]              s{i}_arburst;
     logic                    s{i}_arlock;
-    logic [3:0]              s{i}_arcache;
-    logic [2:0]              s{i}_arprot;
-    logic [3:0]              s{i}_arqos;
     logic                    s{i}_arvalid;
     logic                    s{i}_arready;
     
-    logic [ID_WIDTH-1:0]     s{i}_rid;
+    logic [{slave_id_width_expr}-1:0]    s{i}_rid;
     logic [DATA_WIDTH-1:0]   s{i}_rdata;
     logic [1:0]              s{i}_rresp;
     logic                    s{i}_rlast;
@@ -3154,7 +3358,7 @@ endmodule : dut_wrapper
         return "\n".join(signals)
     
     def _generate_master_connections(self):
-        """Generate master port connections"""
+        """Generate master port connections with correct RTL naming (lowercase)"""
         connections = []
         for i, master in enumerate(self.config.masters):
             connections.append(f"""        // Master {i} - {master.name}
@@ -3204,7 +3408,7 @@ endmodule : dut_wrapper
         return "\n".join(connections)
     
     def _generate_slave_connections(self):
-        """Generate slave port connections"""
+        """Generate slave port connections with correct RTL naming (lowercase)"""
         connections = []
         for i, slave in enumerate(self.config.slaves):
             connections.append(f"""        // Slave {i} - {slave.name}
@@ -3214,11 +3418,11 @@ endmodule : dut_wrapper
         .s{i}_awsize(s{i}_awsize),
         .s{i}_awburst(s{i}_awburst),
         .s{i}_awlock(s{i}_awlock),
+        .s{i}_awvalid(s{i}_awvalid),
+        .s{i}_awready(s{i}_awready),
         .s{i}_awcache(s{i}_awcache),
         .s{i}_awprot(s{i}_awprot),
         .s{i}_awqos(s{i}_awqos),
-        .s{i}_awvalid(s{i}_awvalid),
-        .s{i}_awready(s{i}_awready),
         
         .s{i}_wdata(s{i}_wdata),
         .s{i}_wstrb(s{i}_wstrb),
@@ -3237,11 +3441,11 @@ endmodule : dut_wrapper
         .s{i}_arsize(s{i}_arsize),
         .s{i}_arburst(s{i}_arburst),
         .s{i}_arlock(s{i}_arlock),
+        .s{i}_arvalid(s{i}_arvalid),
+        .s{i}_arready(s{i}_arready),
         .s{i}_arcache(s{i}_arcache),
         .s{i}_arprot(s{i}_arprot),
         .s{i}_arqos(s{i}_arqos),
-        .s{i}_arvalid(s{i}_arvalid),
-        .s{i}_arready(s{i}_arready),
         
         .s{i}_rid(s{i}_rid),
         .s{i}_rdata(s{i}_rdata),
