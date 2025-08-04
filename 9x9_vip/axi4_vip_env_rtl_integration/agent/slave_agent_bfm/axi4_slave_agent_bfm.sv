@@ -4,21 +4,30 @@
 // Date: 2025-08-04 09:53:21
 //==============================================================================
 
-interface axi4_slave_agent_bfm #(
+module axi4_slave_agent_bfm #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 64,
-    parameter ID_WIDTH   = 4
+    parameter ID_WIDTH   = 8  // Slave ID width includes concatenated master ID
 )(
     input aclk,
-    input aresetn
+    input aresetn,
+    axi4_if.slave axi_intf  // Connect to AXI interface
 );
 
     import axi4_globals_pkg::*;
     
-    // Slave driver BFM instance (interface instantiation)
-    axi4_slave_driver_bfm slave_driver_bfm_h(aclk, aresetn);
+    // Slave driver BFM instance with interface connection
+    axi4_slave_driver_bfm #(
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH),
+        .ID_WIDTH(ID_WIDTH)
+    ) slave_driver_bfm_h(
+        .aclk(aclk), 
+        .aresetn(aresetn),
+        .axi_intf(axi_intf)
+    );
     
-    // Slave monitor BFM instance (interface instantiation) 
+    // Slave monitor BFM instance
     axi4_slave_monitor_bfm slave_monitor_bfm_h(aclk, aresetn);
 
-endinterface : axi4_slave_agent_bfm
+endmodule : axi4_slave_agent_bfm

@@ -1,0 +1,4 @@
+# Simulation log files
+*.log
+*.fsdb
+*.vcd

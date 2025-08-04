@@ -50,7 +50,7 @@ endif
 # VCS options
 VCS_COMP_OPTS = -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps
 VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait -lca -kdb
-VCS_COMP_OPTS += +lint=PCWM
+VCS_COMP_OPTS += +lint=PCWM +lint=TFIPC-L
 VCS_COMP_OPTS += $(COMMON_OPTS)
 
 VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=UVM_MEDIUM

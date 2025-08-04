@@ -1,0 +1,679 @@
+Command: /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/./simv +UVM_TESTNAME=axi4_basic_rw_test +UVM_VERBOSITY=UVM_HIGH +define+DUMP_FSDB +fsdb_file=test_connectivity.fsdb -l connectivity_test.log
+Chronologic VCS simulator copyright 1991-2024
+Contains Synopsys proprietary information.
+Compiler version W-2024.09-SP1_Full64; Runtime version W-2024.09-SP1_Full64;  Aug  4 15:17 2025
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh(402) @ 0: reporter [UVM/RELNOTES] 
+----------------------------------------------------------------
+UVM-1.2.Synopsys
+(C) 2007-2014 Mentor Graphics Corporation
+(C) 2007-2014 Cadence Design Systems, Inc.
+(C) 2006-2014 Synopsys, Inc.
+(C) 2011-2013 Cypress Semiconductor Corp.
+(C) 2013-2014 NVIDIA Corporation
+----------------------------------------------------------------
+
+  ***********       IMPORTANT RELEASE NOTES         ************
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_OBJECT_DO_NOT_NEED_CONSTRUCTOR undefined.
+  See http://www.eda.org/svdb/view.php?id=3770 for more details.
+
+      (Specify +UVM_NO_RELNOTES to turn off this notice)
+
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(215) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Master BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(262) @ 0: reporter [AXI_SLAVE_DRIVER_BFM] Slave BFM signals initialized
+[0] HDL Top: BFMs instantiated and connected
+[0] HDL Top: 9 Master BFMs connected to axi_if interfaces
+[0] HDL Top: 9 Slave BFMs connected to slave_if interfaces
+[0] HDL Top: Signal driving is now handled by BFMs
+UVM_INFO @ 0: reporter [RNTST] Running test axi4_basic_rw_test...
+UVM_INFO ../env/axi4_protocol_coverage.sv(19) @ 0: uvm_test_top.env.coverage [axi4_protocol_coverage] Protocol coverage build phase
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(158) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Building master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(164) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Master agent mode:  ACTIVE
+UVM_INFO ../master/axi4_master_pkg.sv(170) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Created sequencer and driver for active agent
+UVM_INFO ../master/axi4_master_pkg.sv(173) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Created monitor
+UVM_INFO ../slave/axi4_slave_pkg.sv(108) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Building slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(114) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Slave agent mode:  ACTIVE
+UVM_INFO ../slave/axi4_slave_pkg.sv(120) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Created sequencer and driver for active agent
+UVM_INFO ../slave/axi4_slave_pkg.sv(123) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Created monitor
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[1] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[2] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[3] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[4] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[5] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[6] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[7] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(178) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Connecting master agent components
+UVM_INFO ../master/axi4_master_pkg.sv(182) @ 0: uvm_test_top.env.master_agent[8] [axi4_master_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[0] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[1] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[2] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[3] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[4] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[5] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[6] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[7] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO ../slave/axi4_slave_pkg.sv(128) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Connecting slave agent components
+UVM_INFO ../slave/axi4_slave_pkg.sv(132) @ 0: uvm_test_top.env.slave_agent[8] [axi4_slave_agent] Connected driver to sequencer
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh(589) @ 0: reporter [UVMTOP] UVM testbench topology:
+--------------------------------------------------------------------
+Name                         Type                        Size  Value
+--------------------------------------------------------------------
+uvm_test_top                 axi4_basic_rw_test          -     @376 
+  env                        axi4_env                    -     @412 
+    coverage                 axi4_protocol_coverage      -     @753 
+    master_agent[0]          axi4_master_agent           -     @445 
+      driver                 axi4_master_driver          -     @907 
+        rsp_port             uvm_analysis_port           -     @926 
+        seq_item_port        uvm_seq_item_pull_port      -     @916 
+      monitor                axi4_master_monitor         -     @938 
+        item_collected_port  uvm_analysis_port           -     @947 
+      sequencer              axi4_master_sequencer       -     @770 
+        rsp_export           uvm_analysis_export         -     @779 
+        seq_item_export      uvm_seq_item_pull_imp       -     @897 
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[1]          axi4_master_agent           -     @454 
+      driver                 axi4_master_driver          -     @1102
+        rsp_port             uvm_analysis_port           -     @1121
+        seq_item_port        uvm_seq_item_pull_port      -     @1111
+      monitor                axi4_master_monitor         -     @1133
+        item_collected_port  uvm_analysis_port           -     @1142
+      sequencer              axi4_master_sequencer       -     @965 
+        rsp_export           uvm_analysis_export         -     @974 
+        seq_item_export      uvm_seq_item_pull_imp       -     @1092
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[2]          axi4_master_agent           -     @463 
+      driver                 axi4_master_driver          -     @1297
+        rsp_port             uvm_analysis_port           -     @1316
+        seq_item_port        uvm_seq_item_pull_port      -     @1306
+      monitor                axi4_master_monitor         -     @1328
+        item_collected_port  uvm_analysis_port           -     @1337
+      sequencer              axi4_master_sequencer       -     @1160
+        rsp_export           uvm_analysis_export         -     @1169
+        seq_item_export      uvm_seq_item_pull_imp       -     @1287
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[3]          axi4_master_agent           -     @472 
+      driver                 axi4_master_driver          -     @1492
+        rsp_port             uvm_analysis_port           -     @1511
+        seq_item_port        uvm_seq_item_pull_port      -     @1501
+      monitor                axi4_master_monitor         -     @1523
+        item_collected_port  uvm_analysis_port           -     @1532
+      sequencer              axi4_master_sequencer       -     @1355
+        rsp_export           uvm_analysis_export         -     @1364
+        seq_item_export      uvm_seq_item_pull_imp       -     @1482
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[4]          axi4_master_agent           -     @481 
+      driver                 axi4_master_driver          -     @1687
+        rsp_port             uvm_analysis_port           -     @1706
+        seq_item_port        uvm_seq_item_pull_port      -     @1696
+      monitor                axi4_master_monitor         -     @1718
+        item_collected_port  uvm_analysis_port           -     @1727
+      sequencer              axi4_master_sequencer       -     @1550
+        rsp_export           uvm_analysis_export         -     @1559
+        seq_item_export      uvm_seq_item_pull_imp       -     @1677
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[5]          axi4_master_agent           -     @490 
+      driver                 axi4_master_driver          -     @1882
+        rsp_port             uvm_analysis_port           -     @1901
+        seq_item_port        uvm_seq_item_pull_port      -     @1891
+      monitor                axi4_master_monitor         -     @1913
+        item_collected_port  uvm_analysis_port           -     @1922
+      sequencer              axi4_master_sequencer       -     @1745
+        rsp_export           uvm_analysis_export         -     @1754
+        seq_item_export      uvm_seq_item_pull_imp       -     @1872
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[6]          axi4_master_agent           -     @499 
+      driver                 axi4_master_driver          -     @2077
+        rsp_port             uvm_analysis_port           -     @2096
+        seq_item_port        uvm_seq_item_pull_port      -     @2086
+      monitor                axi4_master_monitor         -     @2108
+        item_collected_port  uvm_analysis_port           -     @2117
+      sequencer              axi4_master_sequencer       -     @1940
+        rsp_export           uvm_analysis_export         -     @1949
+        seq_item_export      uvm_seq_item_pull_imp       -     @2067
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[7]          axi4_master_agent           -     @508 
+      driver                 axi4_master_driver          -     @2272
+        rsp_port             uvm_analysis_port           -     @2291
+        seq_item_port        uvm_seq_item_pull_port      -     @2281
+      monitor                axi4_master_monitor         -     @2303
+        item_collected_port  uvm_analysis_port           -     @2312
+      sequencer              axi4_master_sequencer       -     @2135
+        rsp_export           uvm_analysis_export         -     @2144
+        seq_item_export      uvm_seq_item_pull_imp       -     @2262
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    master_agent[8]          axi4_master_agent           -     @517 
+      driver                 axi4_master_driver          -     @2467
+        rsp_port             uvm_analysis_port           -     @2486
+        seq_item_port        uvm_seq_item_pull_port      -     @2476
+      monitor                axi4_master_monitor         -     @2498
+        item_collected_port  uvm_analysis_port           -     @2507
+      sequencer              axi4_master_sequencer       -     @2330
+        rsp_export           uvm_analysis_export         -     @2339
+        seq_item_export      uvm_seq_item_pull_imp       -     @2457
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    scoreboard               axi4_scoreboard             -     @744 
+      master_fifo[0]         uvm_tlm_analysis_fifo #(T)  -     @2519
+        analysis_export      uvm_analysis_imp            -     @2568
+        get_ap               uvm_analysis_port           -     @2558
+        get_peek_export      uvm_get_peek_imp            -     @2538
+        put_ap               uvm_analysis_port           -     @2548
+        put_export           uvm_put_imp                 -     @2528
+      master_fifo[1]         uvm_tlm_analysis_fifo #(T)  -     @2578
+        analysis_export      uvm_analysis_imp            -     @2627
+        get_ap               uvm_analysis_port           -     @2617
+        get_peek_export      uvm_get_peek_imp            -     @2597
+        put_ap               uvm_analysis_port           -     @2607
+        put_export           uvm_put_imp                 -     @2587
+      master_fifo[2]         uvm_tlm_analysis_fifo #(T)  -     @2637
+        analysis_export      uvm_analysis_imp            -     @2686
+        get_ap               uvm_analysis_port           -     @2676
+        get_peek_export      uvm_get_peek_imp            -     @2656
+        put_ap               uvm_analysis_port           -     @2666
+        put_export           uvm_put_imp                 -     @2646
+      master_fifo[3]         uvm_tlm_analysis_fifo #(T)  -     @2696
+        analysis_export      uvm_analysis_imp            -     @2745
+        get_ap               uvm_analysis_port           -     @2735
+        get_peek_export      uvm_get_peek_imp            -     @2715
+        put_ap               uvm_analysis_port           -     @2725
+        put_export           uvm_put_imp                 -     @2705
+      master_fifo[4]         uvm_tlm_analysis_fifo #(T)  -     @2755
+        analysis_export      uvm_analysis_imp            -     @2804
+        get_ap               uvm_analysis_port           -     @2794
+        get_peek_export      uvm_get_peek_imp            -     @2774
+        put_ap               uvm_analysis_port           -     @2784
+        put_export           uvm_put_imp                 -     @2764
+      master_fifo[5]         uvm_tlm_analysis_fifo #(T)  -     @2814
+        analysis_export      uvm_analysis_imp            -     @2863
+        get_ap               uvm_analysis_port           -     @2853
+        get_peek_export      uvm_get_peek_imp            -     @2833
+        put_ap               uvm_analysis_port           -     @2843
+        put_export           uvm_put_imp                 -     @2823
+      master_fifo[6]         uvm_tlm_analysis_fifo #(T)  -     @2873
+        analysis_export      uvm_analysis_imp            -     @2922
+        get_ap               uvm_analysis_port           -     @2912
+        get_peek_export      uvm_get_peek_imp            -     @2892
+        put_ap               uvm_analysis_port           -     @2902
+        put_export           uvm_put_imp                 -     @2882
+      master_fifo[7]         uvm_tlm_analysis_fifo #(T)  -     @2932
+        analysis_export      uvm_analysis_imp            -     @2981
+        get_ap               uvm_analysis_port           -     @2971
+        get_peek_export      uvm_get_peek_imp            -     @2951
+        put_ap               uvm_analysis_port           -     @2961
+        put_export           uvm_put_imp                 -     @2941
+      master_fifo[8]         uvm_tlm_analysis_fifo #(T)  -     @2991
+        analysis_export      uvm_analysis_imp            -     @3040
+        get_ap               uvm_analysis_port           -     @3030
+        get_peek_export      uvm_get_peek_imp            -     @3010
+        put_ap               uvm_analysis_port           -     @3020
+        put_export           uvm_put_imp                 -     @3000
+      slave_fifo[0]          uvm_tlm_analysis_fifo #(T)  -     @3050
+        analysis_export      uvm_analysis_imp            -     @3099
+        get_ap               uvm_analysis_port           -     @3089
+        get_peek_export      uvm_get_peek_imp            -     @3069
+        put_ap               uvm_analysis_port           -     @3079
+        put_export           uvm_put_imp                 -     @3059
+      slave_fifo[1]          uvm_tlm_analysis_fifo #(T)  -     @3109
+        analysis_export      uvm_analysis_imp            -     @3158
+        get_ap               uvm_analysis_port           -     @3148
+        get_peek_export      uvm_get_peek_imp            -     @3128
+        put_ap               uvm_analysis_port           -     @3138
+        put_export           uvm_put_imp                 -     @3118
+      slave_fifo[2]          uvm_tlm_analysis_fifo #(T)  -     @3168
+        analysis_export      uvm_analysis_imp            -     @3217
+        get_ap               uvm_analysis_port           -     @3207
+        get_peek_export      uvm_get_peek_imp            -     @3187
+        put_ap               uvm_analysis_port           -     @3197
+        put_export           uvm_put_imp                 -     @3177
+      slave_fifo[3]          uvm_tlm_analysis_fifo #(T)  -     @3227
+        analysis_export      uvm_analysis_imp            -     @3276
+        get_ap               uvm_analysis_port           -     @3266
+        get_peek_export      uvm_get_peek_imp            -     @3246
+        put_ap               uvm_analysis_port           -     @3256
+        put_export           uvm_put_imp                 -     @3236
+      slave_fifo[4]          uvm_tlm_analysis_fifo #(T)  -     @3286
+        analysis_export      uvm_analysis_imp            -     @3335
+        get_ap               uvm_analysis_port           -     @3325
+        get_peek_export      uvm_get_peek_imp            -     @3305
+        put_ap               uvm_analysis_port           -     @3315
+        put_export           uvm_put_imp                 -     @3295
+      slave_fifo[5]          uvm_tlm_analysis_fifo #(T)  -     @3345
+        analysis_export      uvm_analysis_imp            -     @3394
+        get_ap               uvm_analysis_port           -     @3384
+        get_peek_export      uvm_get_peek_imp            -     @3364
+        put_ap               uvm_analysis_port           -     @3374
+        put_export           uvm_put_imp                 -     @3354
+      slave_fifo[6]          uvm_tlm_analysis_fifo #(T)  -     @3404
+        analysis_export      uvm_analysis_imp            -     @3453
+        get_ap               uvm_analysis_port           -     @3443
+        get_peek_export      uvm_get_peek_imp            -     @3423
+        put_ap               uvm_analysis_port           -     @3433
+        put_export           uvm_put_imp                 -     @3413
+      slave_fifo[7]          uvm_tlm_analysis_fifo #(T)  -     @3463
+        analysis_export      uvm_analysis_imp            -     @3512
+        get_ap               uvm_analysis_port           -     @3502
+        get_peek_export      uvm_get_peek_imp            -     @3482
+        put_ap               uvm_analysis_port           -     @3492
+        put_export           uvm_put_imp                 -     @3472
+      slave_fifo[8]          uvm_tlm_analysis_fifo #(T)  -     @3522
+        analysis_export      uvm_analysis_imp            -     @3571
+        get_ap               uvm_analysis_port           -     @3561
+        get_peek_export      uvm_get_peek_imp            -     @3541
+        put_ap               uvm_analysis_port           -     @3551
+        put_export           uvm_put_imp                 -     @3531
+    slave_agent[0]           axi4_slave_agent            -     @526 
+      driver                 axi4_slave_driver           -     @3724
+        rsp_port             uvm_analysis_port           -     @3743
+        seq_item_port        uvm_seq_item_pull_port      -     @3733
+      monitor                axi4_slave_monitor          -     @3755
+        item_collected_port  uvm_analysis_port           -     @3764
+      sequencer              axi4_slave_sequencer        -     @3587
+        rsp_export           uvm_analysis_export         -     @3596
+        seq_item_export      uvm_seq_item_pull_imp       -     @3714
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[1]           axi4_slave_agent            -     @535 
+      driver                 axi4_slave_driver           -     @3919
+        rsp_port             uvm_analysis_port           -     @3938
+        seq_item_port        uvm_seq_item_pull_port      -     @3928
+      monitor                axi4_slave_monitor          -     @3950
+        item_collected_port  uvm_analysis_port           -     @3959
+      sequencer              axi4_slave_sequencer        -     @3782
+        rsp_export           uvm_analysis_export         -     @3791
+        seq_item_export      uvm_seq_item_pull_imp       -     @3909
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[2]           axi4_slave_agent            -     @544 
+      driver                 axi4_slave_driver           -     @4114
+        rsp_port             uvm_analysis_port           -     @4133
+        seq_item_port        uvm_seq_item_pull_port      -     @4123
+      monitor                axi4_slave_monitor          -     @4145
+        item_collected_port  uvm_analysis_port           -     @4154
+      sequencer              axi4_slave_sequencer        -     @3977
+        rsp_export           uvm_analysis_export         -     @3986
+        seq_item_export      uvm_seq_item_pull_imp       -     @4104
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[3]           axi4_slave_agent            -     @553 
+      driver                 axi4_slave_driver           -     @4309
+        rsp_port             uvm_analysis_port           -     @4328
+        seq_item_port        uvm_seq_item_pull_port      -     @4318
+      monitor                axi4_slave_monitor          -     @4340
+        item_collected_port  uvm_analysis_port           -     @4349
+      sequencer              axi4_slave_sequencer        -     @4172
+        rsp_export           uvm_analysis_export         -     @4181
+        seq_item_export      uvm_seq_item_pull_imp       -     @4299
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[4]           axi4_slave_agent            -     @562 
+      driver                 axi4_slave_driver           -     @4504
+        rsp_port             uvm_analysis_port           -     @4523
+        seq_item_port        uvm_seq_item_pull_port      -     @4513
+      monitor                axi4_slave_monitor          -     @4535
+        item_collected_port  uvm_analysis_port           -     @4544
+      sequencer              axi4_slave_sequencer        -     @4367
+        rsp_export           uvm_analysis_export         -     @4376
+        seq_item_export      uvm_seq_item_pull_imp       -     @4494
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[5]           axi4_slave_agent            -     @571 
+      driver                 axi4_slave_driver           -     @4699
+        rsp_port             uvm_analysis_port           -     @4718
+        seq_item_port        uvm_seq_item_pull_port      -     @4708
+      monitor                axi4_slave_monitor          -     @4730
+        item_collected_port  uvm_analysis_port           -     @4739
+      sequencer              axi4_slave_sequencer        -     @4562
+        rsp_export           uvm_analysis_export         -     @4571
+        seq_item_export      uvm_seq_item_pull_imp       -     @4689
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[6]           axi4_slave_agent            -     @580 
+      driver                 axi4_slave_driver           -     @4894
+        rsp_port             uvm_analysis_port           -     @4913
+        seq_item_port        uvm_seq_item_pull_port      -     @4903
+      monitor                axi4_slave_monitor          -     @4925
+        item_collected_port  uvm_analysis_port           -     @4934
+      sequencer              axi4_slave_sequencer        -     @4757
+        rsp_export           uvm_analysis_export         -     @4766
+        seq_item_export      uvm_seq_item_pull_imp       -     @4884
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[7]           axi4_slave_agent            -     @589 
+      driver                 axi4_slave_driver           -     @5089
+        rsp_port             uvm_analysis_port           -     @5108
+        seq_item_port        uvm_seq_item_pull_port      -     @5098
+      monitor                axi4_slave_monitor          -     @5120
+        item_collected_port  uvm_analysis_port           -     @5129
+      sequencer              axi4_slave_sequencer        -     @4952
+        rsp_export           uvm_analysis_export         -     @4961
+        seq_item_export      uvm_seq_item_pull_imp       -     @5079
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    slave_agent[8]           axi4_slave_agent            -     @598 
+      driver                 axi4_slave_driver           -     @5284
+        rsp_port             uvm_analysis_port           -     @5303
+        seq_item_port        uvm_seq_item_pull_port      -     @5293
+      monitor                axi4_slave_monitor          -     @5315
+        item_collected_port  uvm_analysis_port           -     @5324
+      sequencer              axi4_slave_sequencer        -     @5147
+        rsp_export           uvm_analysis_export         -     @5156
+        seq_item_export      uvm_seq_item_pull_imp       -     @5274
+        arbitration_queue    array                       0     -    
+        lock_queue           array                       0     -    
+        num_last_reqs        integral                    32    'd1  
+        num_last_rsps        integral                    32    'd1  
+    v_seqr                   axi4_virtual_sequencer      -     @607 
+      rsp_export             uvm_analysis_export         -     @616 
+      seq_item_export        uvm_seq_item_pull_imp       -     @734 
+      arbitration_queue      array                       0     -    
+      lock_queue             array                       0     -    
+      num_last_reqs          integral                    32    'd1  
+      num_last_rsps          integral                    32    'd1  
+--------------------------------------------------------------------
+
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(87) @ 0: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Starting master driver run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 0: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../master/axi4_master_pkg.sv(132) @ 0: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Starting master monitor run_phase
+UVM_INFO ../master/axi4_master_pkg.sv(133) @ 0: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Monitoring AXI4 master interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[0].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[0].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[1].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[1].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[2].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[2].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[3].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[3].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[4].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[4].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[5].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[5].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[6].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[6].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[7].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[7].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(82) @ 0: uvm_test_top.env.slave_agent[8].monitor [axi4_slave_monitor] Starting slave monitor run_phase
+UVM_INFO ../slave/axi4_slave_pkg.sv(83) @ 0: uvm_test_top.env.slave_agent[8].monitor [axi4_slave_monitor] Monitoring AXI4 slave interface for transactions
+UVM_INFO ../test/axi4_basic_rw_test.sv(23) @ 0: uvm_test_top [axi4_basic_rw_test] Starting basic read/write test
+UVM_INFO ../virtual_seq/axi4_virtual_write_read_seq.sv(21) @ 0: uvm_test_top.env.v_seqr@@vseq [axi4_virtual_write_read_seq] Starting virtual write-read sequence
+UVM_INFO ../virtual_seq/axi4_virtual_write_seq.sv(20) @ 0: uvm_test_top.env.v_seqr@@write_seq [axi4_virtual_write_seq] Starting virtual write sequence
+UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x0, len=0, size=2, burst=1
+UVM_INFO ../master/axi4_master_pkg.sv(99) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Transaction details - id=5, qos=7, region=11, cache=0x7, prot=1
+UVM_INFO ../master/axi4_master_pkg.sv(111) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Driving transaction to BFM interface
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 100000: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[0].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[1].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[2].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[3].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[4].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[5].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[6].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[7].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 100000: uvm_test_top.env.slave_agent[8].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(114) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Transaction completed, signaling item_done
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../virtual_seq/axi4_virtual_read_seq.sv(20) @ 100000: uvm_test_top.env.v_seqr@@read_seq [axi4_virtual_read_seq] Starting virtual read sequence
+UVM_INFO ../master/axi4_master_pkg.sv(92) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x0, len=0, size=2, burst=1
+UVM_INFO ../master/axi4_master_pkg.sv(99) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Transaction details - id=9, qos=15, region=4, cache=0x9, prot=6
+UVM_INFO ../master/axi4_master_pkg.sv(111) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Driving transaction to BFM interface
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(32) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting write transaction handling
+UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(45) @ 145000: reporter [AXI_SLAVE_DRIVER_BFM] Starting read transaction handling
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(138) @ 200000: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[0].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[1].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[2].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[3].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[4].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[5].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[6].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[7].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../slave/axi4_slave_pkg.sv(88) @ 200000: uvm_test_top.env.slave_agent[8].monitor [axi4_slave_monitor] Monitor active - checking for transactions
+UVM_INFO ../master/axi4_master_pkg.sv(114) @ 200000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Transaction completed, signaling item_done
+UVM_INFO ../master/axi4_master_pkg.sv(89) @ 200000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Waiting for next transaction from sequencer
+UVM_INFO ../test/axi4_basic_rw_test.sv(29) @ 200000: uvm_test_top [axi4_basic_rw_test] Completed basic read/write test
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_catcher.svh(705) @ 200000: reporter [UVM/REPORT/CATCHER] 
+--- UVM Report catcher Summary ---
+
+
+Number of demoted UVM_FATAL reports  :    0
+Number of demoted UVM_ERROR reports  :    0
+Number of demoted UVM_WARNING reports:    0
+Number of caught UVM_FATAL reports   :    0
+Number of caught UVM_ERROR reports   :    0
+Number of caught UVM_WARNING reports :    0
+
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_server.svh(904) @ 200000: reporter [UVM/REPORT/SERVER] 
+--- UVM Report Summary ---
+
+** Report counts by severity
+UVM_INFO :  254
+UVM_WARNING :    0
+UVM_ERROR :    0
+UVM_FATAL :    0
+** Report counts by id
+[AXI_MASTER_DRIVER_BFM]     9
+[AXI_SLAVE_DRIVER_BFM]    27
+[RNTST]     1
+[UVM/RELNOTES]     1
+[UVM/REPORT/CATCHER]     1
+[UVMTOP]     1
+[axi4_basic_rw_test]     2
+[axi4_master_agent]    54
+[axi4_master_driver]    28
+[axi4_master_monitor]    36
+[axi4_protocol_coverage]     1
+[axi4_slave_agent]    54
+[axi4_slave_monitor]    36
+[axi4_virtual_read_seq]     1
+[axi4_virtual_write_read_seq]     1
+[axi4_virtual_write_seq]     1
+
+$finish called from file "/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh", line 527.
+$finish at simulation time               200000
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 200000 ps
+CPU Time:      0.610 seconds;       Data structure size:   2.0Mb
+Mon Aug  4 15:17:14 2025

@@ -29,17 +29,68 @@ module hdl_top;
     // AXI4 interfaces
     axi4_if axi_if[NO_OF_MASTERS](aclk, aresetn);
     
-    // Master agent BFMs
-    axi4_master_agent_bfm master_bfm[NO_OF_MASTERS](aclk, aresetn);
+    // Master agent BFMs - connected to AXI interfaces
+    genvar i;
+    generate
+        for (i = 0; i < NO_OF_MASTERS; i++) begin : gen_master_bfms
+            axi4_master_agent_bfm #(
+                .ADDR_WIDTH(ADDRESS_WIDTH),
+                .DATA_WIDTH(DATA_WIDTH),
+                .ID_WIDTH(ID_WIDTH)
+            ) master_bfm (
+                .aclk(aclk),
+                .aresetn(aresetn),
+                .axi_intf(axi_if[i])
+            );
+        end
+    endgenerate
     
-    // Slave agent BFMs
-    axi4_slave_agent_bfm slave_bfm[NO_OF_SLAVES](aclk, aresetn);
+    // Additional slave interfaces for slave BFMs (connected to DUT outputs)
+    // Slave interfaces need wider ID width to accommodate master ID concatenation
+    axi4_if #(
+        .ADDR_WIDTH(ADDRESS_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH),
+        .ID_WIDTH(ID_WIDTH+$clog2(NO_OF_MASTERS))  // Extended ID width for slaves
+    ) slave_if[NO_OF_SLAVES](aclk, aresetn);
     
-    // FSDB dumping
+    // Slave agent BFMs - connected to slave interfaces
+    generate
+        for (i = 0; i < NO_OF_SLAVES; i++) begin : gen_slave_bfms
+            axi4_slave_agent_bfm #(
+                .ADDR_WIDTH(ADDRESS_WIDTH),
+                .DATA_WIDTH(DATA_WIDTH),
+                .ID_WIDTH(ID_WIDTH+$clog2(NO_OF_MASTERS))  // Slave ID includes master ID
+            ) slave_bfm (
+                .aclk(aclk),
+                .aresetn(aresetn),
+                .axi_intf(slave_if[i])
+            );
+        end
+    endgenerate
+    
+    // BFM initialization and control
+    initial begin
+        $display("[%0t] HDL Top: BFMs instantiated and connected", $time);
+        $display("[%0t] HDL Top: %0d Master BFMs connected to axi_if interfaces", $time, NO_OF_MASTERS);
+        $display("[%0t] HDL Top: %0d Slave BFMs connected to slave_if interfaces", $time, NO_OF_SLAVES);
+        $display("[%0t] HDL Top: Signal driving is now handled by BFMs", $time);
+    end
+    
+    // Unified FSDB/VCD dumping with plusarg support
     `ifdef DUMP_FSDB
     initial begin
+        string dump_file = "axi4_vip.fsdb";  // Default filename
+        
+        // Check for custom filename from plusargs
+        if ($value$plusargs("fsdb_file=%s", dump_file)) begin
+            $display("[%0t] Using custom FSDB file: %s", $time, dump_file);
+        end else begin
+            $display("[%0t] Using default FSDB file: %s", $time, dump_file);
+        end
+        
+        // Start FSDB dumping with determined filename
         $display("[%0t] Starting FSDB dump", $time);
-        $fsdbDumpfile("axi4_vip.fsdb");
+        $fsdbDumpfile(dump_file);
         $fsdbDumpvars(0, hdl_top, "+all");
         $fsdbDumpSVA();
         $fsdbDumpMDA();
@@ -50,8 +101,17 @@ module hdl_top;
     // VCD dumping (alternative)
     `ifdef DUMP_VCD
     initial begin
+        string dump_file = "axi4_vip.vcd";  // Default filename
+        
+        // Check for custom filename from plusargs
+        if ($value$plusargs("vcd_file=%s", dump_file)) begin
+            $display("[%0t] Using custom VCD file: %s", $time, dump_file);
+        end else begin
+            $display("[%0t] Using default VCD file: %s", $time, dump_file);
+        end
+        
         $display("[%0t] Starting VCD dump", $time);
-        $dumpfile("axi4_vip.vcd");
+        $dumpfile(dump_file);
         $dumpvars(0, hdl_top);
         $dumpon();
     end
@@ -80,26 +140,18 @@ module hdl_top;
         `endif
     endtask
     
-    // Dump control from plusargs
-    initial begin
-        string dump_file;
-        if ($value$plusargs("fsdb_file=%s", dump_file)) begin
-            `ifdef DUMP_FSDB
-                $fsdbDumpfile(dump_file);
-                $display("[%0t] FSDB file set to: %s", $time, dump_file);
-            `endif
-        end
-    end
-    
-    // RTL DUT instance
+    // RTL DUT instance - Full 9x9 interconnect
     dut_wrapper #(
         .ADDR_WIDTH(ADDRESS_WIDTH),
         .DATA_WIDTH(DATA_WIDTH),
-        .ID_WIDTH(ID_WIDTH)
+        .ID_WIDTH(ID_WIDTH),
+        .NUM_MASTERS(NO_OF_MASTERS),
+        .NUM_SLAVES(NO_OF_SLAVES)
     ) dut (
         .clk(aclk),
         .rst_n(aresetn),
-        .axi_if(axi_if[0])  // Connect to first master interface
+        .master_if(axi_if),    // All master interfaces from VIP
+        .slave_if(slave_if)    // All slave interfaces to VIP slave BFMs
     );
     
     // Additional waveform dumping for DUT internals

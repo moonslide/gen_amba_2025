@@ -221,6 +221,8 @@ Selection-LineColor = ID_BLUE3
 Selection-LineWidth = 1
 [FSM_Dlg-Print]
 Orientation = Landscape
+[FileBrowser]
+nWaveOpenFsdbDirHistory = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb\""
 [Form]
 version = Verdi_W-2024.09-SP1
 [General]
@@ -231,7 +233,8 @@ SyncBrowserDir = TRUE
 FindBarVisible = 
 ColorTheme = classic
 version = Verdi_W-2024.09-SP1
-recent_commands_nWave = zoomOut
+recent_commands_nWave = zoomOut,openFile,getSignal
+recent_commands_Verdi = hbTextCopySignalFullPath,UndoTraceGroup
 prevColorTheme = classic
 SignalCaseInSensitive = FALSE
 [GlobalProp]
@@ -376,9 +379,12 @@ saveWaveformStat = TRUE
 savePropStat = FALSE
 savePropDtl = TRUE
 [QtDialog]
-QwWarnMsgDlg = 1410,607,600,249
-unknownSave = 1489,557,461,245
-QwUserAskDlg = 1558,654,324,125
+qWaveSignalDialog = 1320,440,800,479
+openFileDlg = 1379,433,602,483
+tipViewerDlg = 1471,598,398,259
+QwWarnMsgDlg = 1410,718,600,249
+unknownSave = 1854,593,461,245
+QwUserAskDlg = 1508,565,324,125
 [Relationship]
 hideRecursiceNode = FALSE
 [Safety]
@@ -581,7 +587,7 @@ pdmlMacro = ID_BLACK
 font = COURIER12
 annotFont = FIXED12
 [Text.1]
-viewport = 0 27 3440 1305 45
+viewport = 825 272 2520 962 45
 [TextPrinter]
 Orientation = Landscape
 Indicator = FALSE
@@ -684,28 +690,28 @@ visualIndex = 1
 isHidden = TRUE
 isUserChangeColumnVisible = FALSE
 [VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column2]
-name = "Message"
-width = 2000
-visualIndex = 5
-isHidden = FALSE
-isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column3]
 name = "Time"
 width = 60
 visualIndex = 0
 isHidden = FALSE
 isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column4]
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column3]
 name = "Code"
 width = 60
 visualIndex = 3
 isHidden = TRUE
 isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column5]
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column4]
 name = "Type"
 width = 60
 visualIndex = 4
 isHidden = TRUE
+isUserChangeColumnVisible = FALSE
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column5]
+name = "Message"
+width = 2000
+visualIndex = 5
+isHidden = FALSE
 isUserChangeColumnVisible = FALSE
 [VIA.ruleHistory]
 /home/eda_tools/synopsys/verdi/W-2024.09-SP1/share/VIA/Apps/PredefinedRules/Misc/Onesearch_rule.rc = 
@@ -783,8 +789,8 @@ AutoApplySeverityColor = TRUE
 scope_to_save_with_macro
 open_file_dir
 open_rc_file_dir
-getSignalForm = 0 0 800 479 100 30 100 30
-viewPort = 0 25 3440 592 100 65
+getSignalForm = 1320 403 800 479 220 387 484 187
+viewPort = 0 25 2520 437 634 65
 legendBackground = -c ID_BLACK
 valueBackground = -c ID_BLACK
 curveBackground = -c ID_BLACK
@@ -950,8 +956,8 @@ printBasic = 1 0 0 FALSE FALSE
 printDest = -printer {}
 printSignature = {%f %h %t} {}
 curveWindow_Drag&Drop_Mode = TRUE
-RecentFile1 = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb\""
-RecentFile2 = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/waves/axi4_stress_test_1.fsdb\""
+RecentFile1 = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/waves/axi4_stress_test_1.fsdb\""
+RecentFile2 = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb\""
 open_file_time_range = FALSE
 legend_window_font = -f COURIER12 -c ID_CYAN5
 value_window_font = -f COURIER12 -c ID_CYAN5
@@ -1327,7 +1333,7 @@ AddImportArgument = FALSE
 LineBreakWithScope = TRUE
 StopAfterCompileOption = -s
 [wave.0]
-viewPort = 0 25 3440 592 100 65
+viewPort = 0 25 2520 437 634 65
 [wave.1]
 viewPort = 127 219 960 332 100 65
 [wave.2]

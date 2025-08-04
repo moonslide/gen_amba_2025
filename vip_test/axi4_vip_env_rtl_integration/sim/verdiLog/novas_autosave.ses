@@ -1,0 +1,107 @@
+@verdi rc file Version 1.0
+[General]
+saveDB = TRUE
+relativePath = FALSE
+saveSingleView = FALSE
+saveNWaveWinId = 
+VerdiVersion = Verdi_W-2024.09-SP1
+[KeyNote]
+Line1 = Automatic Backup 0
+Line2 = Save Open Database Information: Yes
+Line3 = Path Option: Absolute Paths
+Line4 = Windows Option: All Windows
+[OneSearch]
+isExisted = TRUE
+[TestBench]
+ConstrViewShow = 0
+InherViewShow = 0
+FSDBMsgShow = 0
+AnnotationShow = 0
+Console = FALSE
+powerDumped = 0
+breakpoint_count = 1
+BP1 = stop -line 8 -file /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/rtl_wrapper/dut_wrapper.sv \\
+
+[fusa]
+fdb_server = 
+fdb_proj = 
+fdb_campaign = 
+fdb_tool = 
+[hb]
+postSimFile = /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/sim/waves/axi4_performance_test_1.fsdb
+syncTime = 1006504.538
+viewport = 409 548 1920 716 0 0 537 2558
+activeNode = "hdl_top"
+activeScope = "hdl_top"
+activeFile = "../top/hdl_top.sv"
+interactiveMode = False
+viewType = Source
+simulatorMode = False
+sourceBeginLine = 30
+baMode = False
+srcLineNum = True
+AutoWrap = True
+IdentifyFalseLogic = False
+syncSignal = False
+traceMode = Hierarchical
+showTraceInSchema = True
+paMode = False
+funcMode = False
+powerAwareAnnot = True
+safetyAwareAnnot = True
+amsAnnot = True
+DnDtraceCrossHierOnly = True
+leadingZero = False
+signalPane = False
+SourceVerticalScrollLines = 5
+Scope1 = "hdl_top"
+Scope2 = "hdl_top.axi_if[0]"
+Scope3 = "hdl_top.dut.axi_if"
+Scope4 = "hdl_top.dut.generated_interconnect.u_axi_mtos_s0"
+Scope5 = "hdl_top.dut.generated_interconnect.u_axi_stom_m1.u_axi_arbiter_stom_s3.priority_sel"
+Scope6 = "hdl_top.dut.generated_interconnect.u_axi_stom_m1.u_axi_arbiter_stom_s3"
+Scope7 = "hdl_top.dut.generated_interconnect.u_axi_stom_m1"
+Scope8 = "hdl_top.dut.generated_interconnect.u_axi_stom_m0"
+Scope9 = "hdl_top.dut.generated_interconnect.u_axi_mtos_s2"
+Scope10 = "hdl_top.dut.generated_interconnect.u_aix_wid_m0.u_axi_wid_fifo_sync"
+multipleSelection = 1 29 5 0 0
+sdfCheckUndef = FALSE
+simFlow = FALSE
+[hb.design]
+importCmd = "-elab" "./simv.daidir/kdb" 
+invokeDir = /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/sim
+[hb.sourceTab.1]
+scope = hdl_top
+File = /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/top/hdl_top.sv
+Line = 31
+[nMemoryManager]
+WaveformFile = /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/sim/waves/axi4_performance_test_1.fsdb
+UserActionNum = 0
+nMemWindowNum = 0
+[wave.0]
+viewPort = 0 25 1920 265 100 65
+primaryWindow = TRUE
+SessionFile = /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/sim/verdiLog/novas_autosave.ses.wave.0
+displayGrid = FALSE
+hierarchicalName = FALSE
+waveformToolTip = FALSE
+snap = TRUE
+displayLeadingZeros = FALSE
+fixDelta = FALSE
+displayCursorMarker = FALSE
+autoUpdate = FALSE
+highlightGlitchs = FALSE
+waveformSyncCursorMarker = FALSE
+waveformSyncHorizontalRange = FALSE
+waveformSyncVerticalscroll = FALSE
+displayErrors = TRUE
+displayMsgSymbols = TRUE
+showMsgDescriptions = TRUE
+autoFit = FALSE
+displayDeltaY = FALSE
+centerCursor = FALSE
+fsaRegMask = TRUE
+fsaCoreMask = TRUE
+fsaSfsmMask = TRUE
+fsaEcrMask = TRUE
+tPropMask = TRUE

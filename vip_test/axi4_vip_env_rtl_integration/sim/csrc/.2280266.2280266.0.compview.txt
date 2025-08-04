@@ -1,0 +1,7 @@
+Command exited with non-zero status 255
+{"vcs1":{"timestamp_begin":1754232385.331315562, "rt":0.09, "ut":0.04, "st":0.04}}
+{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1754232384.596835387}
+{"VCS_COMP_START_TIME": 1754232384.596835387}
+{"VCS_COMP_END_TIME": 1754232385.502117747}
+{"VCS_USER_OPTIONS": "-full64 -sverilog -timescale=1ns/1ps simple_bfm_test.sv -I.. +incdir+../pkg +incdir+../intf ../pkg/axi4_globals_pkg.sv ../intf/axi4_interface/axi4_if.sv ../agent/master_agent_bfm/axi4_master_driver_bfm.sv ../agent/master_agent_bfm/axi4_master_monitor_bfm.sv ../agent/master_agent_bfm/axi4_master_agent_bfm.sv ../agent/master_agent_bfm/axi4_master_bfm_connector.sv ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv ../agent/slave_agent_bfm/axi4_slave_monitor_bfm.sv ../agent/slave_agent_bfm/axi4_slave_agent_bfm.sv ../rtl_wrapper/generated_rtl/axi4_interconnect_m2s3.v ../rtl_wrapper/dut_wrapper.sv ../top/hdl_top.sv -o simple_test +define+DUMP_FSDB -l simple_compile.log 2"}
+{"vcs1": {"peak_mem": 291516}}

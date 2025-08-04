@@ -1,0 +1,18 @@
+verdiSetActWin -dock widgetDock_<Decl._Tree>
+debImport "-elab" "./simv.daidir/kdb"
+debLoadSimResult \
+           /home/timtim01/eda_test/project/gen_amba_2025/vip_test/axi4_vip_env_rtl_integration/sim/waves/axi4_performance_test_1.fsdb
+wvCreateWindow
+verdiSetActWin -win $_nWave2
+verdiWindowResize -win $_Verdi_1 "1270" "297" "900" "700"
+verdiSetActWin -dock widgetDock_MTB_SOURCE_TAB_1
+srcDeselectAll -win $_nTrace1
+wvGetSignalOpen -win $_nWave2
+verdiSetActWin -win $_nWave2
+wvGetSignalClose -win $_nWave2
+wvGetSignalOpen -win $_nWave2
+srcDeselectAll -win $_nTrace1
+srcSelect -signal "aresetn" -line 26 -pos 1 -win $_nTrace1
+verdiSetActWin -dock widgetDock_MTB_SOURCE_TAB_1
+wvAddSignal -win $_nWave2 "hdl_top/aresetn"
+debExit

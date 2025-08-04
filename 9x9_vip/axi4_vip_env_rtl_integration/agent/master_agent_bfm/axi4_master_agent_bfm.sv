@@ -4,21 +4,30 @@
 // Date: 2025-08-04 09:53:21
 //==============================================================================
 
-interface axi4_master_agent_bfm #(
+module axi4_master_agent_bfm #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 64,
     parameter ID_WIDTH   = 4
 )(
     input aclk,
-    input aresetn
+    input aresetn,
+    axi4_if.master axi_intf  // Connect to AXI interface
 );
 
     import axi4_globals_pkg::*;
     
-    // Master driver BFM instance (interface instantiation)
-    axi4_master_driver_bfm master_driver_bfm_h(aclk, aresetn);
+    // Master driver BFM instance with interface connection
+    axi4_master_driver_bfm #(
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH),
+        .ID_WIDTH(ID_WIDTH)
+    ) master_driver_bfm_h(
+        .aclk(aclk), 
+        .aresetn(aresetn),
+        .axi_intf(axi_intf)
+    );
     
-    // Master monitor BFM instance (interface instantiation)
+    // Master monitor BFM instance
     axi4_master_monitor_bfm master_monitor_bfm_h(aclk, aresetn);
 
-endinterface : axi4_master_agent_bfm
+endmodule : axi4_master_agent_bfm

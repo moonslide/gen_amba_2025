@@ -1,0 +1,50 @@
+
+Warning-[UNKWN_OPTVSIM] Unknown option passed
+  Ignoring unknown option '-I..' passed to 'vcs' and continuing compilation.
+
+Command: vcs -full64 -sverilog -timescale=1ns/1ps simple_bfm_test.sv -I.. +incdir+../pkg \
++incdir+../intf ../pkg/axi4_globals_pkg.sv ../intf/axi4_interface/axi4_if.sv ../agent/master_agent_bfm/axi4_master_driver_bfm.sv \
+../agent/master_agent_bfm/axi4_master_monitor_bfm.sv ../agent/master_agent_bfm/axi4_master_agent_bfm.sv \
+../agent/master_agent_bfm/axi4_master_bfm_connector.sv ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv \
+../agent/slave_agent_bfm/axi4_slave_monitor_bfm.sv ../agent/slave_agent_bfm/axi4_slave_agent_bfm.sv \
+../rtl_wrapper/generated_rtl/axi4_interconnect_m2s3.v ../rtl_wrapper/dut_wrapper.sv \
+../top/hdl_top.sv -o simple_test +define+DUMP_FSDB -l simple_compile.log 2
+                         Chronologic VCS (TM)
+       Version W-2024.09-SP1_Full64 -- Sun Aug  3 22:46:25 2025
+
+                    Copyright (c) 1991 - 2024 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+Parsing design file 'simple_bfm_test.sv'
+Parsing design file '../pkg/axi4_globals_pkg.sv'
+
+Error-[SV-LCM-PND] Package not defined
+../pkg/axi4_globals_pkg.sv, 10
+axi4_globals_pkg, "uvm_pkg::"
+  Package scope resolution failed. Token 'uvm_pkg' is not a package. 
+  Originating module 'axi4_globals_pkg'.
+  Move package definition before the use of the package.
+
+
+Error-[SFCOR] Source file cannot be opened
+  Source file "uvm_macros.svh" cannot be opened for reading due to 'No such 
+  file or directory'.
+  Please fix above issue and compile again.
+  "../pkg/axi4_globals_pkg.sv", 11
+  Source info:     `include "uvm_macros.svh"
+
+2 errors
+CPU time: .150 seconds to compile

@@ -221,18 +221,22 @@ Selection-LineColor = ID_BLUE3
 Selection-LineWidth = 1
 [FSM_Dlg-Print]
 Orientation = Landscape
+[FileBrowser]
+nWaveOpenFsdbDirHistory = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb\""
 [Form]
 version = Verdi_W-2024.09-SP1
 [General]
 autoSaveSession = FALSE
 TclAutoSource = 
 cmd_enter_form = FALSE
-ColorTheme = classic
 SyncBrowserDir = TRUE
+FindBarVisible = 
+ColorTheme = classic
 version = Verdi_W-2024.09-SP1
+recent_commands_nWave = zoomOut,openFile,getSignal
+recent_commands_Verdi = hbTextCopySignalFullPath,UndoTraceGroup
 prevColorTheme = classic
 SignalCaseInSensitive = FALSE
-FindBarVisible = 
 [GlobalProp]
 ErrWindow_Font = Helvetica_M_R_12
 [Globals]
@@ -322,6 +326,15 @@ showDollarUnit = TRUE
 HB_designTreeFont = *-adobe-courier-medium-r-*-*-12-*-*-*-*-*-iso8859-*
 Text_font = COURIER12
 nMemory_font = Fixed 14
+Wave_legend_window_font = -f COURIER12 -c ID_CYAN5
+Wave_value_window_font = -f COURIER12 -c ID_CYAN5
+Wave_curve_window_font = -f COURIER12 -c ID_CYAN5
+Wave_group_name_font = -f COURIER12 -c ID_GREEN5
+Wave_ruler_value_font = -f COURIER12 -c ID_CYAN5
+Wave_analog_ruler_value_font = -f COURIER12 -c ID_CYAN5
+Wave_comment_string_font = -f COURIER12 -c ID_RED5
+Wave_getsignal_form_font = -f COURIER12
+Text_annotFont = FIXED12
 [OtherEditor]
 cmd1 = "xterm -font 9x15 -fg black -bg gray -e"
 name = "vi"
@@ -366,9 +379,12 @@ saveWaveformStat = TRUE
 savePropStat = FALSE
 savePropDtl = TRUE
 [QtDialog]
-QwWarnMsgDlg = 1410,570,600,249
-unknownSave = 1489,520,461,245
-QwUserAskDlg = 1558,654,324,125
+qWaveSignalDialog = 1320,440,800,479
+openFileDlg = 1379,433,602,483
+tipViewerDlg = 1471,598,398,259
+QwWarnMsgDlg = 1410,718,600,249
+unknownSave = 1854,593,461,245
+QwUserAskDlg = 1508,565,324,125
 [Relationship]
 hideRecursiceNode = FALSE
 [Safety]
@@ -410,13 +426,15 @@ vcs_mixPath = simv
 vcs_mixOption = -vhdlrun "-vhpi debussy:FSDBDumpCmd"
 scs_mixPath = scsim
 scs_mixOption = -vhpi debussy:FSDBDumpCmd
-interactiveDebugging = {True, False}
-KeepBreakPoints = False
 ScsDebugAll = False
 simType = {vcssv, xl, nc, vcs, mti, mti_vlog, vhnc, scs, mixnc}
 thirdpartyIdx = -1
 iscCmdSep = FALSE
 NoAppendOption = False
+bSVTBMode = TRUE
+SimMode = TRUE
+interactiveDebugging = TRUE
+KeepBreakPoints = FALSE
 [SimulationPlus]
 xlPath = verilog
 xlOption = 
@@ -440,16 +458,18 @@ vcs_mixPath = simv
 vcs_mixOption = -vhdlrun "-vhpi debussy:FSDBDumpCmd"
 scs_mixPath = scsim
 scs_mixOption = -vhpi debussy:FSDBDumpCmd
-vcs_svPath = simv
-vcs_svOption = 
-simType = vcssv
 thirdpartyIdx = -1
-interactiveDebugging = FALSE
-KeepBreakPoints = FALSE
 iscCmdSep = FALSE
 ScsDebugAll = FALSE
 NoAppendOption = FALSE
 invokeSimPath = work
+simType = vcssv
+bSVTBMode = TRUE
+SimMode = TRUE
+interactiveDebugging = TRUE
+KeepBreakPoints = FALSE
+vcs_svPath = /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/simv
+vcs_svOption = +UVM_TESTNAME=axi4_stress_test +UVM_VERBOSITY=UVM_MEDIUM +ntb_random_seed=1 +fsdb_file=./waves/axi4_stress_test_1.fsdb
 [SimulationPlus2]
 eventDumpUnfinish = FALSE
 [Source]
@@ -567,7 +587,7 @@ pdmlMacro = ID_BLACK
 font = COURIER12
 annotFont = FIXED12
 [Text.1]
-viewport = 0 27 3440 1305 45
+viewport = 825 272 2520 962 45
 [TextPrinter]
 Orientation = Landscape
 Indicator = FALSE
@@ -664,34 +684,34 @@ visualIndex = 2
 isHidden = FALSE
 isUserChangeColumnVisible = FALSE
 [VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column1]
-name = "Type"
-width = 60
-visualIndex = 4
-isHidden = TRUE
-isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column2]
-name = "Message"
-width = 2000
-visualIndex = 5
-isHidden = FALSE
-isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column3]
 name = "Block's First Line"
 width = 120
 visualIndex = 1
 isHidden = TRUE
 isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column4]
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column2]
 name = "Time"
 width = 60
 visualIndex = 0
 isHidden = FALSE
 isUserChangeColumnVisible = FALSE
-[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column5]
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column3]
 name = "Code"
 width = 60
 visualIndex = 3
 isHidden = TRUE
+isUserChangeColumnVisible = FALSE
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column4]
+name = "Type"
+width = 60
+visualIndex = 4
+isHidden = TRUE
+isUserChangeColumnVisible = FALSE
+[VIA.oneSearch.preference.vgifColumnSettingRC.setting0.column5]
+name = "Message"
+width = 2000
+visualIndex = 5
+isHidden = FALSE
 isUserChangeColumnVisible = FALSE
 [VIA.ruleHistory]
 /home/eda_tools/synopsys/verdi/W-2024.09-SP1/share/VIA/Apps/PredefinedRules/Misc/Onesearch_rule.rc = 
@@ -766,8 +786,11 @@ ShowDeltaTime = TRUE
 WaveExtendLastTick = TRUE
 displayMessageLabelOnly = TRUE
 AutoApplySeverityColor = TRUE
-getSignalForm = 0 0 800 479 100 30 100 30
-viewPort = 0 25 3440 562 100 65
+scope_to_save_with_macro
+open_file_dir
+open_rc_file_dir
+getSignalForm = 1320 403 800 479 220 387 484 187
+viewPort = 0 25 2520 437 634 65
 legendBackground = -c ID_BLACK
 valueBackground = -c ID_BLACK
 curveBackground = -c ID_BLACK
@@ -907,7 +930,6 @@ displayDeltaY = FALSE
 signal_rc_abspath = TRUE
 signal_rc_no_natural_bus_range = FALSE
 save_scope_with_macro = FALSE
-scope_to_save_with_macro
 FitAnaByBusSize = FALSE
 DisplayVerticalZoomTools = FALSE
 DisplayIndicateBar = FALSE
@@ -935,9 +957,8 @@ printDest = -printer {}
 printSignature = {%f %h %t} {}
 curveWindow_Drag&Drop_Mode = TRUE
 RecentFile1 = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/waves/axi4_stress_test_1.fsdb\""
+RecentFile2 = "\"/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb\""
 open_file_time_range = FALSE
-open_file_dir
-open_rc_file_dir
 legend_window_font = -f COURIER12 -c ID_CYAN5
 value_window_font = -f COURIER12 -c ID_CYAN5
 curve_window_font = -f COURIER12 -c ID_CYAN5
@@ -1035,6 +1056,7 @@ HvpMergeTool =
 ShowMergeMenuItem = FALSE
 fsmScoreMode = Transition
 [eco]
+NameRule = 
 IsFreezeSilicon = FALSE
 cellQuantityManagement = FALSE
 ManageMode = INSTANCE_NAME
@@ -1042,7 +1064,6 @@ SpareCellsPinsManagement = TRUE
 LogCommitReport = FALSE
 InputPinStatus = 1
 OutputPinStatus = 2
-NameRule = 
 RevisedComponentColor = ID_BLUE5
 SpareCellColor = ID_RED5
 UserName = timtim01
@@ -1312,7 +1333,7 @@ AddImportArgument = FALSE
 LineBreakWithScope = TRUE
 StopAfterCompileOption = -s
 [wave.0]
-viewPort = 0 25 3440 562 100 65
+viewPort = 0 25 2520 437 634 65
 [wave.1]
 viewPort = 127 219 960 332 100 65
 [wave.2]

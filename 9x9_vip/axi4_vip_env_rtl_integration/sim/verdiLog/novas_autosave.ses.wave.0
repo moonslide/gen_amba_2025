@@ -2,11 +2,11 @@ Magic 271485
 Revision Verdi_W-2024.09-SP1
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 0 25 3440 592 100 65
+viewPort 0 25 2520 437 634 65
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
-openDirFile -d / "" "/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb"
+openDirFile -d / "" "/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/waves/axi4_stress_test_1.fsdb"
 
 ; file time scale:
 ; fileTimeScale ### s|ms|us|ns|ps
@@ -16,8 +16,8 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 0.000000 50500000.000000
-cursor 0.000000
+zoom 0.000000 5050000.000000
+cursor 780000.000000
 marker 0.000000
 
 ; user define markers
@@ -25,7 +25,7 @@ marker 0.000000
 ; visible top row signal index
 top 0
 ; marker line index
-markerPos 34
+markerPos 13
 
 ; event list
 ; addEvent event_name event_expression
@@ -46,42 +46,22 @@ curSTATUS ByChange
 
 
 addGroup "G1"
-activeDirFile "" "/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/axi4_vip.fsdb"
-addSignal -h 15 /hdl_top/dut/axi_if/aclk
+activeDirFile "" "/home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/waves/axi4_stress_test_1.fsdb"
+addSignal -h 15 -UNSIGNED -HEX /hdl_top/dut/axi_interconnect/u_aix_wid_m0/M_AWID[3:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope M_AWLEN[7:0]
+addSignal -h 15 -holdScope M_AWVALID
+addSignal -h 15 -holdScope M_AWREADY
+addSignal -h 15 -UNSIGNED -HEX -holdScope M_WID[3:0]
 addGroup "G2"
-addSignal -h 15 -UNSIGNED -HEX /hdl_top/axi_if[0]/awid[3:0]
-addSignal -h 15 -holdScope aresetn
-addSignal -h 15 -holdScope aclk
+addSignal -h 15 -UNSIGNED -HEX /hdl_top/dut/axi_interconnect/M0_AWID[3:0]
 addGroup "G3"
-addSignal -h 15 -UNSIGNED -HEX /hdl_top/axi_if[0]/awid[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awaddr[31:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awlen[7:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awsize[2:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awburst[1:0]
-addSignal -h 15 -holdScope awlock
-addSignal -h 15 -UNSIGNED -HEX -holdScope awcache[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awprot[2:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awqos[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awregion[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope awuser[-1:0]
-addSignal -h 15 -holdScope awvalid
-addSignal -h 15 -holdScope awready
-addSignal -h 15 -UNSIGNED -HEX -holdScope wdata[63:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope wstrb[7:0]
-addSignal -h 15 -holdScope wlast
-addSignal -h 15 -UNSIGNED -HEX -holdScope wuser[-1:0]
-addSignal -h 15 -holdScope wvalid
-addSignal -h 15 -holdScope wready
-addSignal -h 15 -UNSIGNED -HEX -holdScope bid[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope bresp[1:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope buser[-1:0]
-addSignal -h 15 -holdScope bvalid
-addSignal -h 15 -holdScope bready
-addSignal -h 15 -UNSIGNED -HEX -holdScope arid[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope araddr[31:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope arlen[7:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope arsize[2:0]
+addSignal -h 15 -UNSIGNED -HEX /hdl_top/gen_master_bfms[0]/master_bfm/master_driver_bfm_h/axi_intf/araddr[31:0]
 addGroup "G4"
+addSignal -h 15 -UNSIGNED -HEX /hdl_top/gen_master_bfms[0]/master_bfm/master_driver_bfm_h/axi_intf/awaddr[31:0]
+addGroup "G5"
+addSignal -h 15 -UNSIGNED -HEX /hdl_top/gen_master_bfms[0]/master_bfm/master_driver_bfm_h/axi_intf/awaddr[31:0]
+addSignal -h 15 /hdl_top/gen_master_bfms[0]/master_bfm/master_driver_bfm_h/aclk
+addGroup "G6"
 
 ; getSignalForm Scope Hierarchy Status
 ; active file of getSignalForm

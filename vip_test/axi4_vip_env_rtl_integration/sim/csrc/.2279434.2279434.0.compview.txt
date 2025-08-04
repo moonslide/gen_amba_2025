@@ -1,0 +1,6 @@
+Command exited with non-zero status 1
+{"vcs1":{"timestamp_begin":1754232365.131404109, "rt":0.06, "ut":0.03, "st":0.03}}
+{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1754232364.551604541}
+{"VCS_COMP_START_TIME": 1754232364.551604541}
+{"VCS_COMP_END_TIME": 1754232365.277045637}
+{"VCS_USER_OPTIONS": "-full64 -sverilog -timescale=1ns/1ps simple_bfm_test.sv ../top/hdl_top.sv -f axi4_compile.f -o simple_test +define+DUMP_FSDB 2"}

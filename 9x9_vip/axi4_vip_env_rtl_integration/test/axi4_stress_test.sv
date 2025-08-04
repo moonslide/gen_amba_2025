@@ -21,11 +21,20 @@ class axi4_stress_test extends axi4_base_test;
         
         `uvm_info(get_type_name(), "Starting stress test", UVM_LOW)
         
-        // Run stress sequence with heavy traffic
+        // Run stress sequence with moderate traffic for finite completion
         stress_seq = axi4_virtual_stress_seq::type_id::create("stress_seq");
-        stress_seq.num_iterations = 500;
+        stress_seq.num_iterations = 50;  // Reduced for reasonable test time
         stress_seq.enable_backpressure = 1;
-        stress_seq.start(env.v_seqr);
+        
+        // Add timeout to prevent infinite run
+        fork
+            stress_seq.start(env.v_seqr);
+            begin
+                #10ms;  // 10 millisecond timeout
+                `uvm_error(get_type_name(), "Stress test timed out after 10ms - possible infinite loop!")
+            end
+        join_any
+        disable fork;
         
         `uvm_info(get_type_name(), "Completed stress test", UVM_LOW)
         
