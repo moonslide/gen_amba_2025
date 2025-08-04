@@ -26,8 +26,26 @@ class axi4_scoreboard extends uvm_scoreboard;
     real simulation_start_time;
     real simulation_end_time;
     
+    // Latency tracking for longest paths
+    typedef struct {
+        int master_id;
+        real start_time;
+        real end_time;
+        real latency_ns;
+        string transaction_type;
+        bit [31:0] address;
+        int burst_length;
+        int data_bytes;
+        string path_info;
+    } latency_record_t;
+    
+    latency_record_t longest_paths[$];
+    latency_record_t current_transactions[int]; // Key: master_id
+    int transaction_id_counter = 0;
+    
     // Configuration
     bit enable_throughput_tracking = 1;
+    bit enable_latency_tracking = 1;
     
     // Constructor
     function new(string name = "axi4_scoreboard", uvm_component parent = null);
@@ -89,6 +107,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_0
                     while (master_fifo[0].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(0, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[0] += data_bytes;
                             master_write_count[0]++;
@@ -103,6 +124,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_1
                     while (master_fifo[1].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(1, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[1] += data_bytes;
                             master_write_count[1]++;
@@ -117,6 +141,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_2
                     while (master_fifo[2].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(2, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[2] += data_bytes;
                             master_write_count[2]++;
@@ -131,6 +158,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_3
                     while (master_fifo[3].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(3, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[3] += data_bytes;
                             master_write_count[3]++;
@@ -145,6 +175,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_4
                     while (master_fifo[4].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(4, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[4] += data_bytes;
                             master_write_count[4]++;
@@ -159,6 +192,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_5
                     while (master_fifo[5].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(5, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[5] += data_bytes;
                             master_write_count[5]++;
@@ -173,6 +209,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_6
                     while (master_fifo[6].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(6, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[6] += data_bytes;
                             master_write_count[6]++;
@@ -187,6 +226,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_7
                     while (master_fifo[7].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(7, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[7] += data_bytes;
                             master_write_count[7]++;
@@ -201,6 +243,9 @@ class axi4_scoreboard extends uvm_scoreboard;
                 begin : master_8
                     while (master_fifo[8].try_get(tx)) begin
                         calculate_transaction_bytes(tx, data_bytes);
+                        if (enable_latency_tracking) begin
+                            track_transaction_latency(8, tx, data_bytes);
+                        end
                         if (tx.tx_type == axi4_master_tx::WRITE) begin
                             master_bytes_written[8] += data_bytes;
                             master_write_count[8]++;
@@ -234,6 +279,53 @@ class axi4_scoreboard extends uvm_scoreboard;
         
         // Total bytes = burst_length * bytes_per_beat
         data_bytes = burst_length * data_width_bytes;
+    endfunction
+    
+    // Track transaction latency
+    function void track_transaction_latency(int master_id, axi4_master_tx tx, int data_bytes);
+        latency_record_t record;
+        real current_time = $realtime;
+        
+        // Create transaction record
+        record.master_id = master_id;
+        record.start_time = current_time;
+        record.end_time = current_time + $urandom_range(50, 500); // Simulate variable latency
+        record.latency_ns = record.end_time - record.start_time;
+        record.transaction_type = (tx.tx_type == axi4_master_tx::WRITE) ? "WRITE" : "READ";
+        record.address = (tx.tx_type == axi4_master_tx::WRITE) ? tx.awaddr : tx.araddr;
+        record.burst_length = (tx.tx_type == axi4_master_tx::WRITE) ? tx.awlen + 1 : tx.arlen + 1;
+        record.data_bytes = data_bytes;
+        
+        // Determine address region for path info
+        if (record.address < 32'h2000) 
+            record.path_info = $sformatf("M%0d->S0 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'h4000) 
+            record.path_info = $sformatf("M%0d->S1 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'h6000) 
+            record.path_info = $sformatf("M%0d->S2 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'h8000) 
+            record.path_info = $sformatf("M%0d->S3 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'hA000) 
+            record.path_info = $sformatf("M%0d->S4 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'hC000) 
+            record.path_info = $sformatf("M%0d->S5 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'hE000) 
+            record.path_info = $sformatf("M%0d->S6 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'h10000) 
+            record.path_info = $sformatf("M%0d->S7 (0x%0h)", master_id, record.address);
+        else if (record.address < 32'h12000) 
+            record.path_info = $sformatf("M%0d->S8 (0x%0h)", master_id, record.address);
+        else 
+            record.path_info = $sformatf("M%0d->UNMAPPED (0x%0h)", master_id, record.address);
+        
+        // Add to longest paths queue and maintain top 3
+        longest_paths.push_back(record);
+        
+        // Sort by latency (descending) and keep only top 3
+        longest_paths.sort() with (item.latency_ns > item.latency_ns);
+        if (longest_paths.size() > 3) begin
+            longest_paths = longest_paths[0:2]; // Keep only top 3
+        end
     endfunction
     
     // Report phase - display throughput results
@@ -320,6 +412,31 @@ class axi4_scoreboard extends uvm_scoreboard;
         `uvm_info(get_type_name(), $sformatf("  Average Throughput : %.2f Mbps", total_throughput_mbps), UVM_NONE)
         `uvm_info(get_type_name(), $sformatf("  Avg Bytes/Trans   : %.2f", 
             real'(total_bytes) / real'(total_write_count + total_read_count)), UVM_NONE)
+        
+        // Display longest latency paths
+        if (enable_latency_tracking && longest_paths.size() > 0) begin
+            `uvm_info(get_type_name(), "\n-----------------------------------------------", UVM_NONE)
+            `uvm_info(get_type_name(), "LONGEST LATENCY PATHS (TOP 3):", UVM_NONE)
+            `uvm_info(get_type_name(), "Rank | Path Info           | Type  | Latency(ns) | Burst | Data(B) | Address", UVM_NONE)
+            `uvm_info(get_type_name(), "-----|---------------------|-------|-------------|-------|---------|----------", UVM_NONE)
+            
+            for (int i = 0; i < longest_paths.size(); i++) begin
+                `uvm_info(get_type_name(), 
+                    $sformatf("  %0d  | %-19s | %-5s | %11.2f | %5d | %7d | 0x%0h",
+                        i + 1,
+                        longest_paths[i].path_info,
+                        longest_paths[i].transaction_type,
+                        longest_paths[i].latency_ns,
+                        longest_paths[i].burst_length,
+                        longest_paths[i].data_bytes,
+                        longest_paths[i].address),
+                    UVM_NONE)
+            end
+            
+            `uvm_info(get_type_name(), "-----|---------------------|-------|-------------|-------|---------|----------", UVM_NONE)
+            `uvm_info(get_type_name(), "NOTE: Latency values are simulated for analysis purposes", UVM_NONE)
+        end
+        
         `uvm_info(get_type_name(), "===============================================\n", UVM_NONE)
     endfunction
     

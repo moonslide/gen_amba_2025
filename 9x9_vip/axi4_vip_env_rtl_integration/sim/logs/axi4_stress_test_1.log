@@ -1,7 +1,7 @@
-Command: /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/./simv +UVM_TESTNAME=axi4_stress_test +UVM_VERBOSITY=UVM_MEDIUM +ntb_random_seed=1 +fsdb_file=./waves/axi4_stress_test_1.fsdb -l ./logs/axi4_stress_test_1.log
+Command: /home/timtim01/eda_test/project/gen_amba_2025/9x9_vip/axi4_vip_env_rtl_integration/sim/./simv +UVM_TESTNAME=axi4_stress_test +UVM_TIMEOUT=1000us -l ./logs/axi4_stress_test_1.log
 Chronologic VCS simulator copyright 1991-2024
 Contains Synopsys proprietary information.
-Compiler version W-2024.09-SP1_Full64; Runtime version W-2024.09-SP1_Full64;  Aug  4 16:23 2025
+Compiler version W-2024.09-SP1_Full64; Runtime version W-2024.09-SP1_Full64;  Aug  4 16:33 2025
 UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh(402) @ 0: reporter [UVM/RELNOTES] 
 ----------------------------------------------------------------
 UVM-1.2.Synopsys
@@ -51,22 +51,6 @@ UVM_INFO ../agent/slave_agent_bfm/axi4_slave_driver_bfm.sv(265) @ 0: reporter [A
 [0] HDL Top: 9 Master BFMs connected to axi_if interfaces
 [0] HDL Top: 9 Slave BFMs connected to slave_if interfaces
 [0] HDL Top: Signal driving is now handled by BFMs
-[0] Using custom FSDB file: ./waves/axi4_stress_test_1.fsdb
-[0] Starting FSDB dump
-*Verdi* Loading libsscore_vcs202409.so
-FSDB Dumper for VCS, Release Verdi_W-2024.09-SP1, Linux x86_64/64bit, 11/30/2024
-(C) 1996 - 2024 by Synopsys, Inc.
-*Verdi* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
-*Verdi* : Create FSDB file './waves/axi4_stress_test_1.fsdb'
-*Verdi* : Begin traversing the scope (hdl_top), layer (0).
-*Verdi* : Enable +all dumping.
-*Verdi* : End of traversing.
-*Verdi* : Begin traversing the SVA assertions, layer (0).
-*Verdi* : End of traversing the SVA assertions.
-*Verdi* : Begin traversing the MDAs, layer (0).
-*Verdi* : Enable +mda and +packedmda dumping.
-*Verdi* : End of traversing the MDAs.
-*Verdi* : fsdbDumpon - All FSDB files at 0 ps.
 UVM_INFO @ 0: reporter [RNTST] Running test axi4_stress_test...
 UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
 UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
@@ -77,6 +61,7 @@ UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [
 UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
 UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
 UVM_INFO ../agent/master_agent_bfm/axi4_master_driver_bfm.sv(29) @ 0: reporter [AXI_MASTER_DRIVER_BFM] Starting AXI transaction generation for waveform visibility
+UVM_INFO @ 0: reporter [TIMOUTSET] '+UVM_TIMEOUT=1000us' provided on the command line is being applied.
 UVM_INFO ../test/axi4_base_test.sv(61) @ 0: uvm_test_top [axi4_stress_test] Configured slave address ranges
 UVM_INFO ../env/axi4_protocol_coverage.sv(19) @ 0: uvm_test_top.env.coverage [axi4_protocol_coverage] Protocol coverage build phase
 UVM_INFO ../master/axi4_master_pkg.sv(221) @ 0: uvm_test_top.env.master_agent[0] [axi4_master_agent] Building master agent components
@@ -138,354 +123,354 @@ UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.s
 Name                         Type                        Size  Value
 --------------------------------------------------------------------
 uvm_test_top                 axi4_stress_test            -     @394 
-  env                        axi4_env                    -     @450 
-    coverage                 axi4_protocol_coverage      -     @791 
-    master_agent[0]          axi4_master_agent           -     @483 
-      driver                 axi4_master_driver          -     @945 
-        rsp_port             uvm_analysis_port           -     @964 
-        seq_item_port        uvm_seq_item_pull_port      -     @954 
-      monitor                axi4_master_monitor         -     @974 
-        item_collected_port  uvm_analysis_port           -     @983 
-      sequencer              axi4_master_sequencer       -     @808 
-        rsp_export           uvm_analysis_export         -     @817 
-        seq_item_export      uvm_seq_item_pull_imp       -     @935 
+  env                        axi4_env                    -     @452 
+    coverage                 axi4_protocol_coverage      -     @793 
+    master_agent[0]          axi4_master_agent           -     @485 
+      driver                 axi4_master_driver          -     @947 
+        rsp_port             uvm_analysis_port           -     @966 
+        seq_item_port        uvm_seq_item_pull_port      -     @956 
+      monitor                axi4_master_monitor         -     @976 
+        item_collected_port  uvm_analysis_port           -     @985 
+      sequencer              axi4_master_sequencer       -     @810 
+        rsp_export           uvm_analysis_export         -     @819 
+        seq_item_export      uvm_seq_item_pull_imp       -     @937 
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[1]          axi4_master_agent           -     @492 
-      driver                 axi4_master_driver          -     @1136
-        rsp_port             uvm_analysis_port           -     @1155
-        seq_item_port        uvm_seq_item_pull_port      -     @1145
-      monitor                axi4_master_monitor         -     @1165
-        item_collected_port  uvm_analysis_port           -     @1174
-      sequencer              axi4_master_sequencer       -     @999 
-        rsp_export           uvm_analysis_export         -     @1008
-        seq_item_export      uvm_seq_item_pull_imp       -     @1126
+    master_agent[1]          axi4_master_agent           -     @494 
+      driver                 axi4_master_driver          -     @1138
+        rsp_port             uvm_analysis_port           -     @1157
+        seq_item_port        uvm_seq_item_pull_port      -     @1147
+      monitor                axi4_master_monitor         -     @1167
+        item_collected_port  uvm_analysis_port           -     @1176
+      sequencer              axi4_master_sequencer       -     @1001
+        rsp_export           uvm_analysis_export         -     @1010
+        seq_item_export      uvm_seq_item_pull_imp       -     @1128
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[2]          axi4_master_agent           -     @501 
-      driver                 axi4_master_driver          -     @1327
-        rsp_port             uvm_analysis_port           -     @1346
-        seq_item_port        uvm_seq_item_pull_port      -     @1336
-      monitor                axi4_master_monitor         -     @1356
-        item_collected_port  uvm_analysis_port           -     @1365
-      sequencer              axi4_master_sequencer       -     @1190
-        rsp_export           uvm_analysis_export         -     @1199
-        seq_item_export      uvm_seq_item_pull_imp       -     @1317
+    master_agent[2]          axi4_master_agent           -     @503 
+      driver                 axi4_master_driver          -     @1329
+        rsp_port             uvm_analysis_port           -     @1348
+        seq_item_port        uvm_seq_item_pull_port      -     @1338
+      monitor                axi4_master_monitor         -     @1358
+        item_collected_port  uvm_analysis_port           -     @1367
+      sequencer              axi4_master_sequencer       -     @1192
+        rsp_export           uvm_analysis_export         -     @1201
+        seq_item_export      uvm_seq_item_pull_imp       -     @1319
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[3]          axi4_master_agent           -     @510 
-      driver                 axi4_master_driver          -     @1518
-        rsp_port             uvm_analysis_port           -     @1537
-        seq_item_port        uvm_seq_item_pull_port      -     @1527
-      monitor                axi4_master_monitor         -     @1547
-        item_collected_port  uvm_analysis_port           -     @1556
-      sequencer              axi4_master_sequencer       -     @1381
-        rsp_export           uvm_analysis_export         -     @1390
-        seq_item_export      uvm_seq_item_pull_imp       -     @1508
+    master_agent[3]          axi4_master_agent           -     @512 
+      driver                 axi4_master_driver          -     @1520
+        rsp_port             uvm_analysis_port           -     @1539
+        seq_item_port        uvm_seq_item_pull_port      -     @1529
+      monitor                axi4_master_monitor         -     @1549
+        item_collected_port  uvm_analysis_port           -     @1558
+      sequencer              axi4_master_sequencer       -     @1383
+        rsp_export           uvm_analysis_export         -     @1392
+        seq_item_export      uvm_seq_item_pull_imp       -     @1510
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[4]          axi4_master_agent           -     @519 
-      driver                 axi4_master_driver          -     @1709
-        rsp_port             uvm_analysis_port           -     @1728
-        seq_item_port        uvm_seq_item_pull_port      -     @1718
-      monitor                axi4_master_monitor         -     @1738
-        item_collected_port  uvm_analysis_port           -     @1747
-      sequencer              axi4_master_sequencer       -     @1572
-        rsp_export           uvm_analysis_export         -     @1581
-        seq_item_export      uvm_seq_item_pull_imp       -     @1699
+    master_agent[4]          axi4_master_agent           -     @521 
+      driver                 axi4_master_driver          -     @1711
+        rsp_port             uvm_analysis_port           -     @1730
+        seq_item_port        uvm_seq_item_pull_port      -     @1720
+      monitor                axi4_master_monitor         -     @1740
+        item_collected_port  uvm_analysis_port           -     @1749
+      sequencer              axi4_master_sequencer       -     @1574
+        rsp_export           uvm_analysis_export         -     @1583
+        seq_item_export      uvm_seq_item_pull_imp       -     @1701
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[5]          axi4_master_agent           -     @528 
-      driver                 axi4_master_driver          -     @1900
-        rsp_port             uvm_analysis_port           -     @1919
-        seq_item_port        uvm_seq_item_pull_port      -     @1909
-      monitor                axi4_master_monitor         -     @1929
-        item_collected_port  uvm_analysis_port           -     @1938
-      sequencer              axi4_master_sequencer       -     @1763
-        rsp_export           uvm_analysis_export         -     @1772
-        seq_item_export      uvm_seq_item_pull_imp       -     @1890
+    master_agent[5]          axi4_master_agent           -     @530 
+      driver                 axi4_master_driver          -     @1902
+        rsp_port             uvm_analysis_port           -     @1921
+        seq_item_port        uvm_seq_item_pull_port      -     @1911
+      monitor                axi4_master_monitor         -     @1931
+        item_collected_port  uvm_analysis_port           -     @1940
+      sequencer              axi4_master_sequencer       -     @1765
+        rsp_export           uvm_analysis_export         -     @1774
+        seq_item_export      uvm_seq_item_pull_imp       -     @1892
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[6]          axi4_master_agent           -     @537 
-      driver                 axi4_master_driver          -     @2091
-        rsp_port             uvm_analysis_port           -     @2110
-        seq_item_port        uvm_seq_item_pull_port      -     @2100
-      monitor                axi4_master_monitor         -     @2120
-        item_collected_port  uvm_analysis_port           -     @2129
-      sequencer              axi4_master_sequencer       -     @1954
-        rsp_export           uvm_analysis_export         -     @1963
-        seq_item_export      uvm_seq_item_pull_imp       -     @2081
+    master_agent[6]          axi4_master_agent           -     @539 
+      driver                 axi4_master_driver          -     @2093
+        rsp_port             uvm_analysis_port           -     @2112
+        seq_item_port        uvm_seq_item_pull_port      -     @2102
+      monitor                axi4_master_monitor         -     @2122
+        item_collected_port  uvm_analysis_port           -     @2131
+      sequencer              axi4_master_sequencer       -     @1956
+        rsp_export           uvm_analysis_export         -     @1965
+        seq_item_export      uvm_seq_item_pull_imp       -     @2083
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[7]          axi4_master_agent           -     @546 
-      driver                 axi4_master_driver          -     @2282
-        rsp_port             uvm_analysis_port           -     @2301
-        seq_item_port        uvm_seq_item_pull_port      -     @2291
-      monitor                axi4_master_monitor         -     @2311
-        item_collected_port  uvm_analysis_port           -     @2320
-      sequencer              axi4_master_sequencer       -     @2145
-        rsp_export           uvm_analysis_export         -     @2154
-        seq_item_export      uvm_seq_item_pull_imp       -     @2272
+    master_agent[7]          axi4_master_agent           -     @548 
+      driver                 axi4_master_driver          -     @2284
+        rsp_port             uvm_analysis_port           -     @2303
+        seq_item_port        uvm_seq_item_pull_port      -     @2293
+      monitor                axi4_master_monitor         -     @2313
+        item_collected_port  uvm_analysis_port           -     @2322
+      sequencer              axi4_master_sequencer       -     @2147
+        rsp_export           uvm_analysis_export         -     @2156
+        seq_item_export      uvm_seq_item_pull_imp       -     @2274
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    master_agent[8]          axi4_master_agent           -     @555 
-      driver                 axi4_master_driver          -     @2473
-        rsp_port             uvm_analysis_port           -     @2492
-        seq_item_port        uvm_seq_item_pull_port      -     @2482
-      monitor                axi4_master_monitor         -     @2502
-        item_collected_port  uvm_analysis_port           -     @2511
-      sequencer              axi4_master_sequencer       -     @2336
-        rsp_export           uvm_analysis_export         -     @2345
-        seq_item_export      uvm_seq_item_pull_imp       -     @2463
+    master_agent[8]          axi4_master_agent           -     @557 
+      driver                 axi4_master_driver          -     @2475
+        rsp_port             uvm_analysis_port           -     @2494
+        seq_item_port        uvm_seq_item_pull_port      -     @2484
+      monitor                axi4_master_monitor         -     @2504
+        item_collected_port  uvm_analysis_port           -     @2513
+      sequencer              axi4_master_sequencer       -     @2338
+        rsp_export           uvm_analysis_export         -     @2347
+        seq_item_export      uvm_seq_item_pull_imp       -     @2465
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    scoreboard               axi4_scoreboard             -     @782 
-      master_fifo[0]         uvm_tlm_analysis_fifo #(T)  -     @2521
-        analysis_export      uvm_analysis_imp            -     @2570
-        get_ap               uvm_analysis_port           -     @2560
-        get_peek_export      uvm_get_peek_imp            -     @2540
-        put_ap               uvm_analysis_port           -     @2550
-        put_export           uvm_put_imp                 -     @2530
-      master_fifo[1]         uvm_tlm_analysis_fifo #(T)  -     @2580
-        analysis_export      uvm_analysis_imp            -     @2629
-        get_ap               uvm_analysis_port           -     @2619
-        get_peek_export      uvm_get_peek_imp            -     @2599
-        put_ap               uvm_analysis_port           -     @2609
-        put_export           uvm_put_imp                 -     @2589
-      master_fifo[2]         uvm_tlm_analysis_fifo #(T)  -     @2639
-        analysis_export      uvm_analysis_imp            -     @2688
-        get_ap               uvm_analysis_port           -     @2678
-        get_peek_export      uvm_get_peek_imp            -     @2658
-        put_ap               uvm_analysis_port           -     @2668
-        put_export           uvm_put_imp                 -     @2648
-      master_fifo[3]         uvm_tlm_analysis_fifo #(T)  -     @2698
-        analysis_export      uvm_analysis_imp            -     @2747
-        get_ap               uvm_analysis_port           -     @2737
-        get_peek_export      uvm_get_peek_imp            -     @2717
-        put_ap               uvm_analysis_port           -     @2727
-        put_export           uvm_put_imp                 -     @2707
-      master_fifo[4]         uvm_tlm_analysis_fifo #(T)  -     @2757
-        analysis_export      uvm_analysis_imp            -     @2806
-        get_ap               uvm_analysis_port           -     @2796
-        get_peek_export      uvm_get_peek_imp            -     @2776
-        put_ap               uvm_analysis_port           -     @2786
-        put_export           uvm_put_imp                 -     @2766
-      master_fifo[5]         uvm_tlm_analysis_fifo #(T)  -     @2816
-        analysis_export      uvm_analysis_imp            -     @2865
-        get_ap               uvm_analysis_port           -     @2855
-        get_peek_export      uvm_get_peek_imp            -     @2835
-        put_ap               uvm_analysis_port           -     @2845
-        put_export           uvm_put_imp                 -     @2825
-      master_fifo[6]         uvm_tlm_analysis_fifo #(T)  -     @2875
-        analysis_export      uvm_analysis_imp            -     @2924
-        get_ap               uvm_analysis_port           -     @2914
-        get_peek_export      uvm_get_peek_imp            -     @2894
-        put_ap               uvm_analysis_port           -     @2904
-        put_export           uvm_put_imp                 -     @2884
-      master_fifo[7]         uvm_tlm_analysis_fifo #(T)  -     @2934
-        analysis_export      uvm_analysis_imp            -     @2983
-        get_ap               uvm_analysis_port           -     @2973
-        get_peek_export      uvm_get_peek_imp            -     @2953
-        put_ap               uvm_analysis_port           -     @2963
-        put_export           uvm_put_imp                 -     @2943
-      master_fifo[8]         uvm_tlm_analysis_fifo #(T)  -     @2993
-        analysis_export      uvm_analysis_imp            -     @3042
-        get_ap               uvm_analysis_port           -     @3032
-        get_peek_export      uvm_get_peek_imp            -     @3012
-        put_ap               uvm_analysis_port           -     @3022
-        put_export           uvm_put_imp                 -     @3002
-      slave_fifo[0]          uvm_tlm_analysis_fifo #(T)  -     @3052
-        analysis_export      uvm_analysis_imp            -     @3101
-        get_ap               uvm_analysis_port           -     @3091
-        get_peek_export      uvm_get_peek_imp            -     @3071
-        put_ap               uvm_analysis_port           -     @3081
-        put_export           uvm_put_imp                 -     @3061
-      slave_fifo[1]          uvm_tlm_analysis_fifo #(T)  -     @3111
-        analysis_export      uvm_analysis_imp            -     @3160
-        get_ap               uvm_analysis_port           -     @3150
-        get_peek_export      uvm_get_peek_imp            -     @3130
-        put_ap               uvm_analysis_port           -     @3140
-        put_export           uvm_put_imp                 -     @3120
-      slave_fifo[2]          uvm_tlm_analysis_fifo #(T)  -     @3170
-        analysis_export      uvm_analysis_imp            -     @3219
-        get_ap               uvm_analysis_port           -     @3209
-        get_peek_export      uvm_get_peek_imp            -     @3189
-        put_ap               uvm_analysis_port           -     @3199
-        put_export           uvm_put_imp                 -     @3179
-      slave_fifo[3]          uvm_tlm_analysis_fifo #(T)  -     @3229
-        analysis_export      uvm_analysis_imp            -     @3278
-        get_ap               uvm_analysis_port           -     @3268
-        get_peek_export      uvm_get_peek_imp            -     @3248
-        put_ap               uvm_analysis_port           -     @3258
-        put_export           uvm_put_imp                 -     @3238
-      slave_fifo[4]          uvm_tlm_analysis_fifo #(T)  -     @3288
-        analysis_export      uvm_analysis_imp            -     @3337
-        get_ap               uvm_analysis_port           -     @3327
-        get_peek_export      uvm_get_peek_imp            -     @3307
-        put_ap               uvm_analysis_port           -     @3317
-        put_export           uvm_put_imp                 -     @3297
-      slave_fifo[5]          uvm_tlm_analysis_fifo #(T)  -     @3347
-        analysis_export      uvm_analysis_imp            -     @3396
-        get_ap               uvm_analysis_port           -     @3386
-        get_peek_export      uvm_get_peek_imp            -     @3366
-        put_ap               uvm_analysis_port           -     @3376
-        put_export           uvm_put_imp                 -     @3356
-      slave_fifo[6]          uvm_tlm_analysis_fifo #(T)  -     @3406
-        analysis_export      uvm_analysis_imp            -     @3455
-        get_ap               uvm_analysis_port           -     @3445
-        get_peek_export      uvm_get_peek_imp            -     @3425
-        put_ap               uvm_analysis_port           -     @3435
-        put_export           uvm_put_imp                 -     @3415
-      slave_fifo[7]          uvm_tlm_analysis_fifo #(T)  -     @3465
-        analysis_export      uvm_analysis_imp            -     @3514
-        get_ap               uvm_analysis_port           -     @3504
-        get_peek_export      uvm_get_peek_imp            -     @3484
-        put_ap               uvm_analysis_port           -     @3494
-        put_export           uvm_put_imp                 -     @3474
-      slave_fifo[8]          uvm_tlm_analysis_fifo #(T)  -     @3524
-        analysis_export      uvm_analysis_imp            -     @3573
-        get_ap               uvm_analysis_port           -     @3563
-        get_peek_export      uvm_get_peek_imp            -     @3543
-        put_ap               uvm_analysis_port           -     @3553
-        put_export           uvm_put_imp                 -     @3533
-    slave_agent[0]           axi4_slave_agent            -     @564 
-      driver                 axi4_slave_driver           -     @3726
-        rsp_port             uvm_analysis_port           -     @3745
-        seq_item_port        uvm_seq_item_pull_port      -     @3735
-      monitor                axi4_slave_monitor          -     @3755
-        item_collected_port  uvm_analysis_port           -     @3764
-      sequencer              axi4_slave_sequencer        -     @3589
-        rsp_export           uvm_analysis_export         -     @3598
-        seq_item_export      uvm_seq_item_pull_imp       -     @3716
+    scoreboard               axi4_scoreboard             -     @784 
+      master_fifo[0]         uvm_tlm_analysis_fifo #(T)  -     @2523
+        analysis_export      uvm_analysis_imp            -     @2572
+        get_ap               uvm_analysis_port           -     @2562
+        get_peek_export      uvm_get_peek_imp            -     @2542
+        put_ap               uvm_analysis_port           -     @2552
+        put_export           uvm_put_imp                 -     @2532
+      master_fifo[1]         uvm_tlm_analysis_fifo #(T)  -     @2582
+        analysis_export      uvm_analysis_imp            -     @2631
+        get_ap               uvm_analysis_port           -     @2621
+        get_peek_export      uvm_get_peek_imp            -     @2601
+        put_ap               uvm_analysis_port           -     @2611
+        put_export           uvm_put_imp                 -     @2591
+      master_fifo[2]         uvm_tlm_analysis_fifo #(T)  -     @2641
+        analysis_export      uvm_analysis_imp            -     @2690
+        get_ap               uvm_analysis_port           -     @2680
+        get_peek_export      uvm_get_peek_imp            -     @2660
+        put_ap               uvm_analysis_port           -     @2670
+        put_export           uvm_put_imp                 -     @2650
+      master_fifo[3]         uvm_tlm_analysis_fifo #(T)  -     @2700
+        analysis_export      uvm_analysis_imp            -     @2749
+        get_ap               uvm_analysis_port           -     @2739
+        get_peek_export      uvm_get_peek_imp            -     @2719
+        put_ap               uvm_analysis_port           -     @2729
+        put_export           uvm_put_imp                 -     @2709
+      master_fifo[4]         uvm_tlm_analysis_fifo #(T)  -     @2759
+        analysis_export      uvm_analysis_imp            -     @2808
+        get_ap               uvm_analysis_port           -     @2798
+        get_peek_export      uvm_get_peek_imp            -     @2778
+        put_ap               uvm_analysis_port           -     @2788
+        put_export           uvm_put_imp                 -     @2768
+      master_fifo[5]         uvm_tlm_analysis_fifo #(T)  -     @2818
+        analysis_export      uvm_analysis_imp            -     @2867
+        get_ap               uvm_analysis_port           -     @2857
+        get_peek_export      uvm_get_peek_imp            -     @2837
+        put_ap               uvm_analysis_port           -     @2847
+        put_export           uvm_put_imp                 -     @2827
+      master_fifo[6]         uvm_tlm_analysis_fifo #(T)  -     @2877
+        analysis_export      uvm_analysis_imp            -     @2926
+        get_ap               uvm_analysis_port           -     @2916
+        get_peek_export      uvm_get_peek_imp            -     @2896
+        put_ap               uvm_analysis_port           -     @2906
+        put_export           uvm_put_imp                 -     @2886
+      master_fifo[7]         uvm_tlm_analysis_fifo #(T)  -     @2936
+        analysis_export      uvm_analysis_imp            -     @2985
+        get_ap               uvm_analysis_port           -     @2975
+        get_peek_export      uvm_get_peek_imp            -     @2955
+        put_ap               uvm_analysis_port           -     @2965
+        put_export           uvm_put_imp                 -     @2945
+      master_fifo[8]         uvm_tlm_analysis_fifo #(T)  -     @2995
+        analysis_export      uvm_analysis_imp            -     @3044
+        get_ap               uvm_analysis_port           -     @3034
+        get_peek_export      uvm_get_peek_imp            -     @3014
+        put_ap               uvm_analysis_port           -     @3024
+        put_export           uvm_put_imp                 -     @3004
+      slave_fifo[0]          uvm_tlm_analysis_fifo #(T)  -     @3054
+        analysis_export      uvm_analysis_imp            -     @3103
+        get_ap               uvm_analysis_port           -     @3093
+        get_peek_export      uvm_get_peek_imp            -     @3073
+        put_ap               uvm_analysis_port           -     @3083
+        put_export           uvm_put_imp                 -     @3063
+      slave_fifo[1]          uvm_tlm_analysis_fifo #(T)  -     @3113
+        analysis_export      uvm_analysis_imp            -     @3162
+        get_ap               uvm_analysis_port           -     @3152
+        get_peek_export      uvm_get_peek_imp            -     @3132
+        put_ap               uvm_analysis_port           -     @3142
+        put_export           uvm_put_imp                 -     @3122
+      slave_fifo[2]          uvm_tlm_analysis_fifo #(T)  -     @3172
+        analysis_export      uvm_analysis_imp            -     @3221
+        get_ap               uvm_analysis_port           -     @3211
+        get_peek_export      uvm_get_peek_imp            -     @3191
+        put_ap               uvm_analysis_port           -     @3201
+        put_export           uvm_put_imp                 -     @3181
+      slave_fifo[3]          uvm_tlm_analysis_fifo #(T)  -     @3231
+        analysis_export      uvm_analysis_imp            -     @3280
+        get_ap               uvm_analysis_port           -     @3270
+        get_peek_export      uvm_get_peek_imp            -     @3250
+        put_ap               uvm_analysis_port           -     @3260
+        put_export           uvm_put_imp                 -     @3240
+      slave_fifo[4]          uvm_tlm_analysis_fifo #(T)  -     @3290
+        analysis_export      uvm_analysis_imp            -     @3339
+        get_ap               uvm_analysis_port           -     @3329
+        get_peek_export      uvm_get_peek_imp            -     @3309
+        put_ap               uvm_analysis_port           -     @3319
+        put_export           uvm_put_imp                 -     @3299
+      slave_fifo[5]          uvm_tlm_analysis_fifo #(T)  -     @3349
+        analysis_export      uvm_analysis_imp            -     @3398
+        get_ap               uvm_analysis_port           -     @3388
+        get_peek_export      uvm_get_peek_imp            -     @3368
+        put_ap               uvm_analysis_port           -     @3378
+        put_export           uvm_put_imp                 -     @3358
+      slave_fifo[6]          uvm_tlm_analysis_fifo #(T)  -     @3408
+        analysis_export      uvm_analysis_imp            -     @3457
+        get_ap               uvm_analysis_port           -     @3447
+        get_peek_export      uvm_get_peek_imp            -     @3427
+        put_ap               uvm_analysis_port           -     @3437
+        put_export           uvm_put_imp                 -     @3417
+      slave_fifo[7]          uvm_tlm_analysis_fifo #(T)  -     @3467
+        analysis_export      uvm_analysis_imp            -     @3516
+        get_ap               uvm_analysis_port           -     @3506
+        get_peek_export      uvm_get_peek_imp            -     @3486
+        put_ap               uvm_analysis_port           -     @3496
+        put_export           uvm_put_imp                 -     @3476
+      slave_fifo[8]          uvm_tlm_analysis_fifo #(T)  -     @3526
+        analysis_export      uvm_analysis_imp            -     @3575
+        get_ap               uvm_analysis_port           -     @3565
+        get_peek_export      uvm_get_peek_imp            -     @3545
+        put_ap               uvm_analysis_port           -     @3555
+        put_export           uvm_put_imp                 -     @3535
+    slave_agent[0]           axi4_slave_agent            -     @566 
+      driver                 axi4_slave_driver           -     @3728
+        rsp_port             uvm_analysis_port           -     @3747
+        seq_item_port        uvm_seq_item_pull_port      -     @3737
+      monitor                axi4_slave_monitor          -     @3757
+        item_collected_port  uvm_analysis_port           -     @3766
+      sequencer              axi4_slave_sequencer        -     @3591
+        rsp_export           uvm_analysis_export         -     @3600
+        seq_item_export      uvm_seq_item_pull_imp       -     @3718
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[1]           axi4_slave_agent            -     @573 
-      driver                 axi4_slave_driver           -     @3917
-        rsp_port             uvm_analysis_port           -     @3936
-        seq_item_port        uvm_seq_item_pull_port      -     @3926
-      monitor                axi4_slave_monitor          -     @3946
-        item_collected_port  uvm_analysis_port           -     @3955
-      sequencer              axi4_slave_sequencer        -     @3780
-        rsp_export           uvm_analysis_export         -     @3789
-        seq_item_export      uvm_seq_item_pull_imp       -     @3907
+    slave_agent[1]           axi4_slave_agent            -     @575 
+      driver                 axi4_slave_driver           -     @3919
+        rsp_port             uvm_analysis_port           -     @3938
+        seq_item_port        uvm_seq_item_pull_port      -     @3928
+      monitor                axi4_slave_monitor          -     @3948
+        item_collected_port  uvm_analysis_port           -     @3957
+      sequencer              axi4_slave_sequencer        -     @3782
+        rsp_export           uvm_analysis_export         -     @3791
+        seq_item_export      uvm_seq_item_pull_imp       -     @3909
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[2]           axi4_slave_agent            -     @582 
-      driver                 axi4_slave_driver           -     @4108
-        rsp_port             uvm_analysis_port           -     @4127
-        seq_item_port        uvm_seq_item_pull_port      -     @4117
-      monitor                axi4_slave_monitor          -     @4137
-        item_collected_port  uvm_analysis_port           -     @4146
-      sequencer              axi4_slave_sequencer        -     @3971
-        rsp_export           uvm_analysis_export         -     @3980
-        seq_item_export      uvm_seq_item_pull_imp       -     @4098
+    slave_agent[2]           axi4_slave_agent            -     @584 
+      driver                 axi4_slave_driver           -     @4110
+        rsp_port             uvm_analysis_port           -     @4129
+        seq_item_port        uvm_seq_item_pull_port      -     @4119
+      monitor                axi4_slave_monitor          -     @4139
+        item_collected_port  uvm_analysis_port           -     @4148
+      sequencer              axi4_slave_sequencer        -     @3973
+        rsp_export           uvm_analysis_export         -     @3982
+        seq_item_export      uvm_seq_item_pull_imp       -     @4100
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[3]           axi4_slave_agent            -     @591 
-      driver                 axi4_slave_driver           -     @4299
-        rsp_port             uvm_analysis_port           -     @4318
-        seq_item_port        uvm_seq_item_pull_port      -     @4308
-      monitor                axi4_slave_monitor          -     @4328
-        item_collected_port  uvm_analysis_port           -     @4337
-      sequencer              axi4_slave_sequencer        -     @4162
-        rsp_export           uvm_analysis_export         -     @4171
-        seq_item_export      uvm_seq_item_pull_imp       -     @4289
+    slave_agent[3]           axi4_slave_agent            -     @593 
+      driver                 axi4_slave_driver           -     @4301
+        rsp_port             uvm_analysis_port           -     @4320
+        seq_item_port        uvm_seq_item_pull_port      -     @4310
+      monitor                axi4_slave_monitor          -     @4330
+        item_collected_port  uvm_analysis_port           -     @4339
+      sequencer              axi4_slave_sequencer        -     @4164
+        rsp_export           uvm_analysis_export         -     @4173
+        seq_item_export      uvm_seq_item_pull_imp       -     @4291
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[4]           axi4_slave_agent            -     @600 
-      driver                 axi4_slave_driver           -     @4490
-        rsp_port             uvm_analysis_port           -     @4509
-        seq_item_port        uvm_seq_item_pull_port      -     @4499
-      monitor                axi4_slave_monitor          -     @4519
-        item_collected_port  uvm_analysis_port           -     @4528
-      sequencer              axi4_slave_sequencer        -     @4353
-        rsp_export           uvm_analysis_export         -     @4362
-        seq_item_export      uvm_seq_item_pull_imp       -     @4480
+    slave_agent[4]           axi4_slave_agent            -     @602 
+      driver                 axi4_slave_driver           -     @4492
+        rsp_port             uvm_analysis_port           -     @4511
+        seq_item_port        uvm_seq_item_pull_port      -     @4501
+      monitor                axi4_slave_monitor          -     @4521
+        item_collected_port  uvm_analysis_port           -     @4530
+      sequencer              axi4_slave_sequencer        -     @4355
+        rsp_export           uvm_analysis_export         -     @4364
+        seq_item_export      uvm_seq_item_pull_imp       -     @4482
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[5]           axi4_slave_agent            -     @609 
-      driver                 axi4_slave_driver           -     @4681
-        rsp_port             uvm_analysis_port           -     @4700
-        seq_item_port        uvm_seq_item_pull_port      -     @4690
-      monitor                axi4_slave_monitor          -     @4710
-        item_collected_port  uvm_analysis_port           -     @4719
-      sequencer              axi4_slave_sequencer        -     @4544
-        rsp_export           uvm_analysis_export         -     @4553
-        seq_item_export      uvm_seq_item_pull_imp       -     @4671
+    slave_agent[5]           axi4_slave_agent            -     @611 
+      driver                 axi4_slave_driver           -     @4683
+        rsp_port             uvm_analysis_port           -     @4702
+        seq_item_port        uvm_seq_item_pull_port      -     @4692
+      monitor                axi4_slave_monitor          -     @4712
+        item_collected_port  uvm_analysis_port           -     @4721
+      sequencer              axi4_slave_sequencer        -     @4546
+        rsp_export           uvm_analysis_export         -     @4555
+        seq_item_export      uvm_seq_item_pull_imp       -     @4673
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[6]           axi4_slave_agent            -     @618 
-      driver                 axi4_slave_driver           -     @4872
-        rsp_port             uvm_analysis_port           -     @4891
-        seq_item_port        uvm_seq_item_pull_port      -     @4881
-      monitor                axi4_slave_monitor          -     @4901
-        item_collected_port  uvm_analysis_port           -     @4910
-      sequencer              axi4_slave_sequencer        -     @4735
-        rsp_export           uvm_analysis_export         -     @4744
-        seq_item_export      uvm_seq_item_pull_imp       -     @4862
+    slave_agent[6]           axi4_slave_agent            -     @620 
+      driver                 axi4_slave_driver           -     @4874
+        rsp_port             uvm_analysis_port           -     @4893
+        seq_item_port        uvm_seq_item_pull_port      -     @4883
+      monitor                axi4_slave_monitor          -     @4903
+        item_collected_port  uvm_analysis_port           -     @4912
+      sequencer              axi4_slave_sequencer        -     @4737
+        rsp_export           uvm_analysis_export         -     @4746
+        seq_item_export      uvm_seq_item_pull_imp       -     @4864
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[7]           axi4_slave_agent            -     @627 
-      driver                 axi4_slave_driver           -     @5063
-        rsp_port             uvm_analysis_port           -     @5082
-        seq_item_port        uvm_seq_item_pull_port      -     @5072
-      monitor                axi4_slave_monitor          -     @5092
-        item_collected_port  uvm_analysis_port           -     @5101
-      sequencer              axi4_slave_sequencer        -     @4926
-        rsp_export           uvm_analysis_export         -     @4935
-        seq_item_export      uvm_seq_item_pull_imp       -     @5053
+    slave_agent[7]           axi4_slave_agent            -     @629 
+      driver                 axi4_slave_driver           -     @5065
+        rsp_port             uvm_analysis_port           -     @5084
+        seq_item_port        uvm_seq_item_pull_port      -     @5074
+      monitor                axi4_slave_monitor          -     @5094
+        item_collected_port  uvm_analysis_port           -     @5103
+      sequencer              axi4_slave_sequencer        -     @4928
+        rsp_export           uvm_analysis_export         -     @4937
+        seq_item_export      uvm_seq_item_pull_imp       -     @5055
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    slave_agent[8]           axi4_slave_agent            -     @636 
-      driver                 axi4_slave_driver           -     @5254
-        rsp_port             uvm_analysis_port           -     @5273
-        seq_item_port        uvm_seq_item_pull_port      -     @5263
-      monitor                axi4_slave_monitor          -     @5283
-        item_collected_port  uvm_analysis_port           -     @5292
-      sequencer              axi4_slave_sequencer        -     @5117
-        rsp_export           uvm_analysis_export         -     @5126
-        seq_item_export      uvm_seq_item_pull_imp       -     @5244
+    slave_agent[8]           axi4_slave_agent            -     @638 
+      driver                 axi4_slave_driver           -     @5256
+        rsp_port             uvm_analysis_port           -     @5275
+        seq_item_port        uvm_seq_item_pull_port      -     @5265
+      monitor                axi4_slave_monitor          -     @5285
+        item_collected_port  uvm_analysis_port           -     @5294
+      sequencer              axi4_slave_sequencer        -     @5119
+        rsp_export           uvm_analysis_export         -     @5128
+        seq_item_export      uvm_seq_item_pull_imp       -     @5246
         arbitration_queue    array                       0     -    
         lock_queue           array                       0     -    
         num_last_reqs        integral                    32    'd1  
         num_last_rsps        integral                    32    'd1  
-    v_seqr                   axi4_virtual_sequencer      -     @645 
-      rsp_export             uvm_analysis_export         -     @654 
-      seq_item_export        uvm_seq_item_pull_imp       -     @772 
+    v_seqr                   axi4_virtual_sequencer      -     @647 
+      rsp_export             uvm_analysis_export         -     @656 
+      seq_item_export        uvm_seq_item_pull_imp       -     @774 
       arbitration_queue      array                       0     -    
       lock_queue             array                       0     -    
       num_last_reqs          integral                    32    'd1  
@@ -557,10 +542,6 @@ UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[3].
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x1113c2b7, len=179, size=5, burst=2
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x86e1e756, len=39, size=3, burst=3
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 0: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x201216dd, len=53, size=0, burst=3
-*Verdi* : Begin traversing the scope (hdl_top.dut), layer (0).
-*Verdi* : Enable +all dumping.
-*Verdi* : End of traversing.
-[1000] Added DUT internal signals to FSDB dump
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xb2ad560e, len=150, size=3, burst=3
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 100000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x77da7e66, len=148, size=3, burst=2
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 100000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x90d67c96, len=28, size=4, burst=3
@@ -816,407 +797,8 @@ UVM_INFO ../master/axi4_master_pkg.sv(92) @ 900000: uvm_test_top.env.master_agen
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 900000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xe078e9a5, len=220, size=3, burst=1
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 900000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x7ae2a107, len=183, size=6, burst=3
 UVM_INFO ../master/axi4_master_pkg.sv(92) @ 900000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x45708cd7, len=78, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x3ac43bc9, len=254, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xd9e6cca0, len=182, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0xc225d0ba, len=38, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0xdaedb714, len=225, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x693f74ed, len=17, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xb74452f9, len=6, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x10b0d5a9, len=125, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x6ff08c88, len=224, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1000000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xc4e75d64, len=158, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x1e950d09, len=193, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x1ee839d, len=85, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x319729d0, len=160, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xefcf4c54, len=66, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0xec3bfe7, len=51, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x7dfdf4f0, len=88, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x9dceb5db, len=158, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xfe6d4bdb, len=91, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1100000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x46c43a4c, len=50, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x4792ef8f, len=191, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xbaf3185e, len=55, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0xe36ba85f, len=88, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x3f25f1e1, len=156, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x79c3762d, len=206, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x4794e7fe, len=4, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xbe4fa3b6, len=21, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xc04df79d, len=70, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1200000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x3093b0e6, len=64, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xe23bbff9, len=187, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x5b3248c1, len=252, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x5bef4573, len=75, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xabf97442, len=242, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x3c5b0d2e, len=40, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0xdcb70e9a, len=79, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x2aef38e1, len=2, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x415c06dd, len=98, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1300000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x716226c4, len=169, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x131f181f, len=254, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xda93d822, len=217, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x7d59e6b4, len=97, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0xbc571447, len=15, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x9f87bad6, len=214, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x59797c5d, len=79, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x3c4b112b, len=173, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x9245cb45, len=215, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1400000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x161beb71, len=116, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x96a4a04c, len=204, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x957e7e35, len=229, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x47e7a43d, len=202, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xe3ce0535, len=9, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x7eba19b8, len=161, size=4, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x6ef9544d, len=68, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x5b43f6ee, len=8, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x89590783, len=142, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1500000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xdf001818, len=163, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xd85b620e, len=251, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xaf9df2cc, len=219, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x57653616, len=158, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xd5570717, len=202, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0xfe0e8296, len=137, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x6f1d7a53, len=149, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x61b01a29, len=78, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x754b4079, len=166, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1600000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xd766f51d, len=207, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x5b23fb46, len=13, size=4, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x8bc4f1af, len=120, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0xa9068bf5, len=154, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x3ae56b1b, len=106, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xd3d3dd08, len=34, size=4, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x7ae5b4e7, len=228, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xeb7f3e8e, len=245, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x255fc31f, len=216, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1700000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xd6658241, len=191, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x72e32be9, len=39, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x2a71246f, len=189, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0xa842355b, len=6, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x8a8a6d6b, len=131, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x5832f305, len=237, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xa7c9cc40, len=151, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x938da7c8, len=107, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xb6f9321a, len=110, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1800000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xfb8812e6, len=83, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xbda9901e, len=0, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xa0f9a7eb, len=57, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xf55e824a, len=65, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xa3ce3ea1, len=54, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xc9f65b40, len=60, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x7a9e4406, len=149, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x6314670e, len=128, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x49b025, len=90, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 1900000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x9e548fde, len=162, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x4899a064, len=65, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xe496ef41, len=199, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xea4b87e8, len=1, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xa65b16cd, len=52, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x95257ca6, len=245, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x54d40696, len=9, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x89554e31, len=90, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x17b8fdeb, len=126, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2000000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x6bb0acc, len=147, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xb5422e77, len=105, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x388a9474, len=251, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xbb71af51, len=91, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xa1a56350, len=36, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x411721cf, len=59, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x49c93f8, len=161, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x5f7f53c9, len=189, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x173507d7, len=192, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2100000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xd1bfdbcd, len=236, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x4283755f, len=228, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x15b5de07, len=167, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x146844f8, len=106, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x9bde9189, len=6, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xbbb82da8, len=131, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xc948c9be, len=178, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0xda4ddd73, len=126, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x7046cddf, len=180, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2200000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xd10b6e8a, len=100, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xebe41afb, len=198, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xafbd636e, len=112, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x33dfaab3, len=156, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xeb37fedf, len=109, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x2bc731d3, len=77, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x36ed70a8, len=108, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x3e5e0d6d, len=224, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x99dbc1a1, len=18, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2300000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x270081ef, len=215, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xc93644e9, len=12, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x8747a460, len=173, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xb88dbb06, len=208, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x7faebe2b, len=173, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xac2cc1db, len=148, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xf71f0ff4, len=29, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x1b312d01, len=136, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x3dfc712f, len=102, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2400000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xb206a431, len=234, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x53b70247, len=125, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xc11fb307, len=231, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0xb34ac66c, len=140, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x73bf1115, len=215, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x399fc320, len=173, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xe00ac51e, len=253, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xa797fe53, len=161, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x77548424, len=24, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2500000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xa0425693, len=187, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xcb32827c, len=248, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x6cce61c1, len=150, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xeefba777, len=115, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x878b5e89, len=116, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0xc7b943c1, len=63, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x692d1ac1, len=233, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x8874689, len=130, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x16b4d62, len=120, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2600000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x82dfcb51, len=6, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xdb69977a, len=41, size=4, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xd9ea9507, len=89, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x4f1a59cf, len=51, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xf2d8e8b4, len=20, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xc1b43508, len=250, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x940cc8e, len=205, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x57c570da, len=11, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x3da8e307, len=252, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2700000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xc23f6846, len=221, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x579e3dbd, len=172, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x48a05234, len=4, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x52274d85, len=124, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x2069e37c, len=201, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xaf36e2b4, len=79, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x1817d48c, len=0, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x4ff2c9ec, len=243, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x515e2a2b, len=101, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2800000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x6b85d4a8, len=24, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 2829000: uvm_test_top.env.master_agent[7].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 2872000: uvm_test_top.env.master_agent[6].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xaebdc85b, len=143, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x2154857b, len=182, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x5c2a5317, len=102, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xfb422341, len=134, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xef4004b4, len=206, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xd18f6d68, len=98, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0xacd27450, len=225, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xb5404302, len=86, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 2900000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x88e6815c, len=185, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 2918000: uvm_test_top.env.master_agent[4].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 2924000: uvm_test_top.env.master_agent[3].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xf1089cb2, len=28, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xe8eca2f4, len=99, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x5089db25, len=126, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xd4646b3c, len=220, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x31f21777, len=251, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x5c127cd5, len=117, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x7ee25b3b, len=248, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x2cd89984, len=223, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3000000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x6d37c4b2, len=125, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 3030000: uvm_test_top.env.master_agent[5].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 3069000: uvm_test_top.env.master_agent[0].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 3079000: uvm_test_top.env.master_agent[8].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xbfb07a00, len=20, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x9e312864, len=169, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x48b73d4a, len=69, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xbf9f26d7, len=164, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x3f4e8d6e, len=170, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x541cbf64, len=126, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x8ae2088e, len=108, size=7, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xd5551d82, len=22, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3100000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x399bfa12, len=238, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 3126000: uvm_test_top.env.master_agent[1].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(200) @ 3145000: uvm_test_top.env.master_agent[2].monitor [axi4_master_monitor] Generated 100 synthetic transactions
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xd904ca77, len=190, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xa3c8d983, len=180, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x474a26c3, len=128, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x1f5178f0, len=171, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xb3a7de58, len=244, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xa3e53b69, len=121, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x4a701b1e, len=96, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x106c19a2, len=236, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3200000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x3a1059dd, len=197, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x1cdd358f, len=0, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xca1f4020, len=0, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xb6a4d35b, len=180, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x6144d871, len=238, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0xc03cf20b, len=184, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x26bd1fd9, len=41, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x3a1cce6e, len=119, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x917310fd, len=13, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3300000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x9ecf0e94, len=209, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xdf5547bd, len=30, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x6a476631, len=33, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x4c2576e7, len=148, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x779b5492, len=18, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x4a381402, len=20, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x1279fa0a, len=172, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xf745e2ed, len=76, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xf932a53b, len=45, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3400000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x584cbb42, len=121, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x6ea1a3c4, len=2, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xfac739cf, len=81, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x2fc45e3a, len=234, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x5480998a, len=92, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x893ea1b9, len=100, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0xfca5c90b, len=175, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x6200433a, len=249, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xd843f76b, len=106, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3500000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xfc96b325, len=20, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xe4d40297, len=26, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xa57b989c, len=53, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x73f36591, len=231, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x21b74244, len=0, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x686d8601, len=182, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x615366c0, len=45, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0xfa58ed86, len=26, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xd92c2d3e, len=9, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3600000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xd1013b3d, len=250, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x9a159081, len=54, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xf13eb329, len=30, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x85b04aff, len=179, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0x3f07071c, len=220, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x442286f6, len=117, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xe72a73f1, len=251, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x3f5b0db6, len=67, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x4b64b1f9, len=83, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3700000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x5c04965d, len=167, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x76fb1086, len=81, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x7b4425bd, len=211, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x13f18afb, len=161, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0xe363f945, len=127, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xe68d9707, len=93, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xbef6fad6, len=187, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x7f97379f, len=80, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xc427e0f9, len=248, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3800000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xb5b1b50c, len=203, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x6efd383, len=135, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x54e1677e, len=207, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x31a919ce, len=127, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x1057668c, len=79, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x8994cfbf, len=0, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x5032ae83, len=191, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x70758519, len=149, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x7207c9bd, len=47, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 3900000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x2e56fb15, len=123, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x54de8c9d, len=94, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x20eb197, len=91, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x83c76476, len=176, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x867baa9, len=140, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x1bebdee0, len=205, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x88af1112, len=134, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0xf7d16b00, len=27, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xf3c61cc2, len=7, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4000000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xb9b29368, len=35, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xf6d40ec, len=81, size=5, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xa91c0612, len=13, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x8835c388, len=47, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xbb0d43d5, len=16, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0xcae5e918, len=221, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x1512001a, len=223, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0xde5124b8, len=174, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xab23f0e1, len=126, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4100000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x97850a48, len=52, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xf50bc60a, len=241, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x6f359649, len=239, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x3a86f6f6, len=253, size=2, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0xb6fcda75, len=223, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xb787886f, len=143, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xa6a9c91e, len=179, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x1055a337, len=34, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x2af30be3, len=206, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4200000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x395f7ba8, len=218, size=3, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xfa4fa016, len=209, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xbea9247b, len=196, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0xfc14537, len=78, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x6227158a, len=231, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x25266a98, len=125, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0xdc8da83, len=98, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0xbe728dac, len=235, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x6f5aefd0, len=81, size=4, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4300000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0x4c15191, len=115, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xbbd860e1, len=189, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x273a70ce, len=14, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x2f5d134f, len=118, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x8d2009d6, len=120, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x13355842, len=37, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x719cb285, len=135, size=0, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x5611c2b, len=43, size=3, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xf64909c8, len=57, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4400000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x1acc91ed, len=47, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0xdc16f910, len=107, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0x6872fb4b, len=156, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got WRITE transaction - addr=0x3686a26c, len=237, size=6, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0xe2a1b650, len=230, size=0, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x725619e8, len=63, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x6cf53458, len=183, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x4a11de1a, len=178, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0xc4481fe4, len=213, size=3, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4500000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xf04141e5, len=219, size=7, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xa4e0ddfe, len=142, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0x46e12c6e, len=50, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got WRITE transaction - addr=0x5a868c9f, len=165, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x5501b86a, len=26, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xf1961d0, len=56, size=1, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got WRITE transaction - addr=0x4f414655, len=73, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xe1aed588, len=246, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xc35209cc, len=151, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4600000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0x83e0f963, len=218, size=5, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x7e046fbc, len=160, size=4, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0xad63533, len=26, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x2a153e11, len=60, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xe8c5fbcb, len=20, size=5, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0xf43e0059, len=41, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x1cea55ab, len=201, size=0, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xede2d72e, len=76, size=4, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got READ transaction - addr=0xc106a350, len=144, size=6, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4700000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0xb334308b, len=155, size=5, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got WRITE transaction - addr=0x19bdf2cd, len=148, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x8bfc8d9b, len=103, size=4, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0xd1d904ff, len=48, size=7, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got WRITE transaction - addr=0x13088aec, len=6, size=2, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got WRITE transaction - addr=0x21c3baf8, len=100, size=7, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xe5e7e3f3, len=65, size=6, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0x7b78f09d, len=89, size=3, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got READ transaction - addr=0xa1fa32b3, len=131, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4800000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got READ transaction - addr=0xea16630d, len=13, size=1, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[0].driver [axi4_master_driver] Got WRITE transaction - addr=0x327e432b, len=23, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[1].driver [axi4_master_driver] Got WRITE transaction - addr=0x7cf2f989, len=28, size=0, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[2].driver [axi4_master_driver] Got READ transaction - addr=0xaf25ee71, len=8, size=1, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[3].driver [axi4_master_driver] Got READ transaction - addr=0xa755e171, len=94, size=1, burst=1
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[4].driver [axi4_master_driver] Got READ transaction - addr=0x4e5495cc, len=201, size=2, burst=0
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[5].driver [axi4_master_driver] Got READ transaction - addr=0x1a061402, len=225, size=6, burst=3
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[6].driver [axi4_master_driver] Got READ transaction - addr=0x9045c672, len=32, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[7].driver [axi4_master_driver] Got WRITE transaction - addr=0x5222124b, len=190, size=2, burst=2
-UVM_INFO ../master/axi4_master_pkg.sv(92) @ 4900000: uvm_test_top.env.master_agent[8].driver [axi4_master_driver] Got READ transaction - addr=0xde650602, len=85, size=5, burst=1
-UVM_INFO ../test/axi4_stress_test.sv(39) @ 5000000: uvm_test_top [axi4_stress_test] Completed stress test
-UVM_INFO ../env/axi4_scoreboard.sv(256) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] 
-
-===============================================
-UVM_INFO ../env/axi4_scoreboard.sv(257) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]       AXI4 THROUGHPUT ANALYSIS REPORT         
-UVM_INFO ../env/axi4_scoreboard.sv(258) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] ===============================================
-UVM_INFO ../env/axi4_scoreboard.sv(259) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] Simulation Time: 5000.00 ns (5.000 us)
-UVM_INFO ../env/axi4_scoreboard.sv(260) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] -----------------------------------------------
-UVM_INFO ../env/axi4_scoreboard.sv(263) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] MASTER THROUGHPUT STATISTICS:
-UVM_INFO ../env/axi4_scoreboard.sv(264) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] Master | Write Trans | Write Bytes | Write Mbps | Read Trans | Read Bytes | Read Mbps | Total Mbps
-UVM_INFO ../env/axi4_scoreboard.sv(265) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] -------|-------------|-------------|------------|------------|------------|-----------|------------
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M0   |          87 |        2672 |    4275.20 |         84 |       2139 |   3422.40 |    7697.60
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M1   |          80 |        3285 |    5256.00 |         77 |       2518 |   4028.80 |    9284.80
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M2   |          76 |        2390 |    3824.00 |         90 |       2093 |   3348.80 |    7172.80
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M3   |          83 |        2263 |    3620.80 |         90 |       2519 |   4030.40 |    7651.20
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M4   |          88 |        2767 |    4427.20 |         80 |       3025 |   4840.00 |    9267.20
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M5   |          87 |        2739 |    4382.40 |         76 |       2414 |   3862.40 |    8244.80
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M6   |          90 |        3216 |    5145.60 |         76 |       2633 |   4212.80 |    9358.40
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M7   |          80 |        2607 |    4171.20 |         87 |       3056 |   4889.60 |    9060.80
-UVM_INFO ../env/axi4_scoreboard.sv(277) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   M8   |          75 |        2615 |    4184.00 |         88 |       2815 |   4504.00 |    8688.00
-UVM_INFO ../env/axi4_scoreboard.sv(295) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] -------|-------------|-------------|------------|------------|------------|-----------|------------
-UVM_INFO ../env/axi4_scoreboard.sv(303) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] TOTAL  |         746 |       24554 |   39286.40 |        748 |      23212 |  37139.20 |   76425.60
-UVM_INFO ../env/axi4_scoreboard.sv(314) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] 
------------------------------------------------
-UVM_INFO ../env/axi4_scoreboard.sv(315) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] SUMMARY:
-UVM_INFO ../env/axi4_scoreboard.sv(316) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   Total Transactions : 1494 (Write: 746, Read: 748)
-UVM_INFO ../env/axi4_scoreboard.sv(318) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   Total Data Transfer: 47766 bytes (0.05 MB)
-UVM_INFO ../env/axi4_scoreboard.sv(320) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   Average Throughput : 76425.60 Mbps
-UVM_INFO ../env/axi4_scoreboard.sv(321) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard]   Avg Bytes/Trans   : 31.97
-UVM_INFO ../env/axi4_scoreboard.sv(323) @ 5000000: uvm_test_top.env.scoreboard [axi4_scoreboard] ===============================================
-
-UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_catcher.svh(705) @ 5000000: reporter [UVM/REPORT/CATCHER] 
+UVM_FATAL /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_phase.svh(1512) @ 1000000: reporter [PH_TIMEOUT] Explicit timeout of 1000000 hit, indicating a probable testbench issue
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_catcher.svh(705) @ 1000000: reporter [UVM/REPORT/CATCHER] 
 --- UVM Report catcher Summary ---
 
 
@@ -1227,34 +809,35 @@ Number of caught UVM_FATAL reports   :    0
 Number of caught UVM_ERROR reports   :    0
 Number of caught UVM_WARNING reports :    0
 
-UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_server.svh(904) @ 5000000: reporter [UVM/REPORT/SERVER] 
+UVM_INFO /home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_report_server.svh(904) @ 1000000: reporter [UVM/REPORT/SERVER] 
 --- UVM Report Summary ---
 
 ** Report counts by severity
-UVM_INFO :  812
+UVM_INFO :  417
 UVM_WARNING :    0
 UVM_ERROR :    0
-UVM_FATAL :    0
+UVM_FATAL :    1
 ** Report counts by id
 [AXI_MASTER_DRIVER_BFM]    38
 [AXI_SLAVE_DRIVER_BFM]   172
+[PH_TIMEOUT]     1
 [RNTST]     1
+[TIMOUTSET]     1
 [UVM/RELNOTES]     1
 [UVM/REPORT/CATCHER]     1
 [UVMTOP]     1
 [axi4_master_agent]    27
-[axi4_master_driver]   459
-[axi4_master_monitor]    36
+[axi4_master_driver]    99
+[axi4_master_monitor]    27
 [axi4_protocol_coverage]     1
-[axi4_scoreboard]    26
 [axi4_slave_agent]    27
 [axi4_slave_monitor]    18
-[axi4_stress_test]     3
+[axi4_stress_test]     2
 [axi4_virtual_stress_seq]     1
 
-$finish called from file "/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh", line 527.
-$finish at simulation time              5000000
+$finish called from file "/home/eda_tools/synopsys/vcs/W-2024.09-SP1//etc/uvm-1.2/base/uvm_root.svh", line 135.
+$finish at simulation time              1000000
            V C S   S i m u l a t i o n   R e p o r t 
-Time: 5000000 ps
-CPU Time:      3.920 seconds;       Data structure size:  30.2Mb
-Mon Aug  4 16:23:22 2025
+Time: 1000000 ps
+CPU Time:      0.720 seconds;       Data structure size:   6.8Mb
+Mon Aug  4 16:33:10 2025
