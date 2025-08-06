@@ -1,7 +1,0 @@
-Command exited with non-zero status 255
-{"vcs1":{"timestamp_begin":1754295626.193199157, "rt":3.01, "ut":3.03, "st":0.24}}
-{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1754295623.587777633}
-{"VCS_COMP_START_TIME": 1754295623.587777633}
-{"VCS_COMP_END_TIME": 1754295629.505068173}
-{"VCS_USER_OPTIONS": "-full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps -debug_access+all +vcs+lic+wait -lca -kdb +lint=PCWM +lint=TFIPC-L +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR -f ../sim/axi4_compile.f -l ./logs/compile.log"}
-{"vcs1": {"peak_mem": 474840}}

@@ -1,9 +1,0 @@
-{"vcs1":{"timestamp_begin":1754296326.549561298, "rt":15.52, "ut":15.55, "st":0.57}}
-{"vcselab":{"timestamp_begin":1754296342.215870051, "rt":0.54, "ut":0.45, "st":0.11}}
-{"link":{"timestamp_begin":1754296342.895279849, "rt":0.71, "ut":0.43, "st":0.30}}
-{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1754296324.688040435}
-{"VCS_COMP_START_TIME": 1754296324.688040435}
-{"VCS_COMP_END_TIME": 1754296343.914555075}
-{"VCS_USER_OPTIONS": "-full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps -debug_access+all +vcs+lic+wait -lca -kdb +lint=PCWM +lint=TFIPC-L +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR -f ../sim/axi4_compile.f -l ./logs/compile.log"}
-{"vcs1": {"peak_mem": 493428}}
-{"vcselab": {"peak_mem": 183336}}

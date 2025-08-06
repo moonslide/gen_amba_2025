@@ -459,3 +459,66 @@ Address_N = Start_Address
 - Interconnect can register and pipeline stages
 - Default slave should respond to prevent deadlock
 - Exclusive access has no timeout requirement
+
+## AXI VIP QoS Project
+
+### Overview
+The `axi_vip_qos` project extends the gen_amba_2025 VIP with advanced Quality of Service (QoS) and USER signal features. Located at `/home/timtim01/eda_test/project/axi_vip_qos/`, this project provides:
+
+### Key Features
+- **QoS-based Arbitration**: Multiple priority schemes (basic priority, equal fairness, weighted round-robin)
+- **USER Signal Support**: Passthrough of user-defined sideband signals
+- **Starvation Prevention**: Ensures low-priority transactions eventually complete
+- **Priority Boosting**: Dynamic priority adjustment based on wait time
+- **Saturation Stress Testing**: Validates QoS under heavy load conditions
+
+### Test Suite
+```bash
+# QoS Priority Tests
+test/axi4_qos_basic_priority_test.sv
+test/axi4_qos_equal_priority_fairness_test.sv
+
+# USER Signal Tests  
+test/axi4_user_signal_passthrough_test.sv
+
+# Virtual Sequences
+virtual_seq/axi4_virtual_qos_basic_priority_seq.sv
+virtual_seq/axi4_virtual_qos_equal_priority_fairness_seq.sv
+virtual_seq/axi4_virtual_user_signal_passthrough_seq.sv
+
+# Master Sequences
+seq/master_sequences/axi4_master_qos_basic_priority_order_seq.sv
+seq/master_sequences/axi4_master_qos_equal_priority_fairness_seq.sv
+seq/master_sequences/axi4_master_qos_saturation_stress_seq.sv
+seq/master_sequences/axi4_master_qos_starvation_prevention_seq.sv
+seq/master_sequences/axi4_master_qos_with_user_priority_boost_seq.sv
+seq/master_sequences/axi4_master_user_signal_passthrough_seq.sv
+```
+
+### Coverage Components
+- `master/axi4_master_qos_user_coverage.sv` - Master-side QoS/USER coverage
+- `slave/axi4_slave_qos_user_coverage.sv` - Slave-side QoS/USER coverage
+
+### Recent Fixes (2025-08-06)
+- Fixed constraint solver failure in saturation stress test
+- Fixed critical base_addr randomization in USER-based QoS routing
+- Fixed address mapping in QoS sequences
+- Fixed UVM timeout and scoreboard errors
+- Added all includes to packages for proper compilation
+
+### VIP+RTL Integration Fixes (2025-08-06)
+- **Fixed Warning-[UII-L] Interface not instantiated**: Updated hdl_top.sv to properly instantiate all interface arrays and BFM interfaces
+- **Fixed Error-[IIXMR] Invalid cross-module reference**: Replaced foreach loops with explicit unrolled interface initialization to avoid variable index errors
+- **Fixed shell syntax error in make verdi**: Removed extra semicolons after background operators (`&;` → `&`) in all Makefiles
+- **Updated VIP generation flow**: Modified vip_environment_generator.py to generate warning-free hdl_top.sv with proper interface instantiation
+- **Applied fixes globally**: Updated all VIP integration projects (16x16, 17x17, axi4_vip_env_rtl_integration) and generation scripts
+
+### Running QoS Tests
+```bash
+cd /home/timtim01/eda_test/project/axi_vip_qos
+# Run specific QoS test
+./run_test.sh axi4_qos_basic_priority_test
+
+# Run USER signal test
+./run_test.sh axi4_user_signal_passthrough_test
+```

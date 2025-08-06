@@ -1,2 +1,0 @@
-Command Line: /home/eda_tools/synopsys/verdi/W-2024.09-SP1/platform/LINUXAMD64/bin/Novas -ssf ./waves/axi4_stress_test_1.fsdb -elab ./simv.daidir/kdb -nologo
-uname(Linux rocky-eda 4.18.0-553.58.1.el8_10.x86_64 #1 SMP Thu Jun 26 15:50:39 UTC 2025 x86_64)
