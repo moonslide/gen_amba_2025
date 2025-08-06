@@ -30,13 +30,28 @@ def main():
                 master = type('Master', (), {})()
                 master.name = f"master_{i}"
                 master.id = i
+                master.id_width = 4
+                master.user_width = 1
+                master.data_width = 32
+                master.addr_width = 32
+                master.qos_support = True
+                master.exclusive_support = True
+                master.cache_support = True
+                master.prot_support = True
+                master.region_support = True
                 self.masters.append(master)
             for i in range(8):
                 slave = type('Slave', (), {})()
                 slave.name = f"slave_{i}"
                 slave.id = i
-                slave.base_addr = i * 0x10000000
+                slave.base_address = i * 0x10000000
                 slave.size = 0x10000000
+                slave.data_width = 32
+                slave.addr_width = 32
+                slave.memory_type = "RAM"
+                slave.response_delay = 1
+                # Add method for end address calculation
+                slave.get_end_address = lambda: slave.base_address + slave.size - 1
                 self.slaves.append(slave)
     
     config = MinimalConfig()

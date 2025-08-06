@@ -12,6 +12,7 @@ import sqlite3
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 import math
+from vip_storage_manager import get_storage_manager, StoragePolicy
 
 class VIPTestConfigDatabase:
     """Generator for VIP test configuration database system"""
@@ -307,13 +308,18 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 import uuid
+from vip_storage_manager import get_storage_manager, StoragePolicy
 
 class VIPTestConfigManager:
     """Manages VIP test configurations and database operations"""
     
-    def __init__(self, db_path: str = "vip_test_config.db"):
+    def __init__(self, db_path: str = "vip_test_config.db", storage_policy: StoragePolicy = None):
         self.db_path = db_path
         self.conn = None
+        self.storage_manager = get_storage_manager(
+            base_work_dir=os.path.dirname(os.path.abspath(db_path)) or "/tmp/vip_test_runs",
+            policy=storage_policy
+        )
         self._init_database()
         
     def _init_database(self):
@@ -497,9 +503,19 @@ class VIPTestConfigManager:
     def record_test_result(self, execution_id: int, status: str, 
                           start_time: datetime, end_time: datetime,
                           **kwargs) -> int:
-        """Record test execution result"""
+        """Record test execution result with storage management"""
         duration = int((end_time - start_time).total_seconds())
         run_id = kwargs.get('run_id', str(uuid.uuid4()))
+        
+        # Limit log file size if provided
+        log_file_path = kwargs.get('log_file_path', '')
+        if log_file_path and os.path.exists(log_file_path):
+            self.storage_manager.limit_log_file_size(log_file_path)
+        
+        # Truncate error message if too long
+        error_message = kwargs.get('error_message', '')
+        if len(error_message) > 10000:  # Limit to 10KB
+            error_message = error_message[:9950] + "... [truncated]"
         
         cursor = self.conn.cursor()
         cursor.execute("""
@@ -516,10 +532,10 @@ class VIPTestConfigManager:
             kwargs.get('exit_code', 0),
             kwargs.get('simulator_version', ''),
             kwargs.get('host_machine', ''),
-            kwargs.get('log_file_path', ''),
+            log_file_path,
             kwargs.get('coverage_file_path', ''),
             kwargs.get('waveform_file_path', ''),
-            kwargs.get('error_message', ''),
+            error_message,
             kwargs.get('warnings_count', 0),
             kwargs.get('errors_count', 0),
             kwargs.get('assertions_passed', 0),
@@ -528,7 +544,12 @@ class VIPTestConfigManager:
             json.dumps(kwargs.get('performance_metrics', {{}}))
         ))
         self.conn.commit()
-        return cursor.lastrowid
+        
+        # Trigger cleanup if needed
+        result_id = cursor.lastrowid
+        self._check_storage_limits()
+        
+        return result_id
         
     # Regression Management
     def create_regression_run(self, name: str, suite_id: int, config_id: int,
@@ -662,6 +683,36 @@ class VIPTestConfigManager:
             ORDER BY test_date
         """.format(days), (metric_name,))
         return [dict(row) for row in cursor.fetchall()]
+        
+    def _check_storage_limits(self):
+        """Check storage limits and trigger cleanup if necessary"""
+        try:
+            # Check total storage usage
+            storage_stats = self.storage_manager.get_storage_stats()
+            total_usage = storage_stats.get('total_usage_gb', 0)
+            
+            # Get policy limits
+            policy = self.storage_manager.policy
+            
+            # If approaching limit, trigger cleanup
+            if total_usage > (policy.max_total_storage_gb * 0.8):  # 80% threshold
+                self.storage_manager.cleanup_database(self.db_path)
+                
+        except Exception as e:
+            # Don't fail the main operation if storage check fails
+            pass
+            
+    def cleanup_database(self):
+        """Manually trigger database cleanup"""
+        return self.storage_manager.cleanup_database(self.db_path)
+        
+    def get_storage_stats(self) -> Dict[str, Any]:
+        """Get storage statistics"""
+        return self.storage_manager.get_storage_stats()
+        
+    def set_storage_policy(self, policy: StoragePolicy):
+        """Update storage policy"""
+        self.storage_manager.policy = policy
 '''
         
         with open(os.path.join(output_dir, "test_config_manager.py"), 'w') as f:

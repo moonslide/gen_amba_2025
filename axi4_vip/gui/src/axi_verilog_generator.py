@@ -18,17 +18,31 @@ class AXIVerilogGenerator:
         
     def generate(self):
         """Generate complete AXI interconnect"""
-        # Create output directory
-        os.makedirs(self.output_dir, exist_ok=True)
-        
-        # Generate modules
-        self.generate_interconnect()
-        self.generate_address_decoder()
-        self.generate_arbiter()
-        self.generate_router()
-        self.generate_testbench()
-        
-        return self.output_dir
+        try:
+            # Create output directory
+            os.makedirs(self.output_dir, exist_ok=True)
+            
+            # Log generation info
+            num_masters = len(self.config.masters)
+            num_slaves = len(self.config.slaves)
+            print(f"[AXI Gen] Generating {num_masters}x{num_slaves} interconnect")
+            print(f"[AXI Gen] Output directory: {self.output_dir}")
+            
+            # Generate modules
+            self.generate_interconnect()
+            self.generate_address_decoder()
+            self.generate_arbiter()
+            self.generate_router()
+            self.generate_testbench()
+            
+            print(f"[AXI Gen] Generation completed successfully")
+            return self.output_dir
+            
+        except Exception as e:
+            print(f"[AXI Gen] Generation failed: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
         
     def generate_interconnect(self):
         """Generate top-level interconnect module"""

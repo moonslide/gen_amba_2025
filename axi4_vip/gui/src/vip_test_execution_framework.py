@@ -24,6 +24,7 @@ from enum import Enum
 import concurrent.futures
 import tempfile
 import logging
+from vip_storage_manager import get_storage_manager, StoragePolicy
 
 class TestStatus(Enum):
     """Test execution status enumeration"""
@@ -69,7 +70,7 @@ class VIPTestExecutionFramework:
     """Automated test execution framework for AXI4 VIP testing"""
     
     def __init__(self, base_work_dir: str = "/tmp/vip_test_runs", 
-                 max_concurrent_tests: int = 4):
+                 max_concurrent_tests: int = 4, storage_policy: StoragePolicy = None):
         self.base_work_dir = Path(base_work_dir)
         self.max_concurrent_tests = max_concurrent_tests
         self.running_tests: Dict[int, TestExecution] = {}
@@ -77,6 +78,9 @@ class VIPTestExecutionFramework:
         self.result_callbacks: List[Callable] = []
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_concurrent_tests)
         self.shutdown_event = threading.Event()
+        
+        # Initialize storage manager
+        self.storage_manager = get_storage_manager(str(base_work_dir), storage_policy)
         
         # Setup logging
         self.logger = self._setup_logging()
@@ -733,11 +737,30 @@ help:
         """Notify callbacks about test completion"""
         self.logger.info(f"Test completed: {test_execution.test_name} - {test_execution.status.value}")
         
+        # Limit log file size after completion
+        if test_execution.log_file and os.path.exists(test_execution.log_file):
+            self.storage_manager.limit_log_file_size(test_execution.log_file)
+        
+        # Schedule workspace cleanup after a delay (keep for debugging)
+        cleanup_delay_hours = 2  # Keep workspace for 2 hours after completion
+        cleanup_timer = threading.Timer(cleanup_delay_hours * 3600, 
+                                      self._cleanup_test_workspace_delayed, 
+                                      args=[test_execution.execution_id])
+        cleanup_timer.daemon = True
+        cleanup_timer.start()
+        
         for callback in self.result_callbacks:
             try:
                 callback(test_execution)
             except Exception as e:
                 self.logger.error(f"Error in result callback: {e}")
+                
+    def _cleanup_test_workspace_delayed(self, execution_id: int):
+        """Cleanup test workspace after delay"""
+        try:
+            self.cleanup_test_workspace(execution_id, keep_logs=True)
+        except Exception as e:
+            self.logger.warning(f"Failed delayed cleanup of test {execution_id}: {e}")
                 
     def abort_test(self, execution_id: int) -> bool:
         """Abort a running test"""

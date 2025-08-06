@@ -208,33 +208,67 @@ def create_vip_rtl_integrated_makefile():
     makefile_path = os.path.join(sim_dir, "Makefile")
     
     makefile_content = '''#==============================================================================
-# Makefile for AXI4 VIP+RTL Integration (16x16 Matrix)
+# Enhanced Makefile for AXI4 VIP+RTL Integration with Advanced Debug Features
 # Generated for actual VIP+RTL simulation as expected by user
+# Date: 2025-08-06
 #==============================================================================
 
 # Default simulator
 SIM ?= vcs
 
-# Test name and seed
+# Test name
 TEST ?= axi4_rtl_integration_test
+
+# Random seed
 SEED ?= 1
+
+# Verbosity level (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY ?= UVM_MEDIUM
 
 # Directories
 VIP_ROOT = ..
 SIM_DIR = .
+SCRIPT_DIR = $(SIM_DIR)/scripts
 LOG_DIR = $(SIM_DIR)/logs
 WAVE_DIR = $(SIM_DIR)/waves
 COV_DIR = $(SIM_DIR)/coverage
+REPORT_DIR = $(SIM_DIR)/reports
 
 # Export VIP_ROOT for use in compile file
 export VIP_ROOT
 
 # Create directories
-$(shell mkdir -p $(LOG_DIR) $(WAVE_DIR) $(COV_DIR))
+$(shell mkdir -p $(LOG_DIR) $(WAVE_DIR) $(COV_DIR) $(REPORT_DIR))
 
 # Common compile options
 COMMON_OPTS = +define+VIP_RTL_INTEGRATION_MODE
 COMMON_OPTS += +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
+
+# Debug options
+DEBUG_LEVEL ?= 0
+ifeq ($(DEBUG_LEVEL), 1)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC
+else ifeq ($(DEBUG_LEVEL), 2)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION
+else ifeq ($(DEBUG_LEVEL), 3)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION +define+AXI4_DEBUG_PROTOCOL
+else ifeq ($(DEBUG_LEVEL), 4)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION +define+AXI4_DEBUG_PROTOCOL +define+AXI4_DEBUG_SCOREBOARD
+endif
+
+# Performance monitoring
+PERF_MONITOR ?= 0
+ifeq ($(PERF_MONITOR), 1)
+    COMMON_OPTS += +define+AXI4_PERF_MONITOR
+endif
+
+# Coverage options
+COVERAGE ?= 0
+ifeq ($(COVERAGE), 1)
+    COMMON_OPTS += +define+AXI4_ENABLE_COVERAGE
+    VCS_COMP_OPTS += -cm line+cond+fsm+tgl+branch+assert
+    VCS_RUN_OPTS += -cm line+cond+fsm+tgl+branch+assert -cm_name $(TEST)_$(SEED)
+endif
 
 # Waveform dump options
 DUMP_FSDB ?= 0
@@ -253,54 +287,111 @@ ifeq ($(DUMP_VCD), 1)
     COMMON_OPTS += +define+DUMP_VCD
 endif
 
-# VCS options for VIP+RTL integration
+# VCS options
 VCS_COMP_OPTS = -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps
 VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait -lca -kdb
 VCS_COMP_OPTS += +lint=PCWM +lint=TFIPC-L
 VCS_COMP_OPTS += $(COMMON_OPTS)
 
-VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=UVM_MEDIUM
+# Enhanced runtime options
+VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERBOSITY)
 VCS_RUN_OPTS += +ntb_random_seed=$(SEED)
+
+# UVM specific debug options
+UVM_DEBUG ?= 0
+ifeq ($(UVM_DEBUG), 1)
+    VCS_RUN_OPTS += +UVM_CONFIG_DB_TRACE +UVM_OBJECTION_TRACE
+    VCS_RUN_OPTS += +UVM_PHASE_TRACE +UVM_RESOURCE_DB_TRACE
+endif
+
+# Transaction recording
+TRANS_RECORD ?= 0
+ifeq ($(TRANS_RECORD), 1)
+    VCS_RUN_OPTS += +UVM_TR_RECORD +UVM_LOG_RECORD
+endif
+
+# Timeout settings
+TIMEOUT ?= 1000000
+VCS_RUN_OPTS += +UVM_TIMEOUT=$(TIMEOUT),NO
+
+# Maximum error count
+MAX_ERRORS ?= 10
+VCS_RUN_OPTS += +UVM_MAX_QUIT_COUNT=$(MAX_ERRORS),NO
 
 # Add FSDB runtime options
 ifeq ($(DUMP_FSDB), 1)
     VCS_RUN_OPTS += +fsdb_file=$(FSDB_FILE)
 endif
 
+# Questa options
+QUESTA_COMP_OPTS = -64 -sv -mfcu -cuname design_cuname
+QUESTA_COMP_OPTS += +define+QUESTA
+QUESTA_COMP_OPTS += $(COMMON_OPTS)
+
+QUESTA_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERBOSITY)
+QUESTA_RUN_OPTS += -sv_seed $(SEED)
+
 # Targets
-.PHONY: all compile run run_fsdb run_vcd verdi clean help
+.PHONY: all compile run clean help debug_info
 
 all: run
 
-# Compile VIP+RTL integration
 compile:
+	@echo "======================================"
+	@echo "Compiling AXI4 VIP+RTL Environment"
+	@echo "======================================"
+	@echo "Debug Level: $(DEBUG_LEVEL)"
+	@echo "Coverage: $(COVERAGE)"
+	@echo "Performance Monitor: $(PERF_MONITOR)"
 ifeq ($(SIM), vcs)
-	@echo "===================================="
-	@echo "VIP+RTL Integration Compilation (16x16)"
-	@echo "===================================="
-	@echo "Compiling UVM testbench with RTL interconnect..."
 	VIP_ROOT=$(VIP_ROOT) vcs $(VCS_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_vip_rtl_compile.f -l $(LOG_DIR)/compile.log
-	@echo "✅ VIP+RTL compilation successful!"
-else
-	@echo "VIP+RTL integration currently supports VCS only"
+else ifeq ($(SIM), questa)
+	VIP_ROOT=$(VIP_ROOT) vlog $(QUESTA_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_vip_rtl_compile.f -l $(LOG_DIR)/compile.log
 endif
+	@echo "✅ Compilation successful!"
 
-# Run simulation
 run: compile
-ifeq ($(SIM), vcs)
-	@echo "===================================="
-	@echo "Running VIP+RTL Integration Test"
-	@echo "===================================="
-	@echo "Test: $(TEST)"
+	@echo "======================================"
+	@echo "Running Test: $(TEST)"
+	@echo "======================================"
 	@echo "Seed: $(SEED)"
-	./simv $(VCS_RUN_OPTS) -l $(LOG_DIR)/$(TEST)_$(SEED).log
-	@echo "✅ VIP+RTL simulation completed!"
-else
-	@echo "VIP+RTL simulation currently supports VCS only"
+	@echo "Verbosity: $(VERBOSITY)"
+	@echo "UVM Debug: $(UVM_DEBUG)"
+	@echo "Transaction Recording: $(TRANS_RECORD)"
+	@echo "Timeout: $(TIMEOUT)"
+ifeq ($(SIM), vcs)
+	./simv $(VCS_RUN_OPTS) -l $(LOG_DIR)/$(TEST)_$(SEED).log | tee $(LOG_DIR)/$(TEST)_$(SEED)_console.log
+else ifeq ($(SIM), questa)
+	vsim -c design_cuname.hvl_top design_cuname.hdl_top $(QUESTA_RUN_OPTS) -do "run -all; quit" -l $(LOG_DIR)/$(TEST)_$(SEED).log
 endif
+	@echo "✅ Simulation completed!"
+	@echo "Log file: $(LOG_DIR)/$(TEST)_$(SEED).log"
+
+# Debug runs with different levels
+debug_basic:
+	$(MAKE) run DEBUG_LEVEL=1 VERBOSITY=UVM_HIGH
+
+debug_trans:
+	$(MAKE) run DEBUG_LEVEL=2 VERBOSITY=UVM_HIGH TRANS_RECORD=1
+
+debug_protocol:
+	$(MAKE) run DEBUG_LEVEL=3 VERBOSITY=UVM_HIGH UVM_DEBUG=1
+
+debug_full:
+	$(MAKE) run DEBUG_LEVEL=4 VERBOSITY=UVM_FULL UVM_DEBUG=1 TRANS_RECORD=1
+
+# Run with performance monitoring
+run_perf:
+	$(MAKE) run PERF_MONITOR=1
+	@echo "Performance report: $(REPORT_DIR)/$(TEST)_$(SEED)_perf.rpt"
+
+# Run with coverage
+run_cov:
+	$(MAKE) run COVERAGE=1
+	@echo "Coverage report: $(COV_DIR)/$(TEST)_$(SEED).cov"
 
 # Run with FSDB dumping
-run_fsdb: 
+run_fsdb:
 	$(MAKE) run DUMP_FSDB=1
 	@echo "✅ FSDB file generated: $(FSDB_FILE)"
 
@@ -308,6 +399,40 @@ run_fsdb:
 run_vcd:
 	$(MAKE) run DUMP_VCD=1
 	@echo "✅ VCD file generated: $(VCD_FILE)"
+
+# Run all tests
+run_all:
+	@for test in axi4_basic_rw_test axi4_burst_test axi4_stress_test axi4_random_test; do \
+		echo "Running $$test..."; \
+		$(MAKE) run TEST=$$test SEED=$$(date +%s); \
+	done
+
+# Generate debug info report
+debug_info:
+	@echo "======================================"
+	@echo "AXI4 VIP Debug Information"
+	@echo "======================================"
+	@echo "Platform Information:"
+	@echo "  VCS Version: $$(vcs -ID | head -1)"
+	@echo "  UVM Version: UVM-1.2"
+	@echo "  VIP Root: $(VIP_ROOT)"
+	@echo ""
+	@echo "Configuration Details:"
+	@echo "  Number of Masters: $$(grep -c "master_agent\\[" $(VIP_ROOT)/env/axi4_env.sv || echo "Unknown")"
+	@echo "  Number of Slaves: $$(grep -c "slave_agent\\[" $(VIP_ROOT)/env/axi4_env.sv || echo "Unknown")"
+	@echo ""
+	@echo "Available Tests:"
+	@ls -1 $(VIP_ROOT)/test/*.sv | grep -v base_test | sed 's/.*\\//  - /' | sed 's/.sv//'
+	@echo ""
+	@echo "Debug Levels:"
+	@echo "  0 - No debug (default)"
+	@echo "  1 - Basic debug (+AXI4_DEBUG_BASIC)"
+	@echo "  2 - Transaction debug (+AXI4_DEBUG_TRANSACTION)"
+	@echo "  3 - Protocol debug (+AXI4_DEBUG_PROTOCOL)"
+	@echo "  4 - Full debug (+AXI4_DEBUG_SCOREBOARD)"
+	@echo ""
+	@echo "Recent Simulations:"
+	@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{print "  " $$9}'
 
 # Open waveform in Verdi
 verdi:
@@ -326,33 +451,65 @@ verdi:
 		verdi -elab ./simv.daidir/kdb -nologo & \
 	fi
 
+# Analyze logs for errors
+analyze_logs:
+	@echo "======================================"
+	@echo "Log Analysis Report"
+	@echo "======================================"
+	@for log in $(LOG_DIR)/*.log; do \
+		if [ -f "$$log" ]; then \
+			echo "Analyzing: $$log"; \
+			echo -n "  UVM_ERRORS: "; grep -c "UVM_ERROR" "$$log" || echo "0"; \
+			echo -n "  UVM_WARNINGS: "; grep -c "UVM_WARNING" "$$log" || echo "0"; \
+			echo -n "  UVM_FATAL: "; grep -c "UVM_FATAL" "$$log" || echo "0"; \
+			echo ""; \
+		fi \
+	done
+
+# Generate HTML report
+report:
+	@echo "Generating simulation report..."
+	@python3 $(SCRIPT_DIR)/generate_report.py --log-dir $(LOG_DIR) --output $(REPORT_DIR)/simulation_report.html
+	@echo "Report generated: $(REPORT_DIR)/simulation_report.html"
+
+# Clean simulation files
 clean:
 	rm -rf simv* csrc *.log ucli.key
 	rm -rf work transcript vsim.wlf
-	rm -rf $(LOG_DIR)/* $(WAVE_DIR)/* $(COV_DIR)/*
+	rm -rf $(LOG_DIR)/* $(WAVE_DIR)/* $(COV_DIR)/* $(REPORT_DIR)/*
 
+# Help
 help:
-	@echo "VIP+RTL Integration Makefile for 16x16 Matrix"
-	@echo "=============================================="
-	@echo "This makefile provides actual VIP+RTL integration as expected"
-	@echo "when the VIP generator shows 100% completion."
+	@echo "Enhanced AXI4 VIP Simulation Makefile"
+	@echo "===================================="
+	@echo "Basic Targets:"
+	@echo "  make compile    - Compile the design"
+	@echo "  make run        - Compile and run simulation"
+	@echo "  make clean      - Clean simulation files"
 	@echo ""
-	@echo "Usage: make [target] [options]"
-	@echo "Targets:"
-	@echo "  compile       - Compile VIP+RTL integration"
-	@echo "  run           - Run VIP+RTL simulation"
-	@echo "  run_fsdb      - Run with FSDB waveform dumping"
-	@echo "  run_vcd       - Run with VCD waveform dumping"
-	@echo "  verdi         - Open Verdi for debugging"
-	@echo "  clean         - Clean simulation files"
+	@echo "Debug Targets:"
+	@echo "  make debug_basic    - Run with basic debug"
+	@echo "  make debug_trans    - Run with transaction debug"
+	@echo "  make debug_protocol - Run with protocol debug"
+	@echo "  make debug_full     - Run with full debug"
+	@echo "  make debug_info     - Show debug information"
+	@echo ""
+	@echo "Analysis Targets:"
+	@echo "  make analyze_logs - Analyze simulation logs"
+	@echo "  make report       - Generate HTML report"
+	@echo ""
 	@echo "Options:"
-	@echo "  SIM=vcs       - Simulator (vcs)"
-	@echo "  TEST=test_name - UVM test to run"
-	@echo "  SEED=value     - Random seed"
-	@echo "  DUMP_FSDB=1    - Enable FSDB dumping"
-	@echo "  DUMP_VCD=1     - Enable VCD dumping"
-	@echo ""
-	@echo "✅ This provides actual VIP+RTL integration!"
+	@echo "  SIM=vcs           - Simulator (vcs, questa)"
+	@echo "  TEST=test_name    - Test to run"
+	@echo "  SEED=value        - Random seed"
+	@echo "  VERBOSITY=level   - UVM verbosity level"
+	@echo "  DEBUG_LEVEL=0-4   - Debug level"
+	@echo "  UVM_DEBUG=0|1     - Enable UVM debug traces"
+	@echo "  TRANS_RECORD=0|1  - Enable transaction recording"
+	@echo "  COVERAGE=0|1      - Enable coverage collection"
+	@echo "  PERF_MONITOR=0|1  - Enable performance monitoring"
+	@echo "  TIMEOUT=value     - Simulation timeout"
+	@echo "  MAX_ERRORS=value  - Maximum error count"
 '''
 
     with open(makefile_path, 'w') as f:
@@ -392,7 +549,7 @@ ${VIP_ROOT}/top/hvl_top.sv
     with open(compile_file_path, 'w') as f:
         f.write(compile_file_content)
     
-    print("✅ Created VIP+RTL integrated makefile and compile file")
+    print("✅ Created VIP+RTL integrated makefile with enhanced debug features")
     
     return True
 

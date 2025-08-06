@@ -15,62 +15,12 @@ import math
 import csv
 from axi_verilog_generator import AXIVerilogGenerator
 from address_safety_checker import validate_bus_configuration
+from bus_config import Master, Slave, BusConfig
 
 # Lazy import for VIP integration to handle missing dependencies
 VIPControlPanel = None
 
-@dataclass
-class MasterConfig:
-    """Configuration for a bus master"""
-    name: str
-    id_width: int = 4
-    qos_support: bool = True
-    exclusive_support: bool = True
-    user_width: int = 0
-    priority: int = 0  # Default priority (0-15)
-    default_prot: int = 0b010  # Default AxPROT value (privileged, non-secure, data)
-    default_cache: int = 0b0011  # Default AxCACHE value (normal, non-cacheable)
-    default_region: int = 0  # Default AxREGION value
-    
-@dataclass
-class SlaveConfig:
-    """Configuration for a bus slave"""
-    name: str
-    base_address: int
-    size: int  # in KB
-    memory_type: str = "Memory"  # Memory or Peripheral
-    read_latency: int = 1
-    write_latency: int = 1
-    priority: int = 0  # Slave priority for arbitration
-    num_regions: int = 1  # Number of protection regions (1-16)
-    secure_only: bool = False  # Whether slave accepts only secure transactions
-    privileged_only: bool = False  # Whether slave requires privileged access
-    allowed_masters: List[str] = None  # List of master names allowed to access (None = all allowed)
-    
-    def __post_init__(self):
-        if self.allowed_masters is None:
-            self.allowed_masters = []  # Empty list means all masters allowed (default)
-    
-    def get_end_address(self):
-        """Calculate end address based on size"""
-        return self.base_address + (self.size * 1024) - 1
-    
-@dataclass
-class BusConfig:
-    """Complete bus configuration"""
-    bus_type: str  # AXI4, AXI3, AHB, APB
-    data_width: int
-    addr_width: int
-    masters: List[MasterConfig]
-    slaves: List[SlaveConfig]
-    arbitration: str = "QOS"  # FIXED, RR, QOS, WRR
-    # AXI4 feature enables
-    has_qos: bool = True
-    has_cache: bool = True
-    has_prot: bool = True
-    has_region: bool = False
-    has_user: bool = False
-    
+# Internal class definitions removed - now using imports from bus_config.py
 class BusMatrixCanvas(tk.Canvas):
     """Canvas for visual bus matrix representation"""
     
@@ -111,7 +61,7 @@ class BusMatrixCanvas(tk.Canvas):
         self.flashing_block = None
         self.flash_after_id = None
         
-    def add_master(self, config: MasterConfig, x: int = 50, y: int = 50):
+    def add_master(self, config: Master, x: int = 50, y: int = 50):
         """Add a master to the canvas"""
         # Apply zoom to dimensions
         zoom = self.zoom_level
@@ -156,7 +106,7 @@ class BusMatrixCanvas(tk.Canvas):
         
         return master_id
         
-    def add_slave(self, config: SlaveConfig, x: int = 450, y: int = 50):
+    def add_slave(self, config: Slave, x: int = 450, y: int = 50):
         """Add a slave to the canvas"""
         # Apply zoom to dimensions
         zoom = self.zoom_level
@@ -647,6 +597,11 @@ class BusMatrixCanvas(tk.Canvas):
             master['x'] += dx
             master['y'] += dy
             
+            # Update the config object's position if GUI reference exists
+            if hasattr(self, 'gui') and item_index < len(self.gui.current_config.masters):
+                self.gui.current_config.masters[item_index].x = master['x']
+                self.gui.current_config.masters[item_index].y = master['y']
+            
             # Redraw interconnect to update lines
             self.draw_interconnect()
             # Ensure dragged block stays on top
@@ -675,6 +630,11 @@ class BusMatrixCanvas(tk.Canvas):
             # Update stored position
             slave['x'] += dx
             slave['y'] += dy
+            
+            # Update the config object's position if GUI reference exists
+            if hasattr(self, 'gui') and item_index < len(self.gui.current_config.slaves):
+                self.gui.current_config.slaves[item_index].x = slave['x']
+                self.gui.current_config.slaves[item_index].y = slave['y']
             
             # Redraw interconnect to update lines
             self.draw_interconnect()
@@ -738,6 +698,13 @@ class BusMatrixCanvas(tk.Canvas):
                 # Update stored position
                 master['x'] = new_x
                 master['y'] = new_y
+                
+                # Update the config object's position if GUI reference exists
+                if hasattr(self, 'gui'):
+                    master_index = self.masters.index(master)
+                    if master_index < len(self.gui.current_config.masters):
+                        self.gui.current_config.masters[master_index].x = new_x
+                        self.gui.current_config.masters[master_index].y = new_y
         
         # Snap slaves to grid
         for slave in self.slaves:
@@ -765,6 +732,13 @@ class BusMatrixCanvas(tk.Canvas):
                 # Update stored position
                 slave['x'] = new_x
                 slave['y'] = new_y
+                
+                # Update the config object's position if GUI reference exists
+                if hasattr(self, 'gui'):
+                    slave_index = self.slaves.index(slave)
+                    if slave_index < len(self.gui.current_config.slaves):
+                        self.gui.current_config.slaves[slave_index].x = new_x
+                        self.gui.current_config.slaves[slave_index].y = new_y
         
         # Redraw connections after snapping
         self.draw_interconnect()
@@ -860,6 +834,59 @@ class BusMatrixCanvas(tk.Canvas):
             if 'priority_id' in slave:
                 self.tag_raise(slave['priority_id'])
 
+
+class VIPPlaceholderPanel:
+    """Placeholder VIP panel when full VIP is not available"""
+    
+    def __init__(self, parent_frame, gui_instance):
+        self.parent = parent_frame
+        self.gui = gui_instance
+        
+    def create_vip_environment(self):
+        """Show message that VIP is not fully available"""
+        from tkinter import messagebox
+        messagebox.showinfo("VIP Environment", 
+                          "VIP environment generation is not available.\n\n" +
+                          "This could be due to:\n" +
+                          "1. Missing VIP integration modules\n" +
+                          "2. Import errors during VIP setup\n\n" +
+                          "Please check the console for error details.")
+    
+    def reset_vip_environment(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("VIP Reset", "VIP reset is not available.")
+    
+    def export_vip_config(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("VIP Export", "VIP export is not available.")
+    
+    def generate_test_suite(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("Test Suite", "Test suite generation is not available.")
+    
+    def run_tests(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("Run Tests", "Test execution is not available.")
+    
+    def stop_tests(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("Stop Tests", "Test control is not available.")
+    
+    def export_results(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("Export Results", "Result export is not available.")
+    
+    def generate_report(self):
+        """Placeholder method"""
+        from tkinter import messagebox
+        messagebox.showinfo("Generate Report", "Report generation is not available.")
+
 class BusMatrixGUI:
     """Main GUI application"""
     
@@ -868,14 +895,11 @@ class BusMatrixGUI:
         self.root.title("AMBA Bus Matrix Configuration Tool")
         self.root.geometry("1400x850")  # Larger window for better layout
         
-        self.current_config = BusConfig(
-            bus_type="AXI4",
-            data_width=64,
-            addr_width=32,
-            masters=[],
-            slaves=[],
-            arbitration="QOS"
-        )
+        self.current_config = BusConfig()
+        self.current_config.bus_type = "AXI4"
+        self.current_config.data_width = 64
+        self.current_config.addr_width = 32
+        self.current_config.arbitration = "QOS"
         
         self.setup_ui()
         
@@ -902,7 +926,8 @@ class BusMatrixGUI:
         templates_menu = tk.Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Templates", menu=templates_menu)
         templates_menu.add_command(label="Simple AXI4 (2M x 3S)", command=lambda: self.load_template("simple_axi4_2m3s.json"))
-        templates_menu.add_command(label="Complex AXI4 System", command=lambda: self.load_template("complex_axi4_system.json"))
+        templates_menu.add_command(label="Complex AXI4 System (8x8)", command=lambda: self.load_template("complex_axi4_system.json"))
+        templates_menu.add_command(label="Large AXI4 System (15x15)", command=lambda: self.load_template("large_15x15_system.json"))
         templates_menu.add_command(label="AHB System", command=lambda: self.load_template("ahb_system.json"))
         
         # Settings menu
@@ -944,6 +969,7 @@ class BusMatrixGUI:
                                      values=["AXI4", "AXI3", "AHB", "APB"],
                                      state="readonly", width=15)
         bus_type_combo.grid(row=0, column=1, padx=5)
+        bus_type_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_config_changes())
         
         # Data width
         ttk.Label(left_panel, text="Data Width:").grid(row=1, column=0, sticky=tk.W)
@@ -952,13 +978,17 @@ class BusMatrixGUI:
                                        values=["8", "16", "32", "64", "128", "256"],
                                        state="readonly", width=15)
         data_width_combo.grid(row=1, column=1, padx=5)
+        data_width_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_config_changes())
         
         # Address width
         ttk.Label(left_panel, text="Address Width:").grid(row=2, column=0, sticky=tk.W)
         self.addr_width_var = tk.StringVar(value="32")
         addr_width_spin = tk.Spinbox(left_panel, textvariable=self.addr_width_var,
-                                     from_=16, to=64, width=15)
+                                     from_=16, to=64, increment=8, width=15)
         addr_width_spin.grid(row=2, column=1, padx=5)
+        addr_width_spin.bind("<FocusOut>", lambda e: self.apply_config_changes())
+        addr_width_spin.bind("<ButtonRelease>", lambda e: self.apply_config_changes())
+        self.addr_width_var.trace_add("write", lambda *args: self.apply_config_changes())
         
         # Arbitration
         ttk.Label(left_panel, text="Arbitration:").grid(row=3, column=0, sticky=tk.W)
@@ -967,6 +997,7 @@ class BusMatrixGUI:
                                values=["FIXED", "RR", "QOS", "WRR"],
                                state="readonly", width=15)
         arb_combo.grid(row=3, column=1, padx=5)
+        arb_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_config_changes())
         
         # Masters section
         ttk.Separator(left_panel, orient=tk.HORIZONTAL).grid(row=4, column=0, 
@@ -1058,7 +1089,7 @@ class BusMatrixGUI:
         
         # Canvas with larger virtual size for top-bottom layout with improved routing
         self.canvas = BusMatrixCanvas(canvas_frame, width=1000, height=700,
-                                     scrollregion=(0, 0, 1600, 1000))
+                                     scrollregion=(0, 0, 1600, 1200))  # Increased height for slaves at y=500+
         # Store reference to GUI in canvas for callbacks
         self.canvas.gui = self
         
@@ -1090,11 +1121,22 @@ class BusMatrixGUI:
     def setup_vip_integration(self, parent_frame):
         """Setup VIP (Verification IP) integration panel"""
         global VIPControlPanel
+        print("[DEBUG] Starting VIP integration setup...")
         
         try:
             # Lazy import VIP integration
             if VIPControlPanel is None:
-                from vip_gui_integration import VIPControlPanel
+                # Always use the regular VIP integration for reliability
+                # UltraThin patch for fast startup and complete 12-step execution
+                if os.environ.get('VIP_DEFER_IMPORTS', 'false').lower() == 'true':
+                    # Use final version for proper 12-step execution
+                    if os.environ.get('VIP_USE_FINAL', 'true').lower() == 'true':
+                        from vip_gui_integration_ultrathin_final import VIPControlPanelUltraThin as VIPControlPanel
+                    else:
+                        from vip_gui_integration_ultrathin import VIPControlPanelUltraThin as VIPControlPanel
+                else:
+                    from vip_gui_integration import VIPControlPanel
+                print("[INFO] Loading standard VIP integration module")
             
             # Create VIP panel as expandable section at bottom
             vip_frame = ttk.LabelFrame(self.root, text="AXI4 Verification IP (VIP) Suite", padding=10)
@@ -1109,12 +1151,26 @@ class BusMatrixGUI:
             print("[OK] VIP integration successful")
             
         except ImportError as e:
-            print(f"Info: VIP features not available: {e}")
-            # Create placeholder VIP frame
+            print(f"ERROR: VIP import failed: {e}")
+            import traceback
+            traceback.print_exc()
+            # Still try to add VIP menu even if panel fails
+            try:
+                self.add_vip_menu()
+            except:
+                pass
             self.create_vip_placeholder()
         except Exception as e:
-            print(f"Warning: VIP integration failed: {e}")
-            # Continue without VIP features if there's an error
+            print(f"ERROR: VIP integration failed: {e}")
+            import traceback
+            traceback.print_exc()
+            # Still try to add VIP menu even if panel fails
+            try:
+                self.add_vip_menu()
+            except:
+                pass
+            # Always ensure vip_panel is set to something
+            self.create_vip_placeholder()
             self.create_vip_placeholder()
     
     def add_vip_menu(self):
@@ -1131,36 +1187,38 @@ class BusMatrixGUI:
                 env_menu = tk.Menu(vip_menu, tearoff=0)
                 vip_menu.add_cascade(label="Environment", menu=env_menu)
                 env_menu.add_command(label="Create VIP Environment", 
-                                   command=lambda: self.vip_panel.create_vip_environment() if hasattr(self, 'vip_panel') else None)
+                                   command=self.vip_create_environment)
                 env_menu.add_command(label="Reset Environment",
-                                   command=lambda: self.vip_panel.reset_vip_environment() if hasattr(self, 'vip_panel') else None)
+                                   command=self.vip_reset_environment)
                 env_menu.add_command(label="Export VIP Config",
-                                   command=lambda: self.vip_panel.export_vip_config() if hasattr(self, 'vip_panel') else None)
+                                   command=self.vip_export_config)
                 
                 # Test Generation submenu
                 test_menu = tk.Menu(vip_menu, tearoff=0)
                 vip_menu.add_cascade(label="Test Generation", menu=test_menu)
                 test_menu.add_command(label="Generate Test Suite",
-                                    command=lambda: self.vip_panel.generate_test_suite() if hasattr(self, 'vip_panel') else None)
+                                    command=self.vip_generate_test_suite)
                 test_menu.add_command(label="Run Tests",
-                                    command=lambda: self.vip_panel.run_tests() if hasattr(self, 'vip_panel') else None)
+                                    command=self.vip_run_tests)
                 test_menu.add_command(label="Stop Tests",
-                                    command=lambda: self.vip_panel.stop_tests() if hasattr(self, 'vip_panel') else None)
+                                    command=self.vip_stop_tests)
                 
                 # Results submenu
                 results_menu = tk.Menu(vip_menu, tearoff=0)
                 vip_menu.add_cascade(label="Results", menu=results_menu)
                 results_menu.add_command(label="Export Results",
-                                       command=lambda: self.vip_panel.export_results() if hasattr(self, 'vip_panel') else None)
+                                       command=self.vip_export_results)
                 results_menu.add_command(label="Generate Report",
-                                       command=lambda: self.vip_panel.generate_report() if hasattr(self, 'vip_panel') else None)
+                                       command=self.vip_generate_report)
                 
                 # About VIP
                 vip_menu.add_separator()
                 vip_menu.add_command(label="About VIP", command=self.show_vip_about)
                 
         except Exception as e:
-            print(f"Warning: VIP menu creation failed: {e}")
+            print(f"ERROR: VIP menu creation failed: {e}")
+            import traceback
+            traceback.print_exc()
     
     def show_vip_about(self):
         """Show VIP features information"""
@@ -1183,11 +1241,97 @@ Test Categories:
 Based on CLAUDE.md requirements for complete AXI4 VIP development."""
 
         messagebox.showinfo("About AXI4 VIP", about_text)
+
+    def vip_create_environment(self):
+        """Handle Create VIP Environment command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.create_vip_environment()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to create VIP environment:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", 
+                                 "VIP panel is not initialized.\n\n"
+                                 "This can happen if:\n"
+                                 "1. VIP modules failed to import\n"
+                                 "2. GUI is still loading\n\n"
+                                 "Try: Tools → Check VIP Status for details")
+    
+    def vip_reset_environment(self):
+        """Handle Reset Environment command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.reset_vip_environment()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to reset environment:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+    
+    def vip_export_config(self):
+        """Handle Export VIP Config command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.export_vip_config()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to export config:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+    
+    def vip_generate_test_suite(self):
+        """Handle Generate Test Suite command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.generate_test_suite()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to generate test suite:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+    
+    def vip_run_tests(self):
+        """Handle Run Tests command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.run_tests()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to run tests:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+    
+    def vip_stop_tests(self):
+        """Handle Stop Tests command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.stop_tests()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to stop tests:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+    
+    def vip_export_results(self):
+        """Handle Export Results command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.export_results()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to export results:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+    
+    def vip_generate_report(self):
+        """Handle Generate Report command"""
+        if hasattr(self, 'vip_panel') and self.vip_panel:
+            try:
+                self.vip_panel.generate_report()
+            except Exception as e:
+                messagebox.showerror("VIP Error", f"Failed to generate report:\n{str(e)}")
+        else:
+            messagebox.showwarning("VIP Not Ready", "VIP panel is not initialized")
+
     
     def create_vip_placeholder(self):
         """Create placeholder VIP frame when full VIP is not available"""
         try:
-            vip_frame = ttk.LabelFrame(self.root, text="AXI4 Verification IP (VIP) - Loading...", padding=10)
+            vip_frame = ttk.LabelFrame(self.root, text="AXI4 Verification IP (VIP) - Limited Mode", padding=10)
             vip_frame.pack(side=tk.BOTTOM, fill=tk.X, expand=False, padx=5, pady=(0, 5))
             
             info_text = ("VIP features include:\n"
@@ -1195,7 +1339,7 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                         "• Protocol compliance monitoring and checking\n"
                         "• Comprehensive test sequence generation\n"
                         "• Coverage analysis and reporting\n\n"
-                        "Full VIP integration in development...")
+                        "Running in limited mode - basic VIP functions available.")
             
             info_label = ttk.Label(vip_frame, text=info_text, justify=tk.LEFT)
             info_label.pack(pady=10)
@@ -1205,14 +1349,30 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                                      command=self.check_vip_status)
             status_button.pack()
             
+            # IMPORTANT: Set vip_panel to placeholder so menu functions work
+            self.vip_panel = VIPPlaceholderPanel(vip_frame, self)
+            print("[INFO] VIP placeholder panel created")
+            
         except Exception as e:
             print(f"Warning: Could not create VIP placeholder: {e}")
+            # Ensure vip_panel is always set to something
+            self.vip_panel = VIPPlaceholderPanel(None, self)
     
     def check_vip_status(self):
         """Check VIP integration status"""
         try:
             # Try to import VIP components
-            from vip_gui_integration import VIPControlPanel
+            # Use standard VIP integration
+            # UltraThin patch for fast startup and complete 12-step execution
+            if os.environ.get('VIP_DEFER_IMPORTS', 'false').lower() == 'true':
+                # Use final version for proper 12-step execution
+                if os.environ.get('VIP_USE_FINAL', 'true').lower() == 'true':
+                    from vip_gui_integration_ultrathin_final import VIPControlPanelUltraThin as VIPControlPanel
+                else:
+                    from vip_gui_integration_ultrathin import VIPControlPanelUltraThin as VIPControlPanel
+            else:
+                from vip_gui_integration import VIPControlPanel
+            print("[INFO] VIP components loaded successfully")
             
             # Check if VIP components are available
             if hasattr(VIPControlPanel, '__module__'):
@@ -1263,6 +1423,11 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
             row = len(self.canvas.masters) // 4
             x_pos = (50 + col * 140) * zoom  # 4 columns with 140px spacing
             y_pos = (50 + row * 80) * zoom  # Masters at top with 80px row spacing
+            
+            # Update master's x,y coordinates before adding to canvas
+            config.x = int(x_pos)
+            config.y = int(y_pos)
+            
             self.canvas.add_master(config, x=int(x_pos), y=int(y_pos))
             self.canvas.draw_interconnect()
             self.canvas.raise_all_blocks()  # Ensure blocks are above lines
@@ -1378,45 +1543,84 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
         # Get list of available masters
         available_masters = [m.name for m in self.current_config.masters]
         
-        dialog = SlaveDialog(self.root, default_name=default_name, default_address=default_address,
-                           available_masters=available_masters)
-        self.root.wait_window(dialog.dialog)
-        
-        if dialog.result:
-            config = dialog.result
+        try:
+            dialog = SlaveDialog(self.root, default_name=default_name, default_address=default_address,
+                               available_masters=available_masters, main_gui=self)
+            self.root.wait_window(dialog.dialog)
             
-            # Validate address alignment
-            is_valid, error_msg = self.validate_address_alignment(config.base_address, config.size)
-            if not is_valid:
-                result = messagebox.askyesno("Address Alignment Warning",
-                                           f"{error_msg}\n\nDo you want to continue anyway?")
-                if not result:
-                    return
+            print(f"DEBUG: Dialog closed, result = {dialog.result}")
             
-            # Check for address conflicts
-            for slave in self.current_config.slaves:
-                if self.check_address_overlap(config, slave):
-                    messagebox.showerror("Address Conflict", 
-                                       f"Address range overlaps with {slave.name}")
-                    return
-                    
-            self.current_config.slaves.append(config)
-            self.slave_listbox.insert(tk.END, 
-                                    f"{config.name} (0x{config.base_address:08X})")
-            
-            # Add to canvas - Slaves on bottom in rows
-            # Use 4 columns for better horizontal layout
-            zoom = self.canvas.zoom_level
-            col = len(self.canvas.slaves) % 4
-            row = len(self.canvas.slaves) // 4
-            x_pos = (50 + col * 200) * zoom  # 4 columns starting from x=50 with 200px spacing (wider for 150px blocks)
-            y_pos = (500 + row * 120) * zoom  # Slaves at bottom with 120px row spacing (taller blocks)
-            self.canvas.add_slave(config, x=int(x_pos), y=int(y_pos))
-            self.canvas.draw_interconnect()
-            self.canvas.raise_all_blocks()  # Ensure blocks are above lines
-            self.update_canvas_scroll_region()
-            
-            self.update_status(f"Added slave: {config.name}")
+            if dialog.result:
+                config = dialog.result
+                print(f"DEBUG: Got slave config: {config.name}, addr=0x{config.base_address:08X}, size={config.size}KB")
+                
+                # Validate address alignment
+                is_valid, error_msg = self.validate_address_alignment(config.base_address, config.size)
+                if not is_valid:
+                    result = messagebox.askyesno("Address Alignment Warning",
+                                               f"{error_msg}\n\nDo you want to continue anyway?")
+                    if not result:
+                        print("DEBUG: User cancelled due to alignment warning")
+                        return
+                
+                # Check for address conflicts
+                for slave in self.current_config.slaves:
+                    if self.check_address_overlap(config, slave):
+                        messagebox.showerror("Address Conflict", 
+                                           f"Address range overlaps with {slave.name}")
+                        print(f"DEBUG: Address conflict with {slave.name}")
+                        return
+                        
+                print("DEBUG: Adding slave to configuration...")
+                self.current_config.slaves.append(config)
+                self.slave_listbox.insert(tk.END, 
+                                        f"{config.name} (0x{config.base_address:08X})")
+                
+                print("DEBUG: Adding slave to canvas...")
+                # Add to canvas - Slaves on bottom in rows
+                # Use 4 columns for better horizontal layout
+                zoom = self.canvas.zoom_level
+                col = len(self.canvas.slaves) % 4
+                row = len(self.canvas.slaves) // 4
+                x_pos = (50 + col * 200) * zoom  # 4 columns starting from x=50 with 200px spacing (wider for 150px blocks)
+                y_pos = (400 + row * 120) * zoom  # Slaves at 400 for better visibility
+                
+                print(f"DEBUG: Canvas position: x={int(x_pos)}, y={int(y_pos)}, zoom={zoom}")
+                
+                # Update slave's x,y coordinates before adding to canvas
+                config.x = int(x_pos)
+                config.y = int(y_pos)
+                
+                self.canvas.add_slave(config, x=int(x_pos), y=int(y_pos))
+                self.canvas.draw_interconnect()
+                self.canvas.raise_all_blocks()  # Ensure blocks are above lines
+                self.update_canvas_scroll_region()
+                
+                # Auto-scroll to show the newly added slave
+                self.canvas.update_idletasks()  # Force canvas update
+                if len(self.canvas.slaves) == 1:
+                    # First slave - scroll to show slave area
+                    self.canvas.yview_moveto(0.4)  # Scroll to show slaves area
+                else:
+                    # Ensure the new slave is visible
+                    bbox = self.canvas.bbox("all")
+                    if bbox:
+                        self.canvas.config(scrollregion=bbox)
+                
+                print("DEBUG: Slave added successfully to canvas")
+                self.update_status(f"Added slave: {config.name}")
+                
+            else:
+                print("DEBUG: Dialog cancelled - no result")
+                self.update_status("Slave creation cancelled")
+                
+        except Exception as e:
+            error_msg = f"Failed to add slave: {str(e)}"
+            print(f"DEBUG ERROR: {error_msg}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Error Adding Slave", error_msg)
+            self.update_status(f"Error: {error_msg}")
             
     def edit_slave(self):
         """Edit selected slave"""
@@ -1441,7 +1645,8 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
         # Get list of available masters
         available_masters = [m.name for m in self.current_config.masters]
         
-        dialog = SlaveDialog(self.root, config, available_masters=available_masters)
+        dialog = SlaveDialog(self.root, config, available_masters=available_masters, main_gui=self)
+        dialog.editing_slave = True  # Flag to indicate we're editing an existing slave
         self.root.wait_window(dialog.dialog)
         
         if dialog.result:
@@ -1533,7 +1738,7 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
             
             self.update_status(f"Deleted slave: {name}")
             
-    def check_address_overlap(self, slave1: SlaveConfig, slave2: SlaveConfig) -> bool:
+    def check_address_overlap(self, slave1: Slave, slave2: Slave) -> bool:
         """Check if two slaves have overlapping address ranges"""
         end1 = slave1.base_address + (slave1.size * 1024) - 1
         end2 = slave2.base_address + (slave2.size * 1024) - 1
@@ -1566,14 +1771,11 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
         """Create a new configuration"""
         if messagebox.askyesno("New Configuration", 
                              "This will clear the current configuration. Continue?"):
-            self.current_config = BusConfig(
-                bus_type="AXI4",
-                data_width=64,
-                addr_width=32,
-                masters=[],
-                slaves=[],
-                arbitration="QOS"
-            )
+            self.current_config = BusConfig()
+            self.current_config.bus_type = "AXI4"
+            self.current_config.data_width = 64
+            self.current_config.addr_width = 32
+            self.current_config.arbitration = "QOS"
             
             # Clear UI
             self.master_listbox.delete(0, tk.END)
@@ -1604,7 +1806,7 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                     m.setdefault('default_prot', 0b010)
                     m.setdefault('default_cache', 0b0011)
                     m.setdefault('default_region', 0)
-                    masters.append(MasterConfig(**m))
+                    masters.append(Master(**m))
                     
                 slaves = []
                 for s in data['slaves']:
@@ -1613,16 +1815,15 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                     s.setdefault('num_regions', 1)
                     s.setdefault('secure_only', False)
                     s.setdefault('privileged_only', False)
-                    slaves.append(SlaveConfig(**s))
+                    slaves.append(Slave(**s))
                 
-                self.current_config = BusConfig(
-                    bus_type=data['bus_type'],
-                    data_width=data['data_width'],
-                    addr_width=data['addr_width'],
-                    masters=masters,
-                    slaves=slaves,
-                    arbitration=data.get('arbitration', 'QOS')
-                )
+                self.current_config = BusConfig()
+                self.current_config.bus_type = data['bus_type']
+                self.current_config.data_width = data['data_width']
+                self.current_config.addr_width = data['addr_width']
+                self.current_config.masters = masters
+                self.current_config.slaves = slaves
+                self.current_config.arbitration = data.get('arbitration', 'QOS')
                 
                 # Update UI
                 self.refresh_ui()
@@ -1640,7 +1841,7 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
             
             with open(template_path, 'r') as f:
                 data = json.load(f)
-                
+            
             # Convert to dataclasses with default values for missing fields
             masters = []
             for m in data['masters']:
@@ -1649,7 +1850,7 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                 m.setdefault('default_prot', 0b010)
                 m.setdefault('default_cache', 0b0011)
                 m.setdefault('default_region', 0)
-                masters.append(MasterConfig(**m))
+                masters.append(Master(**m))
                 
             slaves = []
             for s in data['slaves']:
@@ -1658,16 +1859,15 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                 s.setdefault('num_regions', 1)
                 s.setdefault('secure_only', False)
                 s.setdefault('privileged_only', False)
-                slaves.append(SlaveConfig(**s))
+                slaves.append(Slave(**s))
             
-            self.current_config = BusConfig(
-                bus_type=data['bus_type'],
-                data_width=data['data_width'],
-                addr_width=data['addr_width'],
-                masters=masters,
-                slaves=slaves,
-                arbitration=data.get('arbitration', 'QOS')
-            )
+            self.current_config = BusConfig()
+            self.current_config.bus_type = data['bus_type']
+            self.current_config.data_width = data['data_width']
+            self.current_config.addr_width = data['addr_width']
+            self.current_config.masters = masters
+            self.current_config.slaves = slaves
+            self.current_config.arbitration = data.get('arbitration', 'QOS')
             
             # Update UI
             self.refresh_ui()
@@ -1694,6 +1894,17 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
         
         if filename:
             try:
+                # Update master and slave positions from canvas before saving
+                for i, master_canvas in enumerate(self.canvas.masters):
+                    if i < len(self.current_config.masters):
+                        self.current_config.masters[i].x = master_canvas['x']
+                        self.current_config.masters[i].y = master_canvas['y']
+                
+                for i, slave_canvas in enumerate(self.canvas.slaves):
+                    if i < len(self.current_config.slaves):
+                        self.current_config.slaves[i].x = slave_canvas['x']
+                        self.current_config.slaves[i].y = slave_canvas['y']
+                
                 data = {
                     'bus_type': self.current_config.bus_type,
                     'data_width': self.current_config.data_width,
@@ -1733,20 +1944,30 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
             zoom = self.canvas.zoom_level
             for i, master in enumerate(self.current_config.masters):
                 self.master_listbox.insert(tk.END, master.name)
-                col = i % 4  # 4 columns for horizontal layout
-                row = i // 4
-                x_pos = (50 + col * 140) * zoom
-                y_pos = (50 + row * 80) * zoom  # Masters at top
+                # Use saved position if available, otherwise calculate default
+                if hasattr(master, 'x') and hasattr(master, 'y') and master.x > 0 and master.y > 0:
+                    x_pos = master.x
+                    y_pos = master.y
+                else:
+                    col = i % 4  # 4 columns for horizontal layout
+                    row = i // 4
+                    x_pos = (50 + col * 140) * zoom
+                    y_pos = (50 + row * 80) * zoom  # Masters at top
                 self.canvas.add_master(master, x=int(x_pos), y=int(y_pos))
                 
             # Add slaves at bottom in horizontal layout
             for i, slave in enumerate(self.current_config.slaves):
                 self.slave_listbox.insert(tk.END, 
                                         f"{slave.name} (0x{slave.base_address:08X})")
-                col = i % 4  # 4 columns for horizontal layout
-                row = i // 4
-                x_pos = (50 + col * 200) * zoom  # Wider spacing for 150px wide blocks
-                y_pos = (500 + row * 120) * zoom  # Slaves at bottom with taller spacing
+                # Use saved position if available, otherwise calculate default
+                if hasattr(slave, 'x') and hasattr(slave, 'y') and slave.x > 0 and slave.y > 0:
+                    x_pos = slave.x
+                    y_pos = slave.y
+                else:
+                    col = i % 4  # 4 columns for horizontal layout
+                    row = i // 4
+                    x_pos = (50 + col * 200) * zoom  # Wider spacing for 150px wide blocks
+                    y_pos = (400 + row * 120) * zoom  # Moved up from 500 to 400 for better visibility
                 self.canvas.add_slave(slave, x=int(x_pos), y=int(y_pos))
             
             # Draw interconnect lines first (they will be under blocks)
@@ -1767,12 +1988,23 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
         
     def update_canvas_scroll_region(self):
         """Update canvas scroll region based on actual content"""
+        # Force canvas update first
+        self.canvas.update_idletasks()
+        
         # Get bounding box of all items
         bbox = self.canvas.bbox("all")
         if bbox:
-            # Add some padding
+            # Add generous padding for better visibility
             x1, y1, x2, y2 = bbox
-            self.canvas.config(scrollregion=(x1-50, y1-50, x2+50, y2+50))
+            # Ensure minimum size for proper scrolling
+            x2 = max(x2, 1600)
+            y2 = max(y2, 1200)
+            self.canvas.config(scrollregion=(x1-100, y1-100, x2+100, y2+100))
+            print(f"DEBUG: Updated scroll region to: ({x1-100}, {y1-100}, {x2+100}, {y2+100})")
+        else:
+            # Set default scroll region if no items
+            self.canvas.config(scrollregion=(0, 0, 1600, 1200))
+            print("DEBUG: Set default scroll region (no items found)")
     
     def generate_verilog(self):
         """Generate Verilog code"""
@@ -1847,18 +2079,36 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
                 
                 # Generate RTL to the selected directory
                 generator = AXIVerilogGenerator(self.current_config)
-                output_file = os.path.join(output_dir, f"{self.current_config.bus_type.lower()}_interconnect.v")
                 
-                # Try to generate - assuming the generator has a method like generate_verilog
+                # Set the output directory to user's choice
+                generator.output_dir = output_dir
+                
+                # Try to generate
                 success = False
-                if hasattr(generator, 'generate_verilog'):
-                    success = generator.generate_verilog(output_file)
-                elif hasattr(generator, 'generate'):
-                    # If it returns a directory, use that
-                    result = generator.generate()
-                    if result:
-                        output_dir = result
-                        success = True
+                error_msg = None
+                
+                try:
+                    if hasattr(generator, 'generate'):
+                        # Call generate method
+                        result = generator.generate()
+                        if result:
+                            # Generator returns the actual output directory used
+                            output_dir = result
+                            success = True
+                            print(f"[GUI] RTL generated successfully in: {output_dir}")
+                        else:
+                            error_msg = "Generator returned None/False"
+                    elif hasattr(generator, 'generate_verilog'):
+                        # Alternative method
+                        output_file = os.path.join(output_dir, f"{self.current_config.bus_type.lower()}_interconnect.v")
+                        success = generator.generate_verilog(output_file)
+                    else:
+                        error_msg = "Generator has no generate method"
+                except Exception as e:
+                    error_msg = str(e)
+                    print(f"[GUI] Generation error: {e}")
+                    import traceback
+                    traceback.print_exc()
                 else:
                     # Fallback - create a placeholder file
                     with open(output_file, 'w') as f:
@@ -2103,6 +2353,33 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
         # TODO: Implement full Verilog export with address decoding
         messagebox.showinfo("Export", "Full Verilog export not yet implemented")
         
+    def apply_config_changes(self):
+        """Apply configuration changes from UI to current_config"""
+        # Prevent recursive calls
+        if hasattr(self, '_updating_config') and self._updating_config:
+            return
+            
+        self._updating_config = True
+        try:
+            # Update bus configuration from UI variables
+            self.current_config.bus_type = self.bus_type_var.get()
+            self.current_config.data_width = int(self.data_width_var.get())
+            self.current_config.addr_width = int(self.addr_width_var.get())
+            self.current_config.arbitration = self.arb_var.get()
+            
+            # Update status to show current configuration
+            self.update_status(f"Configuration updated: {self.current_config.addr_width}-bit address width")
+            
+            # Refresh canvas if needed
+            if hasattr(self, 'canvas'):
+                self.canvas.update()
+                
+        except ValueError as e:
+            # Handle invalid input gracefully
+            messagebox.showerror("Configuration Error", f"Invalid value: {str(e)}")
+        finally:
+            self._updating_config = False
+    
     def update_status(self, message):
         """Update status bar"""
         self.status_bar.config(text=message)
@@ -2298,7 +2575,7 @@ Based on CLAUDE.md requirements for complete AXI4 VIP development."""
 class MasterDialog:
     """Dialog for adding/editing master configuration"""
     
-    def __init__(self, parent, config: Optional[MasterConfig] = None, default_name: str = "Master0"):
+    def __init__(self, parent, config: Optional[Master] = None, default_name: str = "Master0"):
         self.result = None
         
         self.dialog = tk.Toplevel(parent)
@@ -2413,7 +2690,7 @@ class MasterDialog:
         else:
             cache_value = int(cache_str)
         
-        self.result = MasterConfig(
+        self.result = Master(
             name=self.name_var.get(),
             id_width=int(self.id_width_var.get()),
             qos_support=self.qos_var.get(),
@@ -2430,18 +2707,26 @@ class MasterDialog:
 class SlaveDialog:
     """Dialog for adding/editing slave configuration"""
     
-    def __init__(self, parent, config: Optional[SlaveConfig] = None, default_name: str = "Slave0", default_address: int = 0, available_masters: List[str] = None):
+    def __init__(self, parent, config: Optional[Slave] = None, default_name: str = "Slave0", default_address: int = 0, available_masters: List[str] = None, main_gui=None):
         self.result = None
         self.available_masters = available_masters or []
+        self.main_gui = main_gui  # Reference to main GUI for address validation
         
         self.dialog = tk.Toplevel(parent)
         self.dialog.title("Slave Configuration")
-        self.dialog.geometry("450x650")
+        self.dialog.geometry("500x750")  # Increased size to accommodate all content
         self.dialog.transient(parent)
         
         # Create notebook for tabbed interface
-        notebook = ttk.Notebook(self.dialog)
+        notebook = ttk.Notebook(self.dialog)  
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        
+        # CREATE BUTTONS IMMEDIATELY AFTER NOTEBOOK - SAME AS MASTER DIALOG
+        btn_frame = ttk.Frame(self.dialog)
+        btn_frame.pack(side=tk.BOTTOM, pady=10)
+        
+        ttk.Button(btn_frame, text="OK", command=self.ok_clicked).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, text="Cancel", command=self.dialog.destroy).pack(side=tk.LEFT, padx=5)
         
         # Basic tab
         basic_frame = ttk.Frame(notebook)
@@ -2568,34 +2853,32 @@ class SlaveDialog:
             self.master_vars[master_name] = var
             ttk.Checkbutton(master_frame, text=master_name, variable=var).grid(row=i//2, column=i%2, sticky=tk.W, padx=5, pady=2)
         
-        # Address info
-        info_frame = ttk.LabelFrame(basic_frame, text="Address Range", padding=10)
-        info_frame.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
+        # Address info - Enhanced with visual feedback
+        info_frame = ttk.LabelFrame(basic_frame, text="Address Range Validation", padding=10)
+        info_frame.grid(row=7, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
         
-        self.info_label = ttk.Label(info_frame, text="")
-        self.info_label.pack()
+        self.info_label = ttk.Label(info_frame, text="", justify=tk.LEFT, anchor="w")
+        self.info_label.pack(fill=tk.X)
+        
+        # Address map frame (for visual representation when conflicts exist)
+        self.address_map_frame = ttk.LabelFrame(info_frame, text="Address Map", padding=5)
+        # Will be packed dynamically when needed
         
         # Alignment help text
-        help_text = "Note: Size must be power of 2 (e.g., 1, 2, 4, 8, 16...KB/MB/GB)\n"
-        help_text += "Base address must be aligned to size boundary"
+        help_text = "Tips: Size must be power of 2 (1, 2, 4, 8, 16...KB/MB/GB)\n"
+        help_text += "     Base address must be aligned to size boundary\n"
+        help_text += "     Real-time conflict detection prevents duplicate regions"
         self.help_label = ttk.Label(info_frame, text=help_text, font=('Arial', 8), foreground='gray')
-        self.help_label.pack(pady=(5, 0))
+        self.help_label.pack(pady=(10, 0))
         
         self.update_address_info()
-        
-        # Buttons
-        btn_frame = ttk.Frame(self.dialog)
-        btn_frame.pack(side=tk.BOTTOM, pady=10)
-        
-        ttk.Button(btn_frame, text="OK", command=self.ok_clicked).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="Cancel", command=self.dialog.destroy).pack(side=tk.LEFT, padx=5)
         
         # Bind events
         self.addr_var.trace('w', lambda *args: self.update_address_info())
         self.size_value_var.trace('w', lambda *args: self.update_address_info())
         
     def update_address_info(self):
-        """Update address range information"""
+        """ENHANCED: Update address range information with automatic conflict detection"""
         try:
             addr_str = self.addr_var.get()
             if addr_str.startswith("0x") or addr_str.startswith("0X"):
@@ -2621,18 +2904,217 @@ class SlaveDialog:
             is_pow2 = size_bytes & (size_bytes - 1) == 0
             is_aligned = base % size_bytes == 0 if is_pow2 else False
             
-            info_text = f"0x{base:08X} - 0x{end:08X}"
+            info_text = f"Range: 0x{base:08X} - 0x{end:08X}"
+            warning_color = "black"
             
+            # Check for alignment issues first
             if not is_pow2:
-                info_text += "\n[WARNING] Size is not power of 2"
+                import math
+                nearest_pow2_kb = 2 ** math.ceil(math.log2(size_kb))
+                info_text += f"\n[WARNING] Size must be power of 2"
+                info_text += f"\n   Suggested: {nearest_pow2_kb}KB"
+                warning_color = "orange"
             elif not is_aligned:
-                info_text += "\n[WARNING] Address not aligned to size"
-            else:
-                info_text += "\n[OK] Properly aligned"
+                aligned_addr = (base // size_bytes) * size_bytes
+                info_text += f"\n[WARNING] Address not aligned to size"
+                info_text += f"\n   Suggested: 0x{aligned_addr:08X}"
+                warning_color = "orange"
+            
+            # AUTO ADDRESS CONFLICT CHECK - FIXED LOGIC
+            conflicts = []
+            
+            if self.main_gui and hasattr(self.main_gui, 'current_config'):
+                current_name = self.name_var.get()
                 
-            self.info_label.config(text=info_text)
+                # Create temporary slave config for current settings
+                temp_slave = type('TempSlave', (), {
+                    'name': current_name,
+                    'base_address': base,
+                    'size': size_kb
+                })()
+                
+                # Check against all existing slaves
+                for existing_slave in self.main_gui.current_config.slaves:
+                    # Skip self when editing existing slave
+                    if hasattr(self, 'editing_slave') and existing_slave.name == current_name:
+                        continue
+                        
+                    # Check for overlap using FIXED overlap detection method
+                    if self._check_address_overlap_temp(temp_slave, existing_slave):
+                        conflicts.append(existing_slave)
+                        
+                # If conflicts found, show errors and suggest alternatives
+                if conflicts:
+                    info_text += f"\n🚫 ADDRESS CONFLICT DETECTED!"
+                    warning_color = "red"
+                    for conflict in conflicts:
+                        conflict_end = conflict.base_address + (conflict.size * 1024) - 1
+                        info_text += f"\n   Overlaps with '{conflict.name}'"
+                        info_text += f"\n   (0x{conflict.base_address:08X} - 0x{conflict_end:08X})"
+                    
+                    # Show visual address map for conflicts
+                    self.show_address_map(conflicts)
+                    
+                    # Suggest next available address
+                    suggested_addr = self._find_next_available_address(size_kb)
+                    if suggested_addr is not None:
+                        info_text += f"\n[TIP] Suggested Address: 0x{suggested_addr:08X}"
+                        
+                        # Add quick-fix button functionality
+                        if not hasattr(self, 'fix_button_added'):
+                            self.fix_button_added = True
+                            self.add_quick_fix_button(suggested_addr)
+                else:
+                    # No conflicts - hide address map and show green checkmark  
+                    self.show_address_map([])  # Hide address map
+                    if is_pow2 and is_aligned:
+                        info_text += "\n[OK] Address range available"
+                        warning_color = "darkgreen"
+            
+            # Update label with appropriate color
+            self.info_label.config(text=info_text, foreground=warning_color)
+            
+        except ValueError:
+            self.info_label.config(text="[ERROR] Invalid address/size format", foreground="red")
+        except Exception as e:
+            self.info_label.config(text=f"[ERROR] Error: {str(e)}", foreground="red")
+            
+    def _check_address_overlap_temp(self, slave1, slave2):
+        """FIXED: Helper method to check address overlap between two slaves"""
+        start1 = slave1.base_address
+        end1 = slave1.base_address + (slave1.size * 1024) - 1
+        start2 = slave2.base_address  
+        end2 = slave2.base_address + (slave2.size * 1024) - 1
+        
+        # Two ranges overlap if: start1 <= end2 AND start2 <= end1
+        overlap = (start1 <= end2) and (start2 <= end1)
+        
+        return overlap
+    
+    def _find_next_available_address(self, size_kb):
+        """Find the next available address that doesn't conflict with existing slaves"""
+        if not self.main_gui or not hasattr(self.main_gui, 'current_config'):
+            return None
+            
+        size_bytes = size_kb * 1024
+        
+        # Start from address 0 and find first available slot
+        candidate_addr = 0
+        max_attempts = 1000  # Prevent infinite loop
+        
+        for attempt in range(max_attempts):
+            # Align candidate address to size boundary
+            if size_bytes > 0 and (size_bytes & (size_bytes - 1)) == 0:  # Power of 2 check
+                candidate_addr = (candidate_addr + size_bytes - 1) & ~(size_bytes - 1)
+            
+            # Check if this address conflicts with any existing slave
+            temp_slave = type('TempSlave', (), {
+                'name': 'temp',
+                'base_address': candidate_addr,
+                'size': size_kb
+            })()
+            
+            has_conflict = False
+            current_name = self.name_var.get()
+            
+            for existing_slave in self.main_gui.current_config.slaves:
+                # Skip self when editing
+                if hasattr(self, 'editing_slave') and existing_slave.name == current_name:
+                    continue
+                    
+                if self._check_address_overlap_temp(temp_slave, existing_slave):
+                    has_conflict = True
+                    # Move candidate past this conflicting slave
+                    existing_end = existing_slave.base_address + (existing_slave.size * 1024)
+                    candidate_addr = existing_end
+                    break
+            
+            if not has_conflict:
+                return candidate_addr
+                
+        return None  # No available address found
+    
+    def add_quick_fix_button(self, suggested_addr):
+        """Add a quick-fix button to automatically set the suggested address"""
+        if hasattr(self, 'quick_fix_frame'):
+            return  # Button already exists
+            
+        self.quick_fix_frame = ttk.Frame(self.info_label.master)
+        self.quick_fix_frame.pack(pady=(5, 0))
+        
+        def apply_suggested_address():
+            self.addr_var.set(f"0x{suggested_addr:08X}")
+            self.update_address_info()
+            
+        fix_btn = ttk.Button(self.quick_fix_frame, 
+                           text="🔧 Auto-Fix Address", 
+                           command=apply_suggested_address)
+        fix_btn.pack()
+    
+    def show_address_map(self, conflicts):
+        """Show visual address map when conflicts are detected"""
+        # Clear existing map
+        for widget in self.address_map_frame.winfo_children():
+            widget.destroy()
+            
+        if not conflicts:
+            self.address_map_frame.pack_forget()
+            return
+            
+        # Show the address map frame
+        self.address_map_frame.pack(fill=tk.X, pady=(5, 0))
+        
+        # Get current configuration
+        try:
+            current_base = int(self.addr_var.get().replace("0x", "").replace("0X", ""), 16)
+            size_value = int(self.size_value_var.get())
+            size_unit = self.size_unit_var.get()
+            
+            if size_unit == "GB":
+                current_size_kb = size_value * 1048576
+            elif size_unit == "MB":
+                current_size_kb = size_value * 1024
+            else:
+                current_size_kb = size_value
+                
+            current_end = current_base + (current_size_kb * 1024) - 1
+            current_name = self.name_var.get()
+            
         except:
-            self.info_label.config(text="Invalid address/size")
+            return
+        
+        # Create address map entries
+        map_entries = []
+        
+        # Add current slave (in red to show conflict)
+        map_entries.append({
+            'name': f"{current_name} (NEW)",
+            'start': current_base,
+            'end': current_end,
+            'color': 'red'
+        })
+        
+        # Add conflicting slaves
+        for conflict in conflicts:
+            conflict_end = conflict.base_address + (conflict.size * 1024) - 1
+            map_entries.append({
+                'name': conflict.name,
+                'start': conflict.base_address,
+                'end': conflict_end,
+                'color': 'orange'
+            })
+        
+        # Sort by start address
+        map_entries.sort(key=lambda x: x['start'])
+        
+        # Display address map
+        for i, entry in enumerate(map_entries):
+            color = entry['color']
+            addr_text = f"{entry['name']}: 0x{entry['start']:08X} - 0x{entry['end']:08X}"
+            
+            label = ttk.Label(self.address_map_frame, text=f"{'[!]' if color == 'red' else '[*]'} {addr_text}",
+                            foreground=color, font=('Courier', 8))
+            label.pack(anchor=tk.W, padx=5)
             
     def ok_clicked(self):
         """Handle OK button"""
@@ -2666,7 +3148,7 @@ class SlaveDialog:
             else:
                 final_allowed_masters = allowed_masters  # Specific restrictions
             
-            self.result = SlaveConfig(
+            self.result = Slave(
                 name=self.name_var.get(),
                 base_address=base_addr,
                 size=size_kb,

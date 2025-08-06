@@ -16,6 +16,12 @@ module hdl_top;
     initial begin
         aclk = 0;
         forever #5 aclk = ~aclk; // 100MHz
+    
+        $display("[%0t] HDL Top: BFMs instantiated and connected", $time);
+        $display("[%0t] HDL Top: %0d Master BFMs connected to axi_if interfaces", $time, 16);
+        $display("[%0t] HDL Top: %0d Slave BFMs connected to slave_if interfaces", $time, 16);
+        $display("[%0t] HDL Top: Signal driving is now handled by BFMs", $time);
+        
     end
     
     // Generate reset
@@ -47,7 +53,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_0_driver_bfm();
+    ) master_0_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[0])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -58,7 +68,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_1_driver_bfm();
+    ) master_1_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[1])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -69,7 +83,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_2_driver_bfm();
+    ) master_2_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[2])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -80,7 +98,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_3_driver_bfm();
+    ) master_3_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[3])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -91,7 +113,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_4_driver_bfm();
+    ) master_4_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[4])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -102,7 +128,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_5_driver_bfm();
+    ) master_5_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[5])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -113,7 +143,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_6_driver_bfm();
+    ) master_6_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[6])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -124,7 +158,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_7_driver_bfm();
+    ) master_7_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[7])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -135,7 +173,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_8_driver_bfm();
+    ) master_8_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[8])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -146,7 +188,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_9_driver_bfm();
+    ) master_9_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[9])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -157,7 +203,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_10_driver_bfm();
+    ) master_10_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[10])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -168,7 +218,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_11_driver_bfm();
+    ) master_11_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[11])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -179,7 +233,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_12_driver_bfm();
+    ) master_12_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[12])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -190,7 +248,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_13_driver_bfm();
+    ) master_13_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[13])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -201,7 +263,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_14_driver_bfm();
+    ) master_14_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[14])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -212,7 +278,11 @@ module hdl_top;
     axi4_master_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_15_driver_bfm();
+    ) master_15_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(master_if[15])
+    );
     
     axi4_master_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -223,7 +293,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_0_driver_bfm();
+    ) slave_0_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[0])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -234,7 +308,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_1_driver_bfm();
+    ) slave_1_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[1])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -245,7 +323,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_2_driver_bfm();
+    ) slave_2_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[2])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -256,7 +338,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_3_driver_bfm();
+    ) slave_3_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[3])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -267,7 +353,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_4_driver_bfm();
+    ) slave_4_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[4])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -278,7 +368,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_5_driver_bfm();
+    ) slave_5_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[5])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -289,7 +383,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_6_driver_bfm();
+    ) slave_6_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[6])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -300,7 +398,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_7_driver_bfm();
+    ) slave_7_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[7])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -311,7 +413,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_8_driver_bfm();
+    ) slave_8_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[8])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -322,7 +428,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_9_driver_bfm();
+    ) slave_9_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[9])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -333,7 +443,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_10_driver_bfm();
+    ) slave_10_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[10])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -344,7 +458,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_11_driver_bfm();
+    ) slave_11_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[11])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -355,7 +473,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_12_driver_bfm();
+    ) slave_12_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[12])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -366,7 +488,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_13_driver_bfm();
+    ) slave_13_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[13])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -377,7 +503,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_14_driver_bfm();
+    ) slave_14_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[14])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -388,7 +518,11 @@ module hdl_top;
     axi4_slave_driver_bfm #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_15_driver_bfm();
+    ) slave_15_driver_bfm(
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .axi_if(slave_if[15])
+    );
     
     axi4_slave_monitor_bfm #(
         .DATA_WIDTH(DATA_WIDTH),

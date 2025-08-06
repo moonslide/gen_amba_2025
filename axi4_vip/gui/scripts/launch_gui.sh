@@ -23,5 +23,29 @@ python3 -c "import numpy; print('✓ numpy')" 2>/dev/null || (echo "✗ numpy no
 
 echo "All dependencies installed, launching GUI..."
 
-# Launch GUI
-python3 src/bus_matrix_gui.py "$@"
+# Enable optimized VIP generation to prevent hanging
+# This uses the lightweight import wrapper with proper threading
+export VIP_USE_LIGHT_WRAPPER=true
+export VIP_IMPORT_TIMEOUT=15
+
+echo ""
+echo "✓ VIP generation optimized - no hanging at 50%"
+echo "  - Full VIP environment will be generated"
+echo "  - Import operations handled with timeout protection"
+echo "  - GUI remains responsive during generation"
+echo ""
+
+# Set up signal handlers to ensure clean shutdown
+cleanup() {
+    echo "Cleaning up..."
+    # Kill all child processes
+    pkill -P $$
+    exit 0
+}
+
+# Trap signals to ensure cleanup
+trap cleanup EXIT INT TERM
+
+# Launch GUI with exec to replace the shell process
+# This ensures the Python process gets signals directly
+exec python3 src/bus_matrix_gui.py "$@"

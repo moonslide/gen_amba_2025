@@ -1,4 +1,244 @@
-# Simulation log files
-*.log
+# ROOT CAUSE FIX: Comprehensive .gitignore for EDA/Verification Projects
+# 
+# ISSUE: Commit 191cbe1 added 200+ simulation build artifacts to git
+# CAUSE: Inadequate .gitignore allowed csrc/, simv.daidir/, logs, etc. to be tracked
+# EFFECT: Every simulation run creates new files with different process IDs -> unlimited growth
+#
+# This comprehensive .gitignore prevents tracking build artifacts that cause storage bloat
+
+# =============================================================================
+# SIMULATION ARTIFACTS (Primary cause of unlimited storage growth)
+# =============================================================================
+
+# VCS/Synopsys Simulator
+simv*
+csrc/
+simv.daidir/
+ucli.key
+inter.vpd
+DVEfiles/
+worklib/
+
+# Questa/ModelSim
+work/
+transcript
+modelsim.ini
+*.wlf
+*.vstf
+
+# Xcelium/Cadence
+INCA_libs/
+irun.log
+irun.key
+waves.shm/
+cov_work/
+
+# Vivado/Xilinx 
+.Xil/
+*.jou
+*.str
+*.backup.log
+usage_statistics_webtalk.*
+webtalk.*
+xsim.dir/
+*.pb
+*.wdb
+
+# VeriPool/Verilator
+obj_dir/
+*.mk
+*.a
+*.o
+*.d
+
+# =============================================================================
+# WAVEFORM AND DEBUG FILES (Can be GB in size)
+# =============================================================================
+
+# Waveform files
 *.fsdb
 *.vcd
+*.vcd.gz
+*.vpd
+*.shm
+*.wlf
+*.evcd
+*.lxt
+*.lxt2
+*.fst
+*.ghw
+
+# Debug databases
+*.db
+*.sdb
+*.udb
+
+# =============================================================================
+# LOG FILES AND REPORTS (Accumulate over time)
+# =============================================================================
+
+# All log files
+*.log
+*.rpt
+*.out
+*.tmp
+
+# Specific simulator logs
+transcript
+compile.log
+elaborate.log
+simulate.log
+run.log
+novas_dump.log
+tr_db.log
+
+# Verdi/Novas logs
+verdiLog/
+novas.conf
+novas.rc
+novas_autosave.ses*
+.verdi*
+
+# =============================================================================
+# COVERAGE DATA (Large databases)
+# =============================================================================
+
+# Coverage databases
+*.ucdb
+*.acdb  
+cov_work/
+coverage/
+urgReport/
+*.cov
+
+# =============================================================================
+# TEMPORARY AND CACHE FILES
+# =============================================================================
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Build artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.exe
+
+# Archive files with process IDs (main culprit for growth)
+*_archive_*.so
+*_archive_*.a
+*_archive_*.info
+*.[0-9][0-9][0-9][0-9][0-9][0-9][0-9].*
+*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9]_*
+
+# Lock and temporary files
+*.lck
+*.tmp
+*.temp
+*~
+.#*
+#*#
+
+# =============================================================================
+# IDE AND EDITOR FILES
+# =============================================================================
+
+# DVE
+.DVE*
+DVE*
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# Vim
+*.swp
+*.swo
+*~
+.*.sw[a-p]
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# =============================================================================
+# DOCUMENTATION BUILD FILES
+# =============================================================================
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.toc
+*.lot
+*.lof
+
+# =============================================================================
+# PROJECT-SPECIFIC PATTERNS
+# =============================================================================
+
+# Generated RTL (should be regenerated, not stored)
+**/generated_rtl/
+**/rtl_wrapper/generated_rtl/
+
+# Test results and reports
+results/
+reports/
+plots/
+
+# Temporary workspaces
+/tmp/
+work_*
+test_*
+run_*
+
+# Configuration backups
+*.backup
+*.bak
+*.orig
+
+# =============================================================================
+# PLATFORM-SPECIFIC
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+
+# =============================================================================
+# NOTES FOR DEVELOPERS
+# =============================================================================
+#
+# To clean up already-tracked files:
+# 1. git rm -r --cached 9x9_vip/*/sim/csrc/
+# 2. git rm -r --cached 9x9_vip/*/sim/simv.daidir/
+# 3. git rm -r --cached 9x9_vip/*/sim/verdiLog/
+# 4. git rm --cached 9x9_vip/*/sim/*.fsdb
+# 5. git rm --cached 9x9_vip/*/sim/*.log
+# 6. git commit -m "Remove simulation artifacts from git tracking"
+#
+# This will prevent the unlimited storage growth issue.
+#

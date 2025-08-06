@@ -34,10 +34,11 @@ class Slave:
     memory_type: str = "Memory"
     read_latency: int = 1
     write_latency: int = 1
+    priority: int = 0  # Slave priority for arbitration
     num_regions: int = 1
     secure_only: bool = False
     privileged_only: bool = False
-    allowed_masters: List[int] = None
+    allowed_masters: List[str] = None
     
     def __post_init__(self):
         if self.allowed_masters is None:

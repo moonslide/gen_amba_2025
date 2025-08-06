@@ -1,5 +1,0 @@
-  CREATE_STREAM @0 {NAME:vseq T:Transactions SCOPE:uvm_test_top.env.v_seqr STREAM:5711}
-  CREATE_STREAM @0 {NAME:write_seq T:Transactions SCOPE:uvm_test_top.env.v_seqr STREAM:5722}
-  CREATE_STREAM @0 {NAME:write_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[0].sequencer STREAM:5733}
-  CREATE_STREAM @100000 {NAME:read_seq T:Transactions SCOPE:uvm_test_top.env.v_seqr STREAM:6018}
-  CREATE_STREAM @100000 {NAME:read_seq T:Transactions SCOPE:uvm_test_top.env.master_agent[0].sequencer STREAM:6028}

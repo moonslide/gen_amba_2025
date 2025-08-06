@@ -28,6 +28,7 @@ from io import StringIO
 import base64
 
 from test_config_manager import VIPTestConfigManager
+from vip_storage_manager import get_storage_manager, StoragePolicy
 
 @dataclass
 class ReportConfig:
@@ -54,9 +55,15 @@ class ReportConfig:
 class VIPTestReportingAnalyzer:
     """Comprehensive test reporting and analysis system"""
     
-    def __init__(self, db_manager: VIPTestConfigManager):
+    def __init__(self, db_manager: VIPTestConfigManager, storage_policy: StoragePolicy = None):
         self.db_manager = db_manager
         self.logger = self._setup_logging()
+        
+        # Initialize storage manager
+        self.storage_manager = get_storage_manager(
+            base_work_dir=str(Path(db_manager.db_path).parent),
+            policy=storage_policy
+        )
         
         # Configure matplotlib and seaborn
         plt.style.use('seaborn-v0_8')
@@ -118,8 +125,22 @@ class VIPTestReportingAnalyzer:
         with open(report_path, 'w') as f:
             f.write(report_content)
             
+        # Schedule cleanup of old reports
+        self._schedule_report_cleanup(output_dir)
+            
         self.logger.info(f"Report generated: {report_path}")
         return str(report_path)
+        
+    def _schedule_report_cleanup(self, output_dir: Path):
+        """Schedule cleanup of old reports and plots"""
+        try:
+            # Clean reports older than policy
+            import threading
+            cleanup_timer = threading.Timer(60, self.storage_manager.cleanup_reports_and_plots)
+            cleanup_timer.daemon = True
+            cleanup_timer.start()
+        except Exception as e:
+            self.logger.warning(f"Failed to schedule report cleanup: {e}")
         
     def _collect_report_data(self, config: ReportConfig) -> Dict[str, Any]:
         """Collect all data needed for report generation"""
@@ -614,8 +635,11 @@ class VIPTestReportingAnalyzer:
             ax.set_title('Test Results Distribution', fontsize=16, fontweight='bold')
             
             plot_path = plot_dir / "test_results_pie.png"
-            plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+            plt.savefig(plot_path, dpi=150, bbox_inches='tight')  # Reduced DPI to save space
             plt.close()
+            
+            # Check plot file size and compress if needed
+            self._optimize_plot_file(plot_path)
             plots['test_results_pie'] = str(plot_path)
             
         # Tests by category bar chart
@@ -637,8 +661,10 @@ class VIPTestReportingAnalyzer:
                        
             plt.xticks(rotation=45)
             plot_path = plot_dir / "tests_by_category.png"
-            plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+            plt.savefig(plot_path, dpi=150, bbox_inches='tight')
             plt.close()
+            
+            self._optimize_plot_file(plot_path)
             plots['tests_by_category'] = str(plot_path)
             
         return plots
@@ -663,8 +689,10 @@ class VIPTestReportingAnalyzer:
             
             plt.xticks(rotation=45)
             plot_path = plot_dir / "coverage_trend.png"
-            plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+            plt.savefig(plot_path, dpi=150, bbox_inches='tight')
             plt.close()
+            
+            self._optimize_plot_file(plot_path)
             plots['coverage_trend'] = str(plot_path)
             
         # Coverage by category
@@ -686,8 +714,10 @@ class VIPTestReportingAnalyzer:
                        
             plt.xticks(rotation=45)
             plot_path = plot_dir / "coverage_by_category.png"
-            plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+            plt.savefig(plot_path, dpi=150, bbox_inches='tight')
             plt.close()
+            
+            self._optimize_plot_file(plot_path)
             plots['coverage_by_category'] = str(plot_path)
             
         return plots
@@ -739,8 +769,10 @@ class VIPTestReportingAnalyzer:
                     
                 plt.tight_layout()
                 plot_path = plot_dir / "performance_metrics.png"
-                plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+                plt.savefig(plot_path, dpi=150, bbox_inches='tight')
                 plt.close()
+                
+                self._optimize_plot_file(plot_path)
                 plots['performance_metrics'] = str(plot_path)
                 
         return plots
@@ -766,8 +798,10 @@ class VIPTestReportingAnalyzer:
             
             plt.xticks(rotation=45)
             plot_path = plot_dir / "pass_rate_trend.png"
-            plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+            plt.savefig(plot_path, dpi=150, bbox_inches='tight')
             plt.close()
+            
+            self._optimize_plot_file(plot_path)
             plots['pass_rate_trend'] = str(plot_path)
             
         return plots
@@ -798,8 +832,10 @@ class VIPTestReportingAnalyzer:
                        
             plt.tight_layout()
             plot_path = plot_dir / "top_failing_tests.png"
-            plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+            plt.savefig(plot_path, dpi=150, bbox_inches='tight')
             plt.close()
+            
+            self._optimize_plot_file(plot_path)
             plots['top_failing_tests'] = str(plot_path)
             
         return plots
@@ -1016,6 +1052,35 @@ class VIPTestReportingAnalyzer:
 </body>
 </html>
         """
+        
+    def _optimize_plot_file(self, plot_path: Path):
+        """Optimize plot file size to reduce storage usage"""
+        try:
+            file_size = plot_path.stat().st_size
+            max_size = 2 * 1024 * 1024  # 2MB limit per plot
+            
+            if file_size > max_size:
+                # Try to compress with PIL if available
+                try:
+                    from PIL import Image
+                    img = Image.open(plot_path)
+                    # Reduce quality to compress
+                    img.save(plot_path, optimize=True, quality=85)
+                    self.logger.debug(f"Compressed plot {plot_path.name}: {file_size} -> {plot_path.stat().st_size} bytes")
+                except ImportError:
+                    # PIL not available, just warn
+                    self.logger.warning(f"Large plot file {plot_path.name}: {file_size / 1024 / 1024:.1f} MB")
+                    
+        except Exception as e:
+            self.logger.warning(f"Failed to optimize plot {plot_path}: {e}")
+            
+    def _limit_data_size(self, data: List[Dict], max_rows: int = 1000) -> List[Dict]:
+        """Limit data size for large datasets to prevent memory issues"""
+        if len(data) > max_rows:
+            self.logger.warning(f"Dataset too large ({len(data)} rows), limiting to {max_rows}")
+            # Keep most recent data
+            return sorted(data, key=lambda x: x.get('start_time', ''), reverse=True)[:max_rows]
+        return data
 
 def example_report_generation():
     """Example of generating various reports"""

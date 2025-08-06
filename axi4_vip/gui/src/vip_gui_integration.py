@@ -12,8 +12,10 @@ import threading
 import queue
 import time
 import os
+import traceback
 from typing import Dict, List, Optional, Any
 from dataclasses import asdict
+from datetime import datetime, timedelta
 
 # Import with fallback for missing modules
 try:
@@ -47,6 +49,330 @@ try:
     from uvm_config_exporter import export_gui_config_to_uvm
 except ImportError:
     from .uvm_config_exporter import export_gui_config_to_uvm
+
+
+class VIPGenerationThread(threading.Thread):
+    """Separate thread for VIP generation with progress tracking"""
+    
+    def __init__(self, gui_integration, output_dir, rtl_mode, rtl_source=None, rtl_folder=None, status_var=None, status_label=None, progress_callback=None):
+        super().__init__(daemon=True)
+        self.gui_integration = gui_integration
+        self.output_dir = output_dir
+        self.rtl_mode = rtl_mode
+        self.rtl_source = rtl_source  # "generate" or "folder"
+        self.rtl_folder = rtl_folder  # Path to existing RTL folder
+        self.status_var = status_var
+        self.status_label = status_label
+        self.progress_callback = progress_callback
+        
+        # Generation control
+        self.cancelled = False
+        self.completed = False
+        self.error_message = None
+        self.result_path = None
+        
+        # Progress tracking
+        self.current_step = 0
+        # FIXED: Use 10 steps for RTL mode (like working 7/29 version), 6 for VIP standalone
+        if rtl_mode:
+            self.total_steps = 10  # RTL mode: 10 steps
+        else:
+            self.total_steps = 6   # VIP standalone: 6 steps
+        self.step_names = [
+            "Validating configuration",
+            "Creating directory structure", 
+            "Generating package files",
+            "Generating interface files",
+            "Generating agent files",
+            "Generating sequence files",
+            "Generating environment files", 
+            "Generating test files",
+            "Generating top files",
+            "Generating simulation files",
+            "Generating documentation",
+            "Finalizing environment"
+        ]
+        
+    def cancel(self):
+        """Cancel the generation process"""
+        self.cancelled = True
+        
+    def update_progress(self, step_name, step_number=None):
+        """Update progress and status"""
+        if self.cancelled:
+            return False
+            
+        if step_number is not None:
+            self.current_step = step_number
+        else:
+            self.current_step += 1
+            
+        progress_pct = (self.current_step / self.total_steps) * 100
+        status_text = f"Step {self.current_step}/{self.total_steps}: {step_name} ({progress_pct:.0f}%)"
+        
+        # Update status in GUI thread
+        if self.status_var:
+            self.status_var.set(status_text)
+            
+        if self.progress_callback:
+            self.progress_callback(self.current_step, self.total_steps, step_name)
+            
+        print(f"VIP Generation: {status_text}")
+        return True
+        
+    def run(self):
+        """Run VIP generation with progress tracking"""
+        try:
+            self.update_progress("Starting VIP generation", 0)
+            
+            if self.rtl_mode:
+                # RTL Integration Mode
+                if self.rtl_source == "generate":
+                    # Generate RTL from current configuration
+                    self.update_progress("Generating RTL files")
+                    if not self._generate_rtl_with_progress():
+                        return
+                elif self.rtl_source == "folder" and self.rtl_folder:
+                    # Use existing RTL folder
+                    self.update_progress("Using existing RTL folder")
+                    self.gui_integration.existing_rtl_path = self.rtl_folder
+                    
+                self.update_progress("Creating RTL integration environment")
+                env_path = self._generate_rtl_integration_with_progress()
+            else:
+                # VIP Standalone Mode
+                self.update_progress("Creating VIP standalone environment")
+                env_path = self._generate_vip_standalone_with_progress()
+                
+            if env_path and not self.cancelled:
+                self.result_path = env_path
+                self.completed = True
+                self.update_progress("VIP generation completed successfully!")
+                
+                # Update final status in GUI thread
+                final_status = f"[SUCCESS] Success: VIP generated and saved to {env_path}"
+                self.status_var.set(final_status)
+                
+                # Change status label color to green in GUI thread
+                def update_label_color():
+                    if self.status_label:
+                        self.status_label.config(foreground="green")
+                        
+                # Schedule GUI update
+                if hasattr(self.gui_integration, 'gui') and hasattr(self.gui_integration.gui, 'after'):
+                    self.gui_integration.gui.after(0, update_label_color)
+                    
+        except Exception as e:
+            self.error_message = str(e)
+            error_status = f"[ERROR] Error: {self.error_message}"
+            self.status_var.set(error_status)
+            
+            # Change status label color to red in GUI thread
+            def update_error_color():
+                if self.status_label:
+                    self.status_label.config(foreground="red")
+                    
+            # Schedule GUI update
+            if hasattr(self.gui_integration, 'gui') and hasattr(self.gui_integration.gui, 'after'):
+                self.gui_integration.gui.after(0, update_error_color)
+                
+            print(f"VIP Generation Error: {e}")
+            traceback.print_exc()
+            
+    def _generate_rtl_with_progress(self):
+        """Generate RTL with progress updates"""
+        try:
+            if not self.update_progress("Loading AXI Verilog generator"):
+                return False
+                
+            # Generate RTL using the main GUI's Verilog generator
+            rtl_output_dir = os.path.join(self.output_dir, "rtl_integration_env", "rtl_wrapper", "generated_rtl")
+            os.makedirs(rtl_output_dir, exist_ok=True)
+            
+            if not self.update_progress("Generating RTL modules"):
+                return False
+                
+            # Use the AXI Verilog generator from main GUI
+            from axi_verilog_generator import AXIVerilogGenerator
+            generator = AXIVerilogGenerator(self.gui_integration.gui.current_config)
+            generator.output_dir = rtl_output_dir  # Set output directory
+            generated_dir = generator.generate()  # Generate RTL
+            
+            # Store the generated RTL path
+            self.gui_integration.generated_rtl_path = rtl_output_dir
+            
+            if not self.update_progress("RTL generation completed"):
+                return False
+                
+            return True
+            
+        except Exception as e:
+            raise Exception(f"RTL generation failed: {str(e)}")
+            
+    def _generate_rtl_integration_with_progress(self):
+        """Generate RTL integration environment with progress updates"""
+        try:
+            if not self.update_progress("Loading VIP environment generator"):
+                return None
+                
+            # Import the VIP environment generator
+            # Apply scalability patch for large bus matrices (11x11+)
+            try:
+                from vip_environment_generator_scalability_patch import apply_scalability_patch
+                apply_scalability_patch()
+                print("[VIP] Scalability patch applied for large bus matrix support")
+            except Exception as e:
+                print(f"[VIP] Warning: Could not apply scalability patch: {e}")
+
+            # Import the VIP environment generator
+            from vip_environment_generator import VIPEnvironmentGenerator
+            
+            # Create generator instance with cancellation support
+            generator = VIPEnvironmentGenerator(
+                gui_config=self.gui_integration.gui.current_config,
+                mode="rtl_integration",
+                simulator=self.gui_integration.target_simulator
+            )
+            
+            # Add progress callback to generator
+            def generator_progress_callback(step_name, step_num=None):
+                if self.cancelled:
+                    raise Exception("Generation cancelled by user")
+                # Map generator steps to our progress tracking
+                if step_num is not None:
+                    self.update_progress(step_name, step_num)
+                else:
+                    self.update_progress(step_name)
+                    
+            # Inject our progress callback
+            generator._progress_callback = generator_progress_callback
+            
+            # Generate the environment with progress tracking for steps 7-10
+            # Step 6 is already done, now continue to 7
+            if not self.update_progress("Starting environment generation", 7):
+                return None
+            
+            # Run the generator (does the actual work)
+            # Check for large matrix warnings before generation
+            if hasattr(generator, '_check_large_matrix_warning'):
+                generator._check_large_matrix_warning()
+                if generator.warnings:
+                    warning_msg = "\n".join(generator.warnings)
+                    self.update_progress(f"⚠️  {warning_msg}")
+            
+            env_path = generator.generate_environment(self.output_dir)
+            
+            # Update progress with accurate messages based on what was actually generated
+            if env_path:
+                # Check if this is optimized (large matrix) generation
+                num_masters = len(self.gui_integration.current_config.masters) if hasattr(self.gui_integration, 'current_config') else 0
+                num_slaves = len(self.gui_integration.current_config.slaves) if hasattr(self.gui_integration, 'current_config') else 0
+                matrix_size = num_masters * num_slaves
+                
+                time.sleep(0.2)  # Brief pause for visual feedback
+                
+                if max(num_masters, num_slaves) > 10:  # Large matrix - VIP+RTL integration mode
+                    if not self.update_progress("Creating VIP+RTL integration files", 8):
+                        return None
+                        
+                    time.sleep(0.2)
+                    if not self.update_progress("Generating integrated simulation makefile", 9):
+                        return None
+                        
+                    time.sleep(0.2)
+                    if not self.update_progress("Finalizing VIP+RTL integration environment", 10):
+                        return None
+                        
+                    # Show info about VIP+RTL integration
+                    print(f"\n✅ Large matrix ({num_masters}x{num_slaves}) with VIP+RTL integration!")
+                    print("Generated with UVM testbench + RTL interconnect.")
+                    print("Use 'make run_fsdb' to run simulations with waveforms.")
+                    
+                else:  # Normal matrix - full VIP
+                    if not self.update_progress("Generating test and verification files", 8):
+                        return None
+                        
+                    time.sleep(0.2)
+                    if not self.update_progress("Generating simulation infrastructure", 9):
+                        return None
+                        
+                    time.sleep(0.2)
+                    if not self.update_progress("Finalizing VIP environment", 10):
+                        return None
+            
+            # Handle RTL integration
+            if hasattr(self.gui_integration, 'generated_rtl_path') and os.path.exists(self.gui_integration.generated_rtl_path):
+                import shutil
+                dest_rtl_dir = os.path.join(env_path, "rtl_wrapper", "generated_rtl")
+                if os.path.exists(dest_rtl_dir):
+                    shutil.rmtree(dest_rtl_dir)
+                shutil.copytree(self.gui_integration.generated_rtl_path, dest_rtl_dir)
+                self.gui_integration._update_rtl_filelist(env_path)
+            elif hasattr(self.gui_integration, 'existing_rtl_path') and os.path.exists(self.gui_integration.existing_rtl_path):
+                # Use existing RTL
+                import shutil
+                dest_rtl_dir = os.path.join(env_path, "rtl_wrapper", "existing_rtl")
+                if os.path.exists(dest_rtl_dir):
+                    shutil.rmtree(dest_rtl_dir)
+                shutil.copytree(self.gui_integration.existing_rtl_path, dest_rtl_dir)
+                self.gui_integration._update_rtl_filelist(env_path)
+            
+            # Generation is complete at step 10, return the path
+            return env_path
+            
+        except Exception as e:
+            if "cancelled" in str(e).lower():
+                self.update_progress("Generation cancelled")
+                return None
+            raise Exception(f"Failed to generate RTL integration environment: {str(e)}")
+            
+    def _generate_vip_standalone_with_progress(self):
+        """Generate VIP standalone environment with progress updates"""
+        try:
+            if not self.update_progress("Loading VIP environment generator"):
+                return None
+                
+            # Import the VIP environment generator
+            from vip_environment_generator import VIPEnvironmentGenerator
+            
+            # Create generator instance with cancellation support
+            generator = VIPEnvironmentGenerator(
+                gui_config=self.gui_integration.gui.current_config,
+                mode="vip_standalone",
+                simulator=self.gui_integration.target_simulator
+            )
+            
+            # Add progress callback to generator
+            def generator_progress_callback(step_name, step_num=None):
+                if self.cancelled:
+                    raise Exception("Generation cancelled by user")
+                # Map generator steps to our progress tracking
+                if step_num is not None:
+                    self.update_progress(step_name, step_num)
+                else:
+                    self.update_progress(step_name)
+                    
+            # Inject our progress callback
+            generator._progress_callback = generator_progress_callback
+            
+            # Generate the environment
+            # Check for large matrix warnings before generation
+            if hasattr(generator, '_check_large_matrix_warning'):
+                generator._check_large_matrix_warning()
+                if generator.warnings:
+                    warning_msg = "\n".join(generator.warnings)
+                    self.update_progress(f"⚠️  {warning_msg}")
+            
+            env_path = generator.generate_environment(self.output_dir)
+            
+            if not self.update_progress("VIP standalone environment completed"):
+                return None
+                
+            return env_path
+            
+        except Exception as e:
+            raise Exception(f"Failed to generate VIP standalone environment: {str(e)}")
+
 
 class VIPControlPanel:
     """VIP Control Panel for the Bus Matrix GUI"""
@@ -382,7 +708,7 @@ simulation environment can read. Use the exported files with:
                 return
             
             # Show VIP Environment Setup dialog
-            self.show_vip_setup_dialog()
+            self.show_vip_setup_dialog("rtl_integration")
             
         except Exception as e:
             # General error handling
@@ -393,306 +719,316 @@ simulation environment can read. Use the exported files with:
                                "Check the console for more details.")
             print(f"[ERROR] VIP Environment creation failed:\n{error_details}")
     
-    def show_vip_setup_dialog(self):
-        """Show VIP Environment Setup dialog with mode selection"""
+    def show_vip_setup_dialog(self, mode=None):
+        """FIXED: Show improved VIP generation dialog with proper completion logic and progress tracking"""
+        
         dialog = tk.Toplevel(self.parent.winfo_toplevel())
-        dialog.title("VIP Environment Setup")
-        # Requirement 1.1: Set larger default size to show all content including Next button
-        dialog.geometry("600x500")
-        dialog.minsize(600, 500)  # Set minimum size to prevent resizing too small
+        dialog.title("Generate AXI4 VIP Environment - Enhanced")
+        dialog.geometry("900x700")
+        dialog.resizable(True, True)
+        
+        # Set minimum size
+        dialog.minsize(800, 600)
+        
+        # Make dialog modal
         dialog.transient(self.parent.winfo_toplevel())
         dialog.grab_set()
         
         # Center the dialog
         dialog.update_idletasks()
-        x = (dialog.winfo_screenwidth() // 2) - (dialog.winfo_width() // 2)
-        y = (dialog.winfo_screenheight() // 2) - (dialog.winfo_height() // 2)
-        dialog.geometry(f"+{x}+{y}")
+        x = (dialog.winfo_screenwidth() // 2) - (900 // 2)
+        y = (dialog.winfo_screenheight() // 2) - (700 // 2)
+        dialog.geometry(f"900x700+{x}+{y}")
         
-        # Main frame
-        main_frame = ttk.Frame(dialog, padding=20)
+        # Create a canvas with scrollbar for the main content
+        canvas = tk.Canvas(dialog)
+        scrollbar = ttk.Scrollbar(dialog, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Enable mouse wheel scrolling
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        # Bind mousewheel to canvas
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        # Unbind mousewheel when dialog is destroyed
+        dialog.bind("<Destroy>", lambda e: canvas.unbind_all("<MouseWheel>"))
+        
+        # Pack the canvas and scrollbar
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Main frame inside scrollable area
+        main_frame = tk.Frame(scrollable_frame, padx=20, pady=20)
         main_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Title label
-        title_label = ttk.Label(main_frame, text="Select VIP Generation Mode", 
-                               font=('TkDefaultFont', 12, 'bold'))
+        # Title
+        title_label = tk.Label(main_frame, text="Generate AXI4 VIP Environment", 
+                              font=("Arial", 16, "bold"))
         title_label.pack(pady=(0, 20))
         
-        # Mode selection variable
-        mode_var = tk.StringVar(value="rtl_integration")
+        # Current configuration display
+        config_frame = tk.LabelFrame(main_frame, text="Current Bus Configuration", padx=10, pady=10)
+        config_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        config_text = f"Masters: {len(self.gui.current_config.masters)} | "
+        config_text += f"Slaves: {len(self.gui.current_config.slaves)} | "
+        config_text += f"Data Width: {self.gui.current_config.data_width}-bit | "
+        config_text += f"Address Width: {self.gui.current_config.addr_width}-bit"
+        
+        config_label = tk.Label(config_frame, text=config_text, font=("Arial", 10))
+        config_label.pack()
+        
+        # Generation mode selection
+        mode_frame = tk.LabelFrame(main_frame, text="Generation Mode", padx=10, pady=10)
+        mode_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        rtl_mode_var = tk.BooleanVar(value=True)
+        rtl_source_var = tk.StringVar(value="generate")  # "generate" or "folder"
+        rtl_folder_var = tk.StringVar(value="")
         
         # RTL Integration Mode
-        rtl_frame = ttk.LabelFrame(main_frame, text="", padding=10)
-        rtl_frame.pack(fill=tk.X, pady=5)
+        rtl_radio = tk.Radiobutton(mode_frame, text=" RTL Integration Mode", 
+                                  variable=rtl_mode_var, value=True,
+                                  font=("Arial", 10))
+        rtl_radio.pack(anchor=tk.W, pady=2)
         
-        rtl_radio = ttk.Radiobutton(rtl_frame, text="RTL Integration Mode", 
-                                   variable=mode_var, value="rtl_integration")
-        rtl_radio.pack(anchor=tk.W)
+        # RTL sub-options frame
+        rtl_options_frame = tk.Frame(mode_frame)
+        rtl_options_frame.pack(anchor=tk.W, padx=(20, 0), pady=(5, 0))
         
-        rtl_desc = ttk.Label(rtl_frame, 
-                            text="Generate a verification environment designed to connect with an existing RTL DUT.",
-                            wraplength=450, foreground="gray")
-        rtl_desc.pack(anchor=tk.W, padx=(20, 0), pady=(5, 0))
+        # Generate RTL option
+        generate_rtl_radio = tk.Radiobutton(rtl_options_frame, text="Generate RTL from current configuration",
+                                          variable=rtl_source_var, value="generate",
+                                          font=("Arial", 9))
+        generate_rtl_radio.pack(anchor=tk.W)
+        
+        # Use existing RTL option
+        existing_rtl_frame = tk.Frame(rtl_options_frame)
+        existing_rtl_frame.pack(anchor=tk.W, pady=(5, 0))
+        
+        existing_rtl_radio = tk.Radiobutton(existing_rtl_frame, text="Use existing RTL folder:",
+                                          variable=rtl_source_var, value="folder",
+                                          font=("Arial", 9))
+        existing_rtl_radio.pack(side=tk.LEFT)
+        
+        rtl_folder_entry = tk.Entry(existing_rtl_frame, textvariable=rtl_folder_var, width=30, state=tk.DISABLED)
+        rtl_folder_entry.pack(side=tk.LEFT, padx=(5, 0))
+        
+        def browse_rtl_folder():
+            folder = filedialog.askdirectory(title="Select RTL Folder")
+            if folder:
+                rtl_folder_var.set(folder)
+                rtl_source_var.set("folder")
+        
+        browse_btn = tk.Button(existing_rtl_frame, text="Browse...", command=browse_rtl_folder,
+                              font=("Arial", 8), padx=5)
+        browse_btn.pack(side=tk.LEFT, padx=(5, 0))
+        
+        # Enable/disable RTL options based on mode selection
+        def update_rtl_options():
+            if rtl_mode_var.get():
+                generate_rtl_radio.config(state=tk.NORMAL)
+                existing_rtl_radio.config(state=tk.NORMAL)
+                if rtl_source_var.get() == "folder":
+                    rtl_folder_entry.config(state=tk.NORMAL)
+                    browse_btn.config(state=tk.NORMAL)
+                else:
+                    rtl_folder_entry.config(state=tk.DISABLED)
+                    browse_btn.config(state=tk.DISABLED)
+            else:
+                generate_rtl_radio.config(state=tk.DISABLED)
+                existing_rtl_radio.config(state=tk.DISABLED)
+                rtl_folder_entry.config(state=tk.DISABLED)
+                browse_btn.config(state=tk.DISABLED)
+        
+        rtl_mode_var.trace("w", lambda *args: update_rtl_options())
+        rtl_source_var.trace("w", lambda *args: update_rtl_options())
         
         # VIP Standalone Mode
-        vip_frame = ttk.LabelFrame(main_frame, text="", padding=10)
-        vip_frame.pack(fill=tk.X, pady=5)
+        vip_radio = tk.Radiobutton(mode_frame, text=" VIP Standalone Mode", 
+                                  variable=rtl_mode_var, value=False,
+                                  font=("Arial", 10))
+        vip_radio.pack(anchor=tk.W, pady=(10, 2))
         
-        vip_radio = ttk.Radiobutton(vip_frame, text="VIP Standalone Mode", 
-                                   variable=mode_var, value="vip_standalone")
-        vip_radio.pack(anchor=tk.W)
+        vip_desc = tk.Label(mode_frame, text="   Generate VIP environment only (no RTL)",
+                           font=("Arial", 9), fg="gray")
+        vip_desc.pack(anchor=tk.W, padx=(20, 0))
         
-        vip_desc = ttk.Label(vip_frame, 
-                            text="Generate a self-contained environment to run tests on the VIP independently.",
-                            wraplength=450, foreground="gray")
-        vip_desc.pack(anchor=tk.W, padx=(20, 0), pady=(5, 0))
-        
-        # Additional options frame
-        options_frame = ttk.LabelFrame(main_frame, text="Additional Options", padding=10)
-        options_frame.pack(fill=tk.X, pady=(20, 10))
-        
-        # Include example tests checkbox
-        include_tests_var = tk.BooleanVar(value=True)
-        tests_check = ttk.Checkbutton(options_frame, text="Include example test cases",
-                                     variable=include_tests_var)
-        tests_check.pack(anchor=tk.W)
-        
-        # Include documentation checkbox
-        include_docs_var = tk.BooleanVar(value=True)
-        docs_check = ttk.Checkbutton(options_frame, text="Generate documentation",
-                                    variable=include_docs_var)
-        docs_check.pack(anchor=tk.W)
+        # Initialize options state
+        update_rtl_options()
         
         # Simulator selection
-        sim_frame = ttk.Frame(options_frame)
-        sim_frame.pack(fill=tk.X, pady=(10, 0))
+        sim_frame = tk.LabelFrame(main_frame, text="Target Simulator", padx=10, pady=10)
+        sim_frame.pack(fill=tk.X, pady=(0, 15))
         
-        ttk.Label(sim_frame, text="Target Simulator:").pack(side=tk.LEFT)
-        sim_var = tk.StringVar(value="vcs")
-        sim_combo = ttk.Combobox(sim_frame, textvariable=sim_var, 
-                                values=["vcs", "questa", "xcelium", "vivado"],
-                                state="readonly", width=15)
-        sim_combo.pack(side=tk.LEFT, padx=(10, 0))
+        sim_var = tk.StringVar(value="questa")
+        simulators = [("Questa/ModelSim", "questa"), ("VCS", "vcs"), ("Xcelium", "xcelium"), ("Vivado", "vivado")]
         
-        # Button frame
-        button_frame = ttk.Frame(main_frame)
-        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(20, 0))
+        sim_row = tk.Frame(sim_frame)
+        sim_row.pack(fill=tk.X)
         
-        # Output directory selection frame (initially hidden)
-        output_frame = ttk.LabelFrame(main_frame, text="Output Directory", padding=10)
-        
-        # Path display and browse button frame
-        path_frame = ttk.Frame(output_frame)
-        path_frame.pack(fill=tk.X, pady=(5, 10))
-        
-        output_path_var = tk.StringVar(value="")
-        path_label = ttk.Label(path_frame, text="Selected Path:")
-        path_label.pack(side=tk.LEFT)
-        
-        path_display = ttk.Label(path_frame, textvariable=output_path_var, 
-                                relief="sunken", padding=5)
-        path_display.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(10, 10))
-        
-        def browse_directory():
-            # Requirement 2.1: Modal dialog for directory selection
-            selected_dir = filedialog.askdirectory(
-                title="Select Output Directory for VIP Environment",
-                parent=dialog,  # Make it modal to this dialog
-                initialdir=os.path.dirname(os.path.abspath("."))
-            )
+        for i, (name, value) in enumerate(simulators):
+            radio = tk.Radiobutton(sim_row, text=name, variable=sim_var, value=value, font=("Arial", 9))
+            radio.pack(side=tk.LEFT, padx=(0, 15))
             
-            if selected_dir:
-                output_path_var.set(selected_dir)
-                # Requirement 2.2: Show status after selection
-                status_var.set("Path selected. Ready for execution.")
-                generate_btn.config(state="normal")
+        # Progress frame
+        progress_frame = tk.LabelFrame(main_frame, text="Generation Progress", padx=10, pady=10)
+        progress_frame.pack(fill=tk.X, pady=(0, 15))
         
-        browse_btn = ttk.Button(path_frame, text="Browse...", command=browse_directory)
-        browse_btn.pack(side=tk.LEFT)
+        # Progress bar (simple text-based)
+        progress_var = tk.StringVar(value="Ready to generate VIP environment")
+        progress_label = tk.Label(progress_frame, textvariable=progress_var, 
+                                 font=("Arial", 10), anchor=tk.W, fg="blue")
+        progress_label.pack(fill=tk.X)
         
-        # Status label
-        status_var = tk.StringVar(value="Please select an output directory.")
-        status_label = ttk.Label(output_frame, textvariable=status_var, 
-                                foreground="blue")
-        status_label.pack(fill=tk.X, pady=(0, 10))
+        # Progress bar visual
+        progress_canvas = tk.Canvas(progress_frame, height=20, bg="white", relief=tk.SUNKEN, bd=1)
+        progress_canvas.pack(fill=tk.X, pady=(5, 0))
         
-        # Generate button (initially disabled)
-        def on_generate():
-            if not output_path_var.get():
-                messagebox.showerror("Error", "Please select an output directory first.", parent=dialog)
-                return
-            
-            # Store selections
-            self.vip_mode = mode_var.get()
-            self.include_tests = include_tests_var.get()
-            self.include_docs = include_docs_var.get()
-            self.target_simulator = sim_var.get()
-            
-            # Update status
-            status_var.set("Generating VIP environment...")
-            dialog.update()
-            
+        def update_progress_bar(current, total, step_name):
+            """Update the visual progress bar"""
+            progress_canvas.delete("all")
+            if total > 0:
+                progress_pct = current / total
+                bar_width = progress_canvas.winfo_width() * progress_pct
+                progress_canvas.create_rectangle(0, 0, bar_width, 20, fill="lightblue", outline="")
+                progress_canvas.create_text(progress_canvas.winfo_width()//2, 10, 
+                                          text=f"{current}/{total} ({progress_pct*100:.0f}%)",
+                                          font=("Arial", 8))
+                                          
+        # Status display
+        status_var = tk.StringVar(value="Click Generate to start VIP environment creation")
+        status_label = tk.Label(progress_frame, textvariable=status_var, 
+                               font=("Arial", 9), wraplength=550, justify=tk.LEFT)
+        status_label.pack(fill=tk.X, pady=(5, 0))
+        
+        # Buttons frame
+        button_frame = tk.Frame(main_frame)
+        button_frame.pack(fill=tk.X, pady=(20, 0))
+        
+        # Add thread tracking to the instance
+        self.current_generation_thread = None
+        
+        def start_generation():
+            """Start VIP generation in separate thread"""
             try:
-                # Generate VIP environment based on selected mode
-                output_dir = output_path_var.get()
-                if self.vip_mode == "rtl_integration":
-                    # Check if we need to generate RTL first
-                    if hasattr(self, 'rtl_source') and self.rtl_source == "generated":
-                        status_var.set("Generating RTL design...")
-                        dialog.update()
-                        
-                        # Generate RTL using the main GUI's Verilog generator
-                        rtl_output_dir = os.path.join(output_dir, "rtl_integration_env", "rtl_wrapper", "generated_rtl")
-                        os.makedirs(rtl_output_dir, exist_ok=True)
-                        
-                        # Use the AXI Verilog generator from main GUI
-                        from axi_verilog_generator import AXIVerilogGenerator
-                        generator = AXIVerilogGenerator(self.gui.current_config)
-                        generator.output_dir = rtl_output_dir  # Set output directory
-                        generated_dir = generator.generate()  # Generate RTL
-                        
-                        # Store the generated RTL path
-                        self.generated_rtl_path = rtl_output_dir
-                        
-                        status_var.set("RTL generated. Creating VIP environment...")
-                        dialog.update()
-                    
-                    env_path = self.generate_rtl_integration_environment(output_dir)
-                else:
-                    env_path = self.generate_vip_standalone_environment(output_dir)
+                # Get output directory
+                output_dir = filedialog.askdirectory(
+                    title="Select Output Directory for VIP Environment",
+                    initialdir=os.getcwd()
+                )
                 
-                # Requirement 2.2: Show success with full path
-                status_var.set(f"Success: VIP generated and saved to {env_path}")
-                status_label.config(foreground="green")
-                generate_btn.config(text="Close", command=dialog.destroy)
+                if not output_dir:
+                    return
+                    
+                # Update simulator selection
+                self.target_simulator = sim_var.get()
+                
+                # Disable generate button and show cancel button
+                generate_btn.config(state=tk.DISABLED)
+                cancel_btn.config(state=tk.NORMAL)
+                
+                # Start generation thread
+                self.current_generation_thread = VIPGenerationThread(
+                    gui_integration=self,
+                    output_dir=output_dir,
+                    rtl_mode=rtl_mode_var.get(),
+                    rtl_source=rtl_source_var.get() if rtl_mode_var.get() else None,
+                    rtl_folder=rtl_folder_var.get() if rtl_mode_var.get() and rtl_source_var.get() == "folder" else None,
+                    status_var=status_var,
+                    status_label=status_label,
+                    progress_callback=update_progress_bar
+                )
+                
+                self.current_generation_thread.start()
+                
+                # Start monitoring thread completion
+                self._monitor_generation_thread(dialog, generate_btn, cancel_btn, close_btn)
                 
             except Exception as e:
-                status_var.set(f"Error: {str(e)}")
+                status_var.set(f"[ERROR] Error starting generation: {str(e)}")
                 status_label.config(foreground="red")
-        
-        generate_btn = ttk.Button(output_frame, text="Generate VIP Environment", 
-                                 command=on_generate, state="disabled")
-        generate_btn.pack(fill=tk.X)
-        
-        # RTL source selection frame (initially hidden)
-        rtl_source_frame = ttk.LabelFrame(main_frame, text="RTL Source Selection", padding=20)
-        
-        rtl_source_var = tk.StringVar(value="external")
-        rtl_source_path_var = tk.StringVar(value="")
-        
-        # External RTL option
-        ext_rtl_frame = ttk.Frame(rtl_source_frame)
-        ext_rtl_frame.pack(fill=tk.X, pady=5)
-        
-        ext_rtl_radio = ttk.Radiobutton(ext_rtl_frame, text="Use External RTL IP", 
-                                       variable=rtl_source_var, value="external")
-        ext_rtl_radio.pack(anchor=tk.W)
-        
-        ext_rtl_desc = ttk.Label(ext_rtl_frame, 
-                                text="Select this if you have an existing RTL design to verify.",
-                                wraplength=550, foreground="gray")
-        ext_rtl_desc.pack(anchor=tk.W, padx=(20, 0), pady=(5, 0))
-        
-        # Tool-generated RTL option
-        gen_rtl_frame = ttk.Frame(rtl_source_frame)
-        gen_rtl_frame.pack(fill=tk.X, pady=5)
-        
-        gen_rtl_radio = ttk.Radiobutton(gen_rtl_frame, text="Generate RTL with this Tool", 
-                                       variable=rtl_source_var, value="generated")
-        gen_rtl_radio.pack(anchor=tk.W)
-        
-        gen_rtl_desc = ttk.Label(gen_rtl_frame, 
-                                text="The tool will generate Verilog RTL based on your bus configuration and automatically wrap it with VIP.",
-                                wraplength=550, foreground="gray")
-        gen_rtl_desc.pack(anchor=tk.W, padx=(20, 0), pady=(5, 0))
-        
-        # RTL path selection (for external RTL)
-        rtl_path_frame = ttk.LabelFrame(rtl_source_frame, text="External RTL Location (Optional)", padding=10)
-        rtl_path_frame.pack(fill=tk.X, pady=(20, 10))
-        
-        rtl_path_entry_frame = ttk.Frame(rtl_path_frame)
-        rtl_path_entry_frame.pack(fill=tk.X)
-        
-        ttk.Label(rtl_path_entry_frame, text="RTL Directory:").pack(side=tk.LEFT)
-        rtl_path_entry = ttk.Entry(rtl_path_entry_frame, textvariable=rtl_source_path_var)
-        rtl_path_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(10, 10))
-        
-        def browse_rtl():
-            rtl_dir = filedialog.askdirectory(
-                title="Select Directory Containing Your RTL Files",
-                parent=dialog
-            )
-            if rtl_dir:
-                rtl_source_path_var.set(rtl_dir)
-        
-        ttk.Button(rtl_path_entry_frame, text="Browse...", command=browse_rtl).pack(side=tk.LEFT)
-        
-        ttk.Label(rtl_path_frame, 
-                 text="Leave empty to manually add RTL files later.",
-                 foreground="gray").pack(anchor=tk.W, pady=(5, 0))
-        
-        # RTL source navigation buttons
-        rtl_source_btn_frame = ttk.Frame(rtl_source_frame)
-        rtl_source_btn_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(20, 0))
-        
-        def on_rtl_source_next():
-            # Store RTL source selection
-            self.rtl_source = rtl_source_var.get()
-            self.rtl_source_path = rtl_source_path_var.get()
-            
-            # Hide RTL source selection
-            rtl_source_frame.pack_forget()
-            rtl_source_btn_frame.pack_forget()
-            
-            # Show output directory selection
-            output_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 0))
-            title_label.config(text="Select Output Directory")
-        
-        def on_rtl_source_back():
-            # Go back to mode selection
-            rtl_source_frame.pack_forget()
-            rtl_source_btn_frame.pack_forget()
-            
-            # Show mode selection elements
-            rtl_frame.pack(fill=tk.X, pady=5)
-            vip_frame.pack(fill=tk.X, pady=5)
-            options_frame.pack(fill=tk.X, pady=(20, 10))
-            button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(20, 0))
-            
-            title_label.config(text="Select VIP Generation Mode")
-        
-        ttk.Button(rtl_source_btn_frame, text="Next", command=on_rtl_source_next).pack(side=tk.RIGHT)
-        ttk.Button(rtl_source_btn_frame, text="Back", command=on_rtl_source_back).pack(side=tk.RIGHT, padx=(0, 5))
-        
-        def on_next():
-            # Store selections
-            self.vip_mode = mode_var.get()
-            self.include_tests = include_tests_var.get()
-            self.include_docs = include_docs_var.get()
-            self.target_simulator = sim_var.get()
-            
-            # Hide mode selection elements
-            rtl_frame.pack_forget()
-            vip_frame.pack_forget()
-            options_frame.pack_forget()
-            button_frame.pack_forget()
-            
-            if self.vip_mode == "rtl_integration":
-                # Show RTL source selection for RTL integration mode
-                rtl_source_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 0))
-                title_label.config(text="Select RTL Source")
-            else:
-                # Go directly to output directory selection for standalone mode
-                output_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 0))
-                title_label.config(text="Select Output Directory")
-        
-        def on_cancel():
+                
+        def cancel_generation():
+            """Cancel ongoing generation"""
+            if self.current_generation_thread and self.current_generation_thread.is_alive():
+                self.current_generation_thread.cancel()
+                status_var.set("[STOP] Cancelling generation...")
+                cancel_btn.config(state=tk.DISABLED)
+                
+        def close_dialog():
+            """Close the dialog"""
+            # Cancel any ongoing generation
+            if self.current_generation_thread and self.current_generation_thread.is_alive():
+                self.current_generation_thread.cancel()
+                
             dialog.destroy()
+            
+        # Create buttons
+        generate_btn = tk.Button(button_frame, text="Generate VIP Environment", 
+                               command=start_generation, font=("Arial", 10, "bold"),
+                               bg="lightblue", padx=20, pady=5)
+        generate_btn.pack(side=tk.LEFT, padx=(0, 10))
         
-        # Buttons
-        next_btn = ttk.Button(button_frame, text="Next", command=on_next)
-        next_btn.pack(side=tk.RIGHT)
-        ttk.Button(button_frame, text="Cancel", command=on_cancel).pack(side=tk.RIGHT, padx=(5, 5))
+        cancel_btn = tk.Button(button_frame, text="[STOP] Cancel", 
+                             command=cancel_generation, font=("Arial", 10),
+                             state=tk.DISABLED, padx=20, pady=5)
+        cancel_btn.pack(side=tk.LEFT, padx=(0, 10))
+        
+        close_btn = tk.Button(button_frame, text="[ERROR] Close", 
+                            command=close_dialog, font=("Arial", 10),
+                            padx=20, pady=5)
+        close_btn.pack(side=tk.RIGHT)
+        
+        # Handle dialog closing
+        dialog.protocol("WM_DELETE_WINDOW", close_dialog)
+        
+    def _monitor_generation_thread(self, dialog, generate_btn, cancel_btn, close_btn):
+        """Monitor generation thread and update UI when complete"""
+        
+        def check_thread():
+            if self.current_generation_thread and self.current_generation_thread.is_alive():
+                # Thread still running, check again in 500ms
+                dialog.after(500, check_thread)
+            else:
+                # Thread completed
+                generate_btn.config(state=tk.NORMAL)
+                cancel_btn.config(state=tk.DISABLED)
+                
+                if self.current_generation_thread:
+                    if self.current_generation_thread.completed:
+                        # Success - change close button to "Done"
+                        close_btn.config(text="[SUCCESS] Done", bg="lightgreen")
+                        
+                        # Update environment status in main GUI
+                        if hasattr(self, 'env_status_label') and self.env_status_label:
+                            mode = "RTL Integration" if "rtl_integration" in self.current_generation_thread.result_path else "VIP Standalone"
+                            self.env_status_label.config(text=f"Environment: {mode} Mode")
+                            
+                        # Update config tree if method exists
+                        if hasattr(self, 'update_config_tree'):
+                            self.update_config_tree()
+                            
+                    elif self.current_generation_thread.error_message:
+                        # Error occurred
+                        close_btn.config(text="[ERROR] Close", bg="lightcoral")
+                        
+                    else:
+                        # Cancelled
+                        close_btn.config(text=" Close", bg="lightyellow")
+                        
+        # Start monitoring
+        check_thread()
         
         # Focus on dialog
         dialog.focus_set()
@@ -719,6 +1055,9 @@ simulation environment can read. Use the exported files with:
             # Generate the complete environment
             env_path = generator.generate_environment(output_dir)
             
+            
+            # Apply detailed logging patches
+            self._apply_detailed_logging_patches(env_path)
             # If we have generated RTL, copy it to the environment
             if hasattr(self, 'generated_rtl_path') and os.path.exists(self.generated_rtl_path):
                 import shutil
@@ -756,6 +1095,9 @@ simulation environment can read. Use the exported files with:
             # Generate the complete environment
             env_path = generator.generate_environment(output_dir)
             
+            
+            # Apply detailed logging patches
+            self._apply_detailed_logging_patches(env_path)
             # Update status
             self.env_status_label.config(text="Environment: VIP Standalone Mode")
             self.update_config_tree()
@@ -773,10 +1115,13 @@ simulation environment can read. Use the exported files with:
         
         if os.path.exists(rtl_dir):
             rtl_files = []
-            # Find all Verilog files
+            # Find all Verilog files (exclude testbench files)
             for root, dirs, files in os.walk(rtl_dir):
                 for file in files:
                     if file.endswith('.v') or file.endswith('.sv'):
+                        # Skip testbench files - UVM controls simulation
+                        if file.startswith('tb_') or 'testbench' in file.lower():
+                            continue
                         rel_path = os.path.relpath(os.path.join(root, file), env_path)
                         rtl_files.append(f"${{VIP_ROOT}}/{rel_path}")
             
@@ -786,6 +1131,7 @@ simulation environment can read. Use the exported files with:
                 f.write("# Generated by AMBA Bus Matrix Configuration Tool\n\n")
                 for rtl_file in sorted(rtl_files):
                     f.write(f"{rtl_file}\n")
+                f.write("# tb_axi4_interconnect.v excluded - UVM testbench controls simulation\n")
     
     def update_config_tree(self):
         """Update VIP configuration tree display"""
@@ -2957,6 +3303,52 @@ The tim_axi4_vip includes many pre-built tests:
 3. Add to filelist.f
 4. Run with test name
 '''
+
+    def _apply_detailed_logging_patches(self, env_path):
+        """Apply detailed UVM_INFO logging patches to generated VIP"""
+        try:
+            # Path to the patch script
+            patch_script = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), 
+                "scripts", 
+                "apply_detailed_logging.sh"
+            )
+            
+            if os.path.exists(patch_script):
+                import subprocess
+                result = subprocess.run(
+                    [patch_script, env_path], 
+                    capture_output=True, 
+                    text=True
+                )
+                
+                if result.returncode == 0:
+                    print(f"✅ Applied detailed logging patches to {env_path}")
+                    return True
+                else:
+                    print(f"⚠️  Failed to apply logging patches: {result.stderr}")
+                    return False
+            else:
+                print(f"⚠️  Logging patch script not found: {patch_script}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Error applying logging patches: {str(e)}")
+            return False
+
+    def generate_rtl_integration_env(self):
+        """Generate RTL Integration environment - compatibility method"""
+        try:
+            self.show_vip_setup_dialog("rtl_integration")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate RTL integration environment:\n{str(e)}")
+    
+    def generate_vip_standalone_env(self):
+        """Generate VIP Standalone environment - compatibility method"""
+        try:
+            self.show_vip_setup_dialog("vip_standalone")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate VIP standalone environment:\n{str(e)}")
 
 def integrate_vip_with_gui(bus_matrix_gui):
     """Integrate VIP components with existing Bus Matrix GUI"""

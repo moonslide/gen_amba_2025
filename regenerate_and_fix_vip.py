@@ -39,7 +39,7 @@ if os.path.exists(os.path.join(output_dir, "axi4_vip_env_rtl_integration")):
 config = BusConfig()
 config.bus_type = "AXI4"
 config.data_width = 128
-config.addr_width = 40
+config.addr_width = 64
 
 # Add 8 masters as configured
 masters = [
