@@ -33,7 +33,6 @@ package axi4_master_pkg;
         
         // Data channel
         rand bit [DATA_WIDTH-1:0] wdata[];
-        rand bit [DATA_WIDTH/8-1:0] wstrb[];
         
         // Read address channel  
         rand bit [ADDRESS_WIDTH-1:0] araddr;
@@ -76,30 +75,16 @@ package axi4_master_pkg;
         endfunction
     endclass
     
-    // Driver class - Properly drives AXI interface signals
+    // Driver class (stub)
     class axi4_master_driver extends uvm_driver #(axi4_master_tx);
         `uvm_component_utils(axi4_master_driver)
-        
-        // Virtual interface handle
-        virtual axi4_if vif;
         
         function new(string name = "axi4_master_driver", uvm_component parent = null);
             super.new(name, parent);
         endfunction
         
-        function void build_phase(uvm_phase phase);
-            super.build_phase(phase);
-            // Get virtual interface from config_db
-            if(!uvm_config_db#(virtual axi4_if)::get(this, "", "vif", vif))
-                `uvm_fatal("NOVIF", "Virtual interface not found in config_db")
-        endfunction
-        
         virtual task run_phase(uvm_phase phase);
             `uvm_info(get_type_name(), "Starting master driver run_phase", UVM_LOW)
-            
-            // Initialize interface signals
-            reset_signals();
-            
             forever begin
                 `uvm_info(get_type_name(), "Waiting for next transaction from sequencer", UVM_HIGH)
                 seq_item_port.get_next_item(req);
@@ -111,117 +96,24 @@ package axi4_master_pkg;
                     (req.tx_type == axi4_master_tx::WRITE) ? req.awsize : req.arsize,
                     (req.tx_type == axi4_master_tx::WRITE) ? req.awburst : req.arburst), UVM_MEDIUM)
                 
-                // Drive the actual transaction on the interface
-                if (req.tx_type == axi4_master_tx::WRITE) begin
-                    drive_write_transaction(req);
-                end else begin
-                    drive_read_transaction(req);
+                `uvm_info(get_type_name(), $sformatf("Transaction details - id=%0d, qos=%0d, region=%0d, cache=0x%0h, prot=%0d",
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awid : req.arid,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awqos : req.arqos,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awregion : req.arregion,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awcache : req.arcache,
+                    (req.tx_type == axi4_master_tx::WRITE) ? req.awprot : req.arprot), UVM_HIGH)
+                
+                if (req.tx_type == axi4_master_tx::WRITE && req.wdata.size() > 0) begin
+                    `uvm_info(get_type_name(), $sformatf("Write data: %0d beats, first_data=0x%0h", 
+                        req.wdata.size(), req.wdata[0]), UVM_HIGH)
                 end
+                
+                `uvm_info(get_type_name(), "Driving transaction to BFM interface", UVM_HIGH)
+                #100ns;
                 
                 `uvm_info(get_type_name(), "Transaction completed, signaling item_done", UVM_HIGH)
                 seq_item_port.item_done();
             end
-        endtask
-        
-        task reset_signals();
-            vif.awvalid <= 1'b0;
-            vif.wvalid  <= 1'b0;
-            vif.bready  <= 1'b0;
-            vif.arvalid <= 1'b0;
-            vif.rready  <= 1'b0;
-        endtask
-        
-        task drive_write_transaction(axi4_master_tx tx);
-            `uvm_info(get_type_name(), $sformatf("Driving WRITE: addr=0x%0h, len=%0d, id=%0d", 
-                      tx.awaddr, tx.awlen, tx.awid), UVM_MEDIUM)
-            
-            // Drive write address channel
-            @(posedge vif.aclk);
-            vif.awid    <= tx.awid;
-            vif.awaddr  <= tx.awaddr;
-            vif.awlen   <= tx.awlen;
-            vif.awsize  <= tx.awsize;
-            vif.awburst <= tx.awburst;
-            vif.awlock  <= tx.awlock;
-            vif.awcache <= tx.awcache;
-            vif.awprot  <= tx.awprot;
-            vif.awqos   <= tx.awqos;
-            vif.awregion <= tx.awregion;
-            vif.awvalid <= 1'b1;
-            
-            // Wait for awready with timeout
-            begin
-                int timeout = 0;
-                while (!vif.awready && timeout < 100) begin
-                    @(posedge vif.aclk);
-                    timeout++;
-                end
-                if (timeout >= 100) begin
-                    `uvm_error(get_type_name(), "AW channel timeout")
-                end
-            end
-            @(posedge vif.aclk);
-            vif.awvalid <= 1'b0;
-            
-            // Drive write data channel
-            for (int i = 0; i <= tx.awlen; i++) begin
-                @(posedge vif.aclk);
-                vif.wdata  <= (i < tx.wdata.size()) ? tx.wdata[i] : {DATA_WIDTH{1'b0}};
-                vif.wstrb  <= (i < tx.wstrb.size()) ? tx.wstrb[i] : {(DATA_WIDTH/8){1'b1}};
-                vif.wlast  <= (i == tx.awlen);
-                vif.wvalid <= 1'b1;
-                
-                // Wait for wready with timeout
-                begin
-                    int timeout = 0;
-                    while (!vif.wready && timeout < 100) begin
-                        @(posedge vif.aclk);
-                        timeout++;
-                    end
-                end
-            end
-            @(posedge vif.aclk);
-            vif.wvalid <= 1'b0;
-            vif.wlast  <= 1'b0;
-            
-            // Wait for write response
-            vif.bready <= 1'b1;
-            while (!vif.bvalid) @(posedge vif.aclk);
-            @(posedge vif.aclk);
-            vif.bready <= 1'b0;
-        endtask
-        
-        task drive_read_transaction(axi4_master_tx tx);
-            `uvm_info(get_type_name(), $sformatf("Driving READ: addr=0x%0h, len=%0d, id=%0d", 
-                      tx.araddr, tx.arlen, tx.arid), UVM_MEDIUM)
-            
-            // Drive read address channel
-            @(posedge vif.aclk);
-            vif.arid    <= tx.arid;
-            vif.araddr  <= tx.araddr;
-            vif.arlen   <= tx.arlen;
-            vif.arsize  <= tx.arsize;
-            vif.arburst <= tx.arburst;
-            vif.arlock  <= tx.arlock;
-            vif.arcache <= tx.arcache;
-            vif.arprot  <= tx.arprot;
-            vif.arqos   <= tx.arqos;
-            vif.arregion <= tx.arregion;
-            vif.arvalid <= 1'b1;
-            
-            // Wait for arready
-            while (!vif.arready) @(posedge vif.aclk);
-            @(posedge vif.aclk);
-            vif.arvalid <= 1'b0;
-            
-            // Wait for read data
-            vif.rready <= 1'b1;
-            for (int i = 0; i <= tx.arlen; i++) begin
-                while (!vif.rvalid) @(posedge vif.aclk);
-                @(posedge vif.aclk);
-                if (vif.rlast) break;
-            end
-            vif.rready <= 1'b0;
         endtask
     endclass
     
@@ -288,10 +180,8 @@ package axi4_master_pkg;
                 // Allocate data arrays
                 if (tx.tx_type == axi4_master_tx::WRITE) begin
                     tx.wdata = new[tx.awlen + 1];
-                    tx.wstrb = new[tx.awlen + 1];
                     foreach(tx.wdata[i]) begin
                         tx.wdata[i] = $urandom();
-                        tx.wstrb[i] = '1; // All bytes valid
                     end
                 end else begin
                     tx.rdata = new[tx.arlen + 1];
@@ -326,16 +216,9 @@ package axi4_master_pkg;
             super.new(name, parent);
         endfunction
         
-        // Virtual interface handle
-        virtual axi4_if vif;
-        
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
             `uvm_info(get_type_name(), "Building master agent components", UVM_LOW)
-            
-            // Get virtual interface
-            if(!uvm_config_db#(virtual axi4_if)::get(this, "", "vif", vif))
-                `uvm_info(get_type_name(), "Virtual interface not found - will be set in env", UVM_MEDIUM)
             
             // Get configuration
             if(!uvm_config_db#(axi4_master_agent_config)::get(this, "", "cfg", cfg))
@@ -360,12 +243,6 @@ package axi4_master_pkg;
             if(cfg.is_active == UVM_ACTIVE) begin
                 driver.seq_item_port.connect(sequencer.seq_item_export);
                 `uvm_info(get_type_name(), "Connected driver to sequencer", UVM_HIGH)
-                
-                // Pass interface to driver
-                if (vif != null) begin
-                    uvm_config_db#(virtual axi4_if)::set(this, "driver", "vif", vif);
-                    `uvm_info(get_type_name(), "Passed virtual interface to driver", UVM_HIGH)
-                end
             end
         endfunction
     endclass

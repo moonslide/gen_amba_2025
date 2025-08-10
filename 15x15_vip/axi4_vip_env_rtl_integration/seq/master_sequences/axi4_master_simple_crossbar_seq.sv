@@ -1,5 +1,6 @@
 //==============================================================================
-// AXI4 Master Simple Crossbar Sequence - Quick test with reduced transactions
+// AXI4 Master Simple Crossbar Sequence - Tests all AXI channels
+// ULTRATHINK: Proper write and read transactions with correct data patterns
 //==============================================================================
 
 class axi4_master_simple_crossbar_seq extends axi4_master_base_seq;
@@ -12,83 +13,69 @@ class axi4_master_simple_crossbar_seq extends axi4_master_base_seq;
     endfunction
     
     virtual task body();
-        axi4_master_tx write_xtn;
-        axi4_master_tx read_xtn;
+        axi4_master_tx write_xtn, read_xtn;
         
-        `uvm_info(get_type_name(), $sformatf("Master %0d: Starting simplified crossbar test", master_id), UVM_LOW)
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Starting crossbar test with W and R", master_id), UVM_LOW)
         
-        // Only test first 3 slaves to reduce simulation time
-        for (int slave = 0; slave < 3; slave++) begin
-            bit [63:0] slave_base_addr;
-            bit [255:0] write_data;
-            
-            // Calculate slave base address
-            // Slave 0: 0x00000000, Slave 1: 0x10000000, Slave 2: 0x20000000
-            slave_base_addr = slave * 64'h10000000;
-            
-            // Generate unique data pattern
-            write_data = {master_id[7:0], slave[7:0], 240'hABCD_1234};
-            
-            //--------------------------------------------------------------
-            // WRITE TRANSACTION
-            //--------------------------------------------------------------
-            `uvm_info(get_type_name(), $sformatf("Master %0d: Writing to Slave %0d at addr 0x%0h", 
-                      master_id, slave, slave_base_addr), UVM_LOW)
-            
-            write_xtn = axi4_master_tx::type_id::create("write_xtn");
-            
-            // Simple write with just 1 beat to make it faster
-            if (!write_xtn.randomize() with {
-                tx_type == WRITE;
-                awaddr == slave_base_addr + (master_id * 'h100);
-                awlen == 0;           // Single beat only
-                awsize == 3'b011;     // 8 bytes
-                awburst == 2'b00;     // FIXED burst
-                awid == master_id[3:0];
-                wdata.size() == 1;    // Single data beat
-                wdata[0] == write_data;
-            }) begin
-                `uvm_error(get_type_name(), "Write transaction randomization failed")
-            end
-            
-            `uvm_info(get_type_name(), $sformatf("Sending write transaction to sequencer"), UVM_HIGH)
-            start_item(write_xtn);
-            finish_item(write_xtn);
-            `uvm_info(get_type_name(), $sformatf("Write transaction completed"), UVM_HIGH)
-            
-            // Small delay
-            #50;
-            
-            //--------------------------------------------------------------
-            // READ TRANSACTION
-            //--------------------------------------------------------------
-            `uvm_info(get_type_name(), $sformatf("Master %0d: Reading from Slave %0d at addr 0x%0h", 
-                      master_id, slave, slave_base_addr), UVM_LOW)
-            
-            read_xtn = axi4_master_tx::type_id::create("read_xtn");
-            
-            // Simple read with just 1 beat
-            if (!read_xtn.randomize() with {
-                tx_type == READ;
-                araddr == slave_base_addr + (master_id * 'h100);
-                arlen == 0;           // Single beat only
-                arsize == 3'b011;     // 8 bytes
-                arburst == 2'b00;     // FIXED burst
-                arid == master_id[3:0];
-            }) begin
-                `uvm_error(get_type_name(), "Read transaction randomization failed")
-            end
-            
-            `uvm_info(get_type_name(), $sformatf("Sending read transaction to sequencer"), UVM_HIGH)
-            start_item(read_xtn);
-            finish_item(read_xtn);
-            `uvm_info(get_type_name(), $sformatf("Read transaction completed"), UVM_HIGH)
-            
-            // Delay before next slave
-            #50;
+        // WRITE TRANSACTION - with proper data pattern
+        write_xtn = axi4_master_tx::type_id::create("write_xtn");
+        
+        if (!write_xtn.randomize() with {
+            tx_type == axi4_master_tx::WRITE;
+            awaddr == 64'h00001000 + (master_id * 64'h100);  // Unique address per master
+            awlen == 3;           // 4 beats to test wlast properly
+            awsize == 3'b011;     // 8 bytes
+            awburst == 2'b01;     // INCR burst
+            awid == master_id[3:0];
+            wdata.size() == 4;    // 4 data beats
+            wstrb.size() == 4;
+            foreach(wdata[i]) {
+                wdata[i] == (256'hCAFE0000_00000000 + i + (master_id << 8));  // Unique pattern
+            }
+            foreach(wstrb[i]) {
+                wstrb[i] == '1;
+            }
+        }) begin
+            `uvm_error(get_type_name(), "Write transaction randomization failed")
         end
         
-        `uvm_info(get_type_name(), $sformatf("Master %0d: Completed all transactions", master_id), UVM_LOW)
+        `uvm_info(get_type_name(), $sformatf("Sending WRITE to addr=0x%0h with %0d beats", 
+                  write_xtn.awaddr, write_xtn.awlen+1), UVM_MEDIUM)
+        
+        start_item(write_xtn);
+        finish_item(write_xtn);
+        
+        // Small delay between transactions
+        #100;
+        
+        // READ TRANSACTION - read back what we wrote
+        read_xtn = axi4_master_tx::type_id::create("read_xtn");
+        
+        if (!read_xtn.randomize() with {
+            tx_type == axi4_master_tx::READ;
+            araddr == 64'h00001000 + (master_id * 64'h100);  // Same address as write
+            arlen == 3;           // 4 beats
+            arsize == 3'b011;     // 8 bytes
+            arburst == 2'b01;     // INCR burst
+            arid == (master_id[3:0] ^ 4'h8);  // Different ID for read (toggle bit 3)
+        }) begin
+            `uvm_error(get_type_name(), "Read transaction randomization failed")
+        end
+        
+        `uvm_info(get_type_name(), $sformatf("Sending READ from addr=0x%0h with %0d beats", 
+                  read_xtn.araddr, read_xtn.arlen+1), UVM_MEDIUM)
+        
+        start_item(read_xtn);
+        finish_item(read_xtn);
+        
+        // Check read data if available
+        if (read_xtn.rdata.size() > 0) begin
+            foreach(read_xtn.rdata[i]) begin
+                `uvm_info(get_type_name(), $sformatf("Read data[%0d]: 0x%0h", i, read_xtn.rdata[i]), UVM_MEDIUM)
+            end
+        end
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Completed W+R test", master_id), UVM_LOW)
     endtask
     
 endclass

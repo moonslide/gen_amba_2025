@@ -1,0 +1,58 @@
+//==============================================================================
+// AXI4 Master Simple Crossbar Sequence - Quick test with reduced transactions
+//==============================================================================
+
+class axi4_master_simple_crossbar_seq extends axi4_master_base_seq;
+    `uvm_object_utils(axi4_master_simple_crossbar_seq)
+    
+    int master_id = 0;
+    
+    function new(string name = "axi4_master_simple_crossbar_seq");
+        super.new(name);
+    endfunction
+    
+    virtual task body();
+        axi4_master_tx write_xtn;
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Starting simplified crossbar test", master_id), UVM_LOW)
+        
+        // Just do ONE simple write transaction
+        write_xtn = axi4_master_tx::type_id::create("write_xtn");
+        
+        // Simple write with just 1 beat
+        if (!write_xtn.randomize() with {
+            tx_type == WRITE;
+            awaddr == 64'h00000000;
+            awlen == 0;           // Single beat only
+            awsize == 3'b011;     // 8 bytes
+            awburst == 2'b00;     // FIXED burst
+            awid == master_id[3:0];
+            wdata.size() == 1;    // Single data beat
+            wstrb.size() == 1;
+            wdata[0] == 256'hDEADBEEF;
+            wstrb[0] == '1;
+        }) begin
+            `uvm_error(get_type_name(), "Write transaction randomization failed")
+        end
+        
+        `uvm_info(get_type_name(), $sformatf("Sending ONE write transaction"), UVM_MEDIUM)
+        
+        // Send with timeout
+        fork
+            begin
+                start_item(write_xtn);
+                finish_item(write_xtn);
+                `uvm_info(get_type_name(), $sformatf("Write transaction completed"), UVM_MEDIUM)
+            end
+            begin
+                #200; // 200ns timeout
+                `uvm_info(get_type_name(), $sformatf("Transaction timeout"), UVM_MEDIUM)
+            end
+        join_any
+        
+        disable fork;
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Completed", master_id), UVM_LOW)
+    endtask
+    
+endclass

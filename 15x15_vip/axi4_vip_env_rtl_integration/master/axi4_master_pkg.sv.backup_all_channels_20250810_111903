@@ -132,8 +132,7 @@ package axi4_master_pkg;
         endtask
         
         task drive_write_transaction(axi4_master_tx tx);
-            `uvm_info(get_type_name(), $sformatf("Driving WRITE: addr=0x%0h, len=%0d, id=%0d", 
-                      tx.awaddr, tx.awlen, tx.awid), UVM_MEDIUM)
+            `uvm_info(get_type_name(), "Driving WRITE transaction on interface", UVM_HIGH)
             
             // Drive write address channel
             @(posedge vif.aclk);
@@ -149,36 +148,20 @@ package axi4_master_pkg;
             vif.awregion <= tx.awregion;
             vif.awvalid <= 1'b1;
             
-            // Wait for awready with timeout
-            begin
-                int timeout = 0;
-                while (!vif.awready && timeout < 100) begin
-                    @(posedge vif.aclk);
-                    timeout++;
-                end
-                if (timeout >= 100) begin
-                    `uvm_error(get_type_name(), "AW channel timeout")
-                end
-            end
+            // Wait for awready
+            while (!vif.awready) @(posedge vif.aclk);
             @(posedge vif.aclk);
             vif.awvalid <= 1'b0;
             
             // Drive write data channel
             for (int i = 0; i <= tx.awlen; i++) begin
                 @(posedge vif.aclk);
-                vif.wdata  <= (i < tx.wdata.size()) ? tx.wdata[i] : {DATA_WIDTH{1'b0}};
-                vif.wstrb  <= (i < tx.wstrb.size()) ? tx.wstrb[i] : {(DATA_WIDTH/8){1'b1}};
+                vif.wdata  <= (i < tx.wdata.size()) ? tx.wdata[i] : '0;
+                vif.wstrb  <= (i < tx.wstrb.size()) ? tx.wstrb[i] : '1;
                 vif.wlast  <= (i == tx.awlen);
                 vif.wvalid <= 1'b1;
                 
-                // Wait for wready with timeout
-                begin
-                    int timeout = 0;
-                    while (!vif.wready && timeout < 100) begin
-                        @(posedge vif.aclk);
-                        timeout++;
-                    end
-                end
+                while (!vif.wready) @(posedge vif.aclk);
             end
             @(posedge vif.aclk);
             vif.wvalid <= 1'b0;
@@ -192,8 +175,7 @@ package axi4_master_pkg;
         endtask
         
         task drive_read_transaction(axi4_master_tx tx);
-            `uvm_info(get_type_name(), $sformatf("Driving READ: addr=0x%0h, len=%0d, id=%0d", 
-                      tx.araddr, tx.arlen, tx.arid), UVM_MEDIUM)
+            `uvm_info(get_type_name(), "Driving READ transaction on interface", UVM_HIGH)
             
             // Drive read address channel
             @(posedge vif.aclk);

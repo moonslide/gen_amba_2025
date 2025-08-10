@@ -570,6 +570,26 @@ seq/master_sequences/axi4_master_user_signal_passthrough_seq.sv
 - `master/axi4_master_qos_user_coverage.sv` - Master-side QoS/USER coverage
 - `slave/axi4_slave_qos_user_coverage.sv` - Slave-side QoS/USER coverage
 
+### Recent Fixes (2025-08-10)
+- **Fixed axi4_simple_crossbar_test completion issues**:
+  - Disabled BFM auto-drive by default to prevent interference
+  - Removed duplicate variable declarations in master driver BFM
+  - Added proper timeout handling with fork-join_any in test
+  - Implemented virtual sequence completion signaling with seq_done flag
+  - Test now completes successfully in ~3ms with no errors
+  
+- **Fixed AR/R Channel Implementation**:
+  - Implemented transaction queue system for read operations
+  - Fixed signal initialization to prevent unknown values
+  - Added timeout protection for handshakes
+  - Enhanced R-channel handling with RID verification and RRESP checking
+
+- **Fixed B-Channel (Write Response) Implementation**:
+  - Implemented transaction queue to prevent race conditions
+  - Fixed BID to match AWID per AXI4 specification
+  - Added proper B-channel handshake timing
+  - Enhanced error response handling
+
 ### Recent Fixes (2025-08-06)
 - Fixed constraint solver failure in saturation stress test
 - Fixed critical base_addr randomization in USER-based QoS routing

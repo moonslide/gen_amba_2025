@@ -324,87 +324,34 @@ module axi4_slave_driver_bfm #(
         end
     endtask
     
-    // Initialize signals and start handling - ALWAYS READY approach
-
-    // Ultra-simple slave BFM - always ready, immediate response
+    // Initialize signals and start handling
     initial begin
-        // Initialize signals
-        axi_intf.awready = '0;
-        axi_intf.wready  = '0;
-        axi_intf.bvalid  = '0;
-        axi_intf.arready = '0;
-        axi_intf.rvalid  = '0;
+        // Initialize all slave output signals
+        axi_intf.awready  = '0;
+        axi_intf.wready   = '0;
+        axi_intf.bid      = '0;
+        axi_intf.bresp    = '0;
+        axi_intf.bvalid   = '0;
+        axi_intf.arready  = '0;
+        axi_intf.rid      = '0;
+        axi_intf.rdata    = '0;
+        axi_intf.rresp    = '0;
+        axi_intf.rlast    = '0;
+        axi_intf.rvalid   = '0;
         
-        // Wait for reset
+        `uvm_info("AXI_SLAVE_DRIVER_BFM", "Slave BFM signals initialized", UVM_LOW)
+        
+        // Wait for reset deassertion
         wait(aresetn == 1'b1);
-        #10;
+        repeat(5) @(posedge aclk);
         
-        // Set always ready
-        axi_intf.awready <= 1'b1;
-        axi_intf.wready  <= 1'b1;
-        axi_intf.arready <= 1'b1;
-        
-        // Enhanced response loop for proper B and R channels
+        // Start handling transactions
         fork
-            // Write response handler
-            begin
-                logic [ID_WIDTH-1:0] write_id_queue[$];
-                forever begin
-                    @(posedge aclk);
-                    
-                    // Capture write address ID
-                    if (axi_intf.awvalid && axi_intf.awready) begin
-                        write_id_queue.push_back(axi_intf.awid);
-                    end
-                    
-                    // Send write response when wlast received
-                    if (axi_intf.wvalid && axi_intf.wready && axi_intf.wlast && !axi_intf.bvalid) begin
-                        if (write_id_queue.size() > 0) begin
-                            axi_intf.bid    <= write_id_queue.pop_front();
-                            axi_intf.bresp  <= 2'b00;  // OKAY
-                            axi_intf.bvalid <= 1'b1;
-                        end
-                    end
-                    
-                    // Clear response when accepted
-                    if (axi_intf.bvalid && axi_intf.bready) begin
-                        @(posedge aclk);
-                        axi_intf.bvalid <= 1'b0;
-                        axi_intf.bid <= '0;
-                    end
-                end
-            end
-            
-            // Read response handler
-            begin
-                forever begin
-                    @(posedge aclk);
-                    
-                    // Handle read request
-                    if (axi_intf.arvalid && axi_intf.arready && !axi_intf.rvalid) begin
-                        automatic logic [ID_WIDTH-1:0] read_id = axi_intf.arid;
-                        automatic logic [7:0] read_len = axi_intf.arlen;
-                        automatic logic [ADDR_WIDTH-1:0] read_addr = axi_intf.araddr;
-                        
-                        // Send read data beats
-                        for (int i = 0; i <= read_len; i++) begin
-                            @(posedge aclk);
-                            axi_intf.rid    <= read_id;
-                            axi_intf.rdata  <= {DATA_WIDTH{1'b0}} | (read_addr + i*8);  // Address-based pattern
-                            axi_intf.rresp  <= 2'b00;  // OKAY
-                            axi_intf.rlast  <= (i == read_len);
-                            axi_intf.rvalid <= 1'b1;
-                            
-                            // Wait for ready
-                            while (!axi_intf.rready) @(posedge aclk);
-                            @(posedge aclk);
-                            axi_intf.rvalid <= 1'b0;
-                            axi_intf.rlast  <= 1'b0;
-                        end
-                    end
-                end
-            end
+            handle_write_transactions();
+            handle_read_transactions();
         join_none
     end
+
+
 
 endmodule : axi4_slave_driver_bfm

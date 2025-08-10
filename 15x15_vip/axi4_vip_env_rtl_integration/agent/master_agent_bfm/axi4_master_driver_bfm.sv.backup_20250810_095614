@@ -344,8 +344,8 @@ module axi4_master_driver_bfm #(
             end
         end else begin
             // Default: enable BFM driving for signal visibility
-            `uvm_info("AXI_MASTER_DRIVER_BFM", "BFM driving disabled by default - use +BFM_AUTO_DRIVE=1 to enable", UVM_LOW)
-            bfm_enable = 0;  // Disabled by default to prevent interference
+            `uvm_info("AXI_MASTER_DRIVER_BFM", "Enabling BFM driving for signal visibility", UVM_LOW)
+            bfm_enable = 1;
         end
         
         if (bfm_enable) begin

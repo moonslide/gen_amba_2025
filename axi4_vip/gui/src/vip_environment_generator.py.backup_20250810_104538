@@ -13,11 +13,6 @@ from dataclasses import asdict
 class VIPEnvironmentGenerator:
     """Generate VIP environment following tim_axi4_vip structure"""
     
-        # ULTRATHINK Configuration
-    ULTRATHINK_MODE = True  # Enable simplified sequences for guaranteed completion
-    ULTRATHINK_TIMEOUT = 1000  # 1us timeout for tests
-    ULTRATHINK_VERSION = "2.0"  # Version with built-in optimizations
-    
     def __init__(self, gui_config, mode, simulator="vcs"):
         self.config = gui_config
         self.mode = mode  # "rtl_integration" or "vip_standalone"
@@ -140,8 +135,56 @@ Generated on: {self.timestamp}
         warning_text += "\n"
         return warning_text
     
+    def generate_environment(self, output_dir):
+        """Generate complete VIP environment"""
+        # PERFORMANCE OPTIMIZATION: Skip heavy operations for very large matrices
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        matrix_size = num_masters * num_slaves
+        
+        if matrix_size > 300:  # Larger than 15x15 (225)  # 10x10 or larger
+            print(f"[PERF] Large matrix detected ({num_masters}x{num_slaves})")
+            print(f"[PERF] Using optimized generation for better performance...")
+            return self._generate_environment_optimized(output_dir, matrix_size)
+        
+        # Original method for smaller matrices
+        # Validate configuration first
+        self._validate_configuration()
+        
+        # Print warnings to console
+        if self.warnings:
+            print("\n⚠️  Configuration Warnings:")
+            for warning in self.warnings:
+                print(f"   {warning}")
+            print()
+        
+        env_name = f"axi4_vip_env_{self.mode}"
+        env_path = os.path.join(output_dir, env_name)
+        
+        # Create tim_axi4_vip-like directory structure
+        self._create_directory_structure(env_path)
+        
+        # Generate all files
+        self._generate_package_files(env_path)
+        self._generate_interface_files(env_path)
+        self._generate_agent_files(env_path)
+        self._generate_sequence_files(env_path)
+        self._generate_environment_files(env_path)
+        self._generate_test_files(env_path)
+        self._generate_top_files(env_path)
+        self._generate_simulation_files(env_path)
+        self._generate_documentation(env_path)
+        
+        # Generate Verdi integration features
+        self._generate_verdi_integration(env_path)
+        
+        # For RTL integration, generate wrapper
+        if self.mode == "rtl_integration":
+            self._generate_rtl_wrapper(env_path)
+            
+        return env_path
     
-        def _create_directory_structure(self, base_path):
+    def _create_directory_structure(self, base_path):
         """Create tim_axi4_vip-like directory structure"""
         dirs = [
             # Core UVM component directories
@@ -1992,35 +2035,13 @@ class axi4_env extends uvm_env;
             uvm_config_db#(axi4_slave_agent_config)::set(this, $sformatf("slave_agent[%0d]*", i), "cfg", env_cfg.slave_cfg[i]);
         end
         
-        // Create agents and pass interfaces
+        // Create agents
         foreach(master_agent[i]) begin
             master_agent[i] = axi4_master_agent::type_id::create($sformatf("master_agent[%0d]", i), this);
-            
-            // Get and pass virtual interface to agent
-            begin
-                virtual axi4_if vif;
-                if(uvm_config_db#(virtual axi4_if)::get(this, "", $sformatf("master_if_%0d", i), vif)) begin
-                    uvm_config_db#(virtual axi4_if)::set(this, $sformatf("master_agent[%0d]*", i), "vif", vif);
-                    `uvm_info(get_type_name(), $sformatf("Passed master_if_%0d to master_agent[%0d]", i, i), UVM_HIGH)
-                end else begin
-                    `uvm_warning(get_type_name(), $sformatf("master_if_%0d not found in config_db", i))
-                end
-            end
         end
         
         foreach(slave_agent[i]) begin
             slave_agent[i] = axi4_slave_agent::type_id::create($sformatf("slave_agent[%0d]", i), this);
-            
-            // Get and pass virtual interface to agent
-            begin
-                virtual axi4_if vif;
-                if(uvm_config_db#(virtual axi4_if)::get(this, "", $sformatf("slave_if_%0d", i), vif)) begin
-                    uvm_config_db#(virtual axi4_if)::set(this, $sformatf("slave_agent[%0d]*", i), "vif", vif);
-                    `uvm_info(get_type_name(), $sformatf("Passed slave_if_%0d to slave_agent[%0d]", i, i), UVM_HIGH)
-                end else begin
-                    `uvm_warning(get_type_name(), $sformatf("slave_if_%0d not found in config_db", i))
-                end
-            end
         end
         
         // Create virtual sequencer
@@ -3027,17 +3048,14 @@ endclass : axi4_boundary_test
         # Simple crossbar test - reduced complexity version for debugging
         with open(os.path.join(base_path, "test/axi4_simple_crossbar_test.sv"), "w") as f:
             f.write(f"""//==============================================================================
-// AXI4 Simple Crossbar Test - ULTRATHINK Version
-// Generated by AMBA Bus Matrix Configuration Tool with ULTRATHINK optimizations
-// Guaranteed test completion with timeout mechanism
+// AXI4 Simple Crossbar Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Tests 3 masters to 3 slaves for reduced complexity
 // Date: {self.timestamp}
 //==============================================================================
 
 class axi4_simple_crossbar_test extends axi4_base_test;
     `uvm_component_utils(axi4_simple_crossbar_test)
-    
-    // ULTRATHINK Configuration
-    localparam int ULTRATHINK_TIMEOUT = 1000;  // 1us timeout for guaranteed completion
     
     // Constructor
     function new(string name = "axi4_simple_crossbar_test", uvm_component parent = null);
@@ -3047,45 +3065,45 @@ class axi4_simple_crossbar_test extends axi4_base_test;
     // Build phase
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        `uvm_info(get_type_name(), "ULTRATHINK: Test configured with 1us timeout", UVM_LOW)
     endfunction
     
-    // Run phase with ULTRATHINK timeout
+    // Run phase
     virtual task run_phase(uvm_phase phase);
         axi4_virtual_simple_crossbar_seq vseq;
         
         phase.raise_objection(this);
-        `uvm_info(get_type_name(), "Starting ULTRATHINK Simple Crossbar Test", UVM_LOW)
-        `uvm_info(get_type_name(), $sformatf("ULTRATHINK: Test will complete within %0dns", ULTRATHINK_TIMEOUT), UVM_LOW)
+        `uvm_info(get_type_name(), "Starting Simple Crossbar Test", UVM_LOW)
         
-        // ULTRATHINK: Use fork-join_any with guaranteed timeout
+        // Create and start the virtual sequence
+        vseq = axi4_virtual_simple_crossbar_seq::type_id::create("vseq");
+        vseq.start(env.v_seqr);
+        
+        // Wait for completion with timeout
         fork
             begin
-                // Create and start the virtual sequence
-                vseq = axi4_virtual_simple_crossbar_seq::type_id::create("vseq");
-                vseq.start(env.v_seqr);
-                `uvm_info(get_type_name(), "Virtual sequence completed successfully", UVM_LOW)
+                #50000;  // 50us timeout
+                `uvm_error(get_type_name(), "Test timeout - sequences did not complete in time")
             end
             begin
-                // ULTRATHINK: Guaranteed timeout - test WILL complete
-                #ULTRATHINK_TIMEOUT;
-                `uvm_info(get_type_name(), "ULTRATHINK: Timeout reached - ensuring test completion", UVM_LOW)
+                // Wait for actual sequence completion
+                wait(vseq.seq_done == 1);
+                `uvm_info(get_type_name(), "Virtual sequence completed successfully", UVM_LOW)
             end
         join_any
-        
-        // Kill any remaining threads
         disable fork;
         
-        // Small delay for cleanup
-        #100;
+        // Small delay to let transactions complete
+        #1000;
         
-        `uvm_info(get_type_name(), "ULTRATHINK Simple Crossbar Test Completed", UVM_LOW)
+        `uvm_info(get_type_name(), "Simple Crossbar Test Completed", UVM_LOW)
         phase.drop_objection(this);
     endtask
     
 endclass
 """)
-            with open(os.path.join(base_path, "test/axi4_full_crossbar_test.sv"), "w") as f:
+            
+        # Full crossbar test - comprehensive connectivity testing with timeout handling
+        with open(os.path.join(base_path, "test/axi4_full_crossbar_test.sv"), "w") as f:
             f.write(f"""//==============================================================================
 // AXI4 Full Crossbar Test
 // Generated by AMBA Bus Matrix Configuration Tool
@@ -3789,9 +3807,6 @@ endclass
 //==============================================================================
 
 class axi4_virtual_simple_crossbar_seq extends axi4_virtual_base_seq;
-    `uvm_object_utils(axi4_virtual_simple_crossbar_seq)
-    
-    bit seq_done = 0;  // Completion flag
     `uvm_object_utils(axi4_virtual_simple_crossbar_seq)
     
     bit seq_done = 0;  // Completion flag
@@ -6787,20 +6802,27 @@ endmodule : axi4_master_driver_bfm
 """
     
     def _get_slave_driver_bfm_content(self):
-        """Generate ULTRATHINK slave driver BFM with guaranteed response"""
-        
-        # ULTRATHINK: Generate always-ready slave BFM for guaranteed test completion
+        """Generate functional slave driver BFM content"""
+        # Calculate slave ID width based on masters configuration
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            max_master_id_width = max(id_widths)
+            num_masters = len(self.config.masters)
+            # Slave ID width = master ID width + bits needed for master routing
+            slave_id_width = max_master_id_width + max(1, (num_masters-1).bit_length()) if num_masters > 1 else max_master_id_width
+        else:
+            slave_id_width = 8  # Default
+            
         return f"""//==============================================================================
-// AXI4 Slave Driver BFM - ULTRATHINK Version with Guaranteed Response
+// AXI4 Slave Driver BFM - Responds to AXI interface transactions
 // Generated by AMBA Bus Matrix Configuration Tool  
-// Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-// ULTRATHINK: Always ready, immediate response for test completion guarantee
+// Date: {self.timestamp}
 //==============================================================================
 
 module axi4_slave_driver_bfm #(
-    parameter ADDR_WIDTH = {self.addr_width},
-    parameter DATA_WIDTH = {self.data_width},
-    parameter ID_WIDTH   = {self.slave_id_width}  // Slave ID width includes concatenated master ID
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter DATA_WIDTH = {self.config.data_width},
+    parameter ID_WIDTH   = {slave_id_width}  // Slave ID width includes concatenated master ID
 )(
     input aclk, 
     input aresetn,
@@ -6813,132 +6835,340 @@ module axi4_slave_driver_bfm #(
     // Simple memory array for storing data
     logic [DATA_WIDTH-1:0] memory [logic [ADDR_WIDTH-1:0]];
     
-    // ULTRATHINK Configuration
-    localparam bit ULTRATHINK_MODE = 1;  // Enable always-ready mode
-    localparam int RESPONSE_DELAY = 0;   // No delay for immediate response
+    // Control signals for BFM operation
+    bit bfm_enable = 1;  // Default enabled for slave to respond
     
-    // Response queues for proper AXI ordering
-    logic [ID_WIDTH-1:0] write_id_queue[$];
-    logic [ID_WIDTH-1:0] read_id_queue[$];
-    int write_len_queue[$];
-    int read_len_queue[$];
+    // Response delays (configurable)
+    int aw_response_delay = 2;
+    int w_response_delay = 1;
+    int b_response_delay = 3;
+    int ar_response_delay = 2;
+    int r_response_delay = 1;
     
-    // ULTRATHINK: Ultra-simple slave BFM - always ready, immediate response
-    initial begin
-        // Initialize all signals to known values
-        axi_intf.awready = '0;
-        axi_intf.wready  = '0;
-        axi_intf.bvalid  = '0;
-        axi_intf.bid     = '0;
-        axi_intf.bresp   = '0;
-        axi_intf.arready = '0;
-        axi_intf.rvalid  = '0;
-        axi_intf.rid     = '0;
-        axi_intf.rdata   = '0;
-        axi_intf.rresp   = '0;
-        axi_intf.rlast   = '0;
+    // Slave response handling tasks
+    task automatic handle_write_transactions();
+        `uvm_info("AXI_SLAVE_DRIVER_BFM", "Starting write transaction handling", UVM_LOW)
         
-        `uvm_info("AXI_SLAVE_BFM", "ULTRATHINK Slave BFM initializing - Always Ready Mode", UVM_LOW)
+        fork
+            handle_write_address_channel();
+            handle_write_data_channel();
+            handle_write_response_channel();
+        join_none
+    endtask
+    
+    task automatic handle_read_transactions();
+        `uvm_info("AXI_SLAVE_DRIVER_BFM", "Starting read transaction handling", UVM_LOW)
+        
+        fork
+            handle_read_address_channel();
+            handle_read_data_channel();
+        join_none
+    endtask
+    
+    // Write transaction coordination - using a proper transaction queue
+    typedef struct {
+        logic [ID_WIDTH-1:0] awid;
+        logic [ADDR_WIDTH-1:0] awaddr;
+        logic [7:0] awlen;
+        logic [2:0] awsize;
+        logic [1:0] awburst;
+        logic addr_received;
+        logic data_complete;
+        logic response_sent;
+    } write_transaction_t;
+    
+    write_transaction_t write_trans_queue[$];  // Transaction queue
+    
+    // Write Address Channel Handler
+    task automatic handle_write_address_channel();
+        write_transaction_t new_trans;
+        forever begin
+            axi_intf.awready <= 1'b0;
+            
+            // Random delay before accepting
+            repeat($urandom_range(0, aw_response_delay)) @(posedge aclk);
+            axi_intf.awready <= 1'b1;
+            
+            // Wait for valid address and ready handshake
+            while (!(axi_intf.awvalid && axi_intf.awready)) @(posedge aclk);
+            
+            // Capture address information during the handshake (signals are stable)
+            new_trans.awid = axi_intf.awid;
+            new_trans.awaddr = axi_intf.awaddr;
+            new_trans.awlen = axi_intf.awlen;
+            new_trans.awsize = axi_intf.awsize;
+            new_trans.awburst = axi_intf.awburst;
+            new_trans.addr_received = 1'b1;
+            new_trans.data_complete = 1'b0;
+            new_trans.response_sent = 1'b0;
+            
+            // Add to transaction queue
+            write_trans_queue.push_back(new_trans);
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write address accepted: id=%0d, addr=0x%010x, len=%0d", 
+                      new_trans.awid, new_trans.awaddr, new_trans.awlen), UVM_MEDIUM)
+            
+            @(posedge aclk);
+            axi_intf.awready <= 1'b0;
+        end
+    endtask
+    
+    // Write Data Channel Handler
+    task automatic handle_write_data_channel();
+        logic [ADDR_WIDTH-1:0] beat_addr;
+        int write_beat_count;
+        write_transaction_t current_trans;
+        forever begin
+            axi_intf.wready <= 1'b0;
+            
+            // Wait for a transaction with address but no data completion
+            while (write_trans_queue.size() == 0) @(posedge aclk);
+            
+            // Find the oldest transaction that needs data
+            current_trans = write_trans_queue[0];  // Get first transaction
+            write_beat_count = 0;
+            
+            // Handle write data beats
+            while (write_beat_count <= current_trans.awlen) begin
+                // Random delay before accepting data
+                repeat($urandom_range(0, w_response_delay)) @(posedge aclk);
+                axi_intf.wready <= 1'b1;
+                
+                // Wait for valid data
+                while (!axi_intf.wvalid) @(posedge aclk);
+                
+                // Store data in memory (simplified)
+                beat_addr = current_trans.awaddr + (write_beat_count * (DATA_WIDTH/8));
+                memory[beat_addr] = axi_intf.wdata;
+                
+                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data beat %0d accepted: addr=0x%010x, data=0x%016x, wstrb=0x%02x", 
+                          write_beat_count, beat_addr, axi_intf.wdata, axi_intf.wstrb), UVM_HIGH)
+                
+                write_beat_count++;
+                @(posedge aclk);
+                axi_intf.wready <= 1'b0;
+                
+                if (axi_intf.wlast) break;
+            end
+            
+            // Mark data as complete for this transaction
+            write_trans_queue[0].data_complete = 1'b1;
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data complete for id=%0d", current_trans.awid), UVM_MEDIUM)
+        end
+    endtask
+    
+    // Write Response Channel Handler - Enhanced B-channel AXI4 flow
+    task automatic handle_write_response_channel();
+        int b_handshake_timeout;
+        write_transaction_t current_trans;
+        forever begin
+            axi_intf.bvalid <= 1'b0;
+            axi_intf.bid <= '0;
+            axi_intf.bresp <= 2'b00;
+            
+            // Wait for a transaction that is complete but not yet responded
+            while (write_trans_queue.size() == 0 || 
+                   !write_trans_queue[0].addr_received || 
+                   !write_trans_queue[0].data_complete ||
+                   write_trans_queue[0].response_sent) @(posedge aclk);
+            
+            // Get the transaction to respond to
+            current_trans = write_trans_queue[0];
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Starting B-channel response for id=%0d", current_trans.awid), UVM_HIGH)
+            
+            // Random delay before response (realistic slave behavior)
+            repeat($urandom_range(1, b_response_delay)) @(posedge aclk);
+            
+            // Prepare write response with proper AXI4 compliance
+            axi_intf.bid <= current_trans.awid;     // BID must match AWID per AXI4 spec
+            axi_intf.bresp <= 2'b00;                // OKAY response (could be configurable)
+            axi_intf.bvalid <= 1'b1;
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("B-channel response asserted: bid=%0d, bresp=2'b%02b (OKAY)", 
+                      axi_intf.bid, axi_intf.bresp), UVM_MEDIUM)
+            
+            // Wait for BREADY handshake with timeout protection
+            b_handshake_timeout = 0;
+            while (!axi_intf.bready) begin
+                @(posedge aclk);
+                b_handshake_timeout++;
+                if (b_handshake_timeout > 1000) begin
+                    `uvm_error("AXI_SLAVE_DRIVER_BFM", $sformatf("B-channel handshake timeout for id=%0d", current_trans.awid))
+                    break;
+                end
+            end
+            
+            // Complete handshake - both BVALID and BREADY are high
+            if (axi_intf.bready) begin
+                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("B-channel handshake completed for id=%0d", current_trans.awid), UVM_HIGH)
+            end
+            
+            // Deassert BVALID on next clock edge per AXI4 protocol
+            @(posedge aclk);
+            axi_intf.bvalid <= 1'b0;
+            axi_intf.bid <= '0;
+            
+            // Remove completed transaction from queue
+            write_trans_queue.pop_front();
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write transaction completed for id=%0d", current_trans.awid), UVM_MEDIUM)
+        end
+    endtask
+    
+    // Read transaction coordination - using a proper transaction queue
+    typedef struct {
+        logic [ID_WIDTH-1:0] arid;
+        logic [ADDR_WIDTH-1:0] araddr;
+        logic [7:0] arlen;
+        logic [2:0] arsize;
+        logic [1:0] arburst;
+        logic addr_received;
+        logic data_sent;
+    } read_transaction_t;
+    
+    read_transaction_t read_trans_queue[$];  // Transaction queue
+    
+    // Read Address Channel Handler
+    task automatic handle_read_address_channel();
+        read_transaction_t new_trans;
+        forever begin
+            axi_intf.arready <= 1'b0;
+            
+            // Random delay before accepting
+            repeat($urandom_range(0, ar_response_delay)) @(posedge aclk);
+            axi_intf.arready <= 1'b1;
+            
+            // Wait for valid address and ready handshake
+            while (!(axi_intf.arvalid && axi_intf.arready)) @(posedge aclk);
+            
+            // Capture address information during the handshake (signals are stable)
+            new_trans.arid = axi_intf.arid;
+            new_trans.araddr = axi_intf.araddr;
+            new_trans.arlen = axi_intf.arlen;
+            new_trans.arsize = axi_intf.arsize;
+            new_trans.arburst = axi_intf.arburst;
+            new_trans.addr_received = 1'b1;
+            new_trans.data_sent = 1'b0;
+            
+            // Add to transaction queue
+            read_trans_queue.push_back(new_trans);
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read address accepted: id=%0d, addr=0x%010x, len=%0d", 
+                      new_trans.arid, new_trans.araddr, new_trans.arlen), UVM_MEDIUM)
+            
+            @(posedge aclk);
+            axi_intf.arready <= 1'b0;
+        end
+    endtask
+    
+    // Read Data Channel Handler
+    task automatic handle_read_data_channel();
+        int read_beat_count;
+        logic [ADDR_WIDTH-1:0] beat_addr;
+        logic [DATA_WIDTH-1:0] read_data;
+        read_transaction_t current_trans;
+        
+        forever begin
+            // Initialize signals to prevent unknown values
+            axi_intf.rvalid <= 1'b0;
+            axi_intf.rid <= '0;
+            axi_intf.rdata <= '0;
+            axi_intf.rresp <= 2'b00;
+            axi_intf.rlast <= 1'b0;
+            
+            // Wait for a transaction with address received but data not sent
+            while (read_trans_queue.size() == 0 || 
+                   !read_trans_queue[0].addr_received || 
+                   read_trans_queue[0].data_sent) @(posedge aclk);
+            
+            // Get the transaction to process
+            current_trans = read_trans_queue[0];
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Starting R-channel response for id=%0d", current_trans.arid), UVM_HIGH)
+            
+            // Send read data beats
+            for (read_beat_count = 0; read_beat_count <= current_trans.arlen; read_beat_count++) begin
+                // Calculate beat address
+                beat_addr = current_trans.araddr + (read_beat_count * (DATA_WIDTH/8));
+                
+                // Get data from memory (or generate if not written)
+                if (memory.exists(beat_addr)) begin
+                    read_data = memory[beat_addr];
+                end else begin
+                    // Initialize with pattern instead of random to avoid X propagation
+                    read_data = {DATA_WIDTH{1'b0}} | beat_addr;  // Use address as data pattern
+                end
+                
+                // Random delay before data
+                repeat($urandom_range(0, r_response_delay)) @(posedge aclk);
+                
+                // Send read data with proper initialization
+                axi_intf.rid <= current_trans.arid;
+                axi_intf.rdata <= read_data;
+                axi_intf.rresp <= 2'b00;  // OKAY response
+                axi_intf.rlast <= (read_beat_count == current_trans.arlen);
+                axi_intf.rvalid <= 1'b1;
+                
+                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read data beat %0d sent: id=%0d, addr=0x%010x, data=0x%016x, last=%0b", 
+                          read_beat_count, current_trans.arid, beat_addr, read_data, axi_intf.rlast), UVM_HIGH)
+                
+                // Wait for rready with timeout
+                begin
+                    int r_timeout = 0;
+                    while (!axi_intf.rready) begin
+                        @(posedge aclk);
+                        r_timeout++;
+                        if (r_timeout > 1000) begin
+                            `uvm_error("AXI_SLAVE_DRIVER_BFM", $sformatf("R-channel handshake timeout for id=%0d", current_trans.arid))
+                            break;
+                        end
+                    end
+                end
+                
+                @(posedge aclk);
+                axi_intf.rvalid <= 1'b0;
+                axi_intf.rlast <= 1'b0;
+            end
+            
+            // Remove completed transaction from queue
+            read_trans_queue.pop_front();
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read transaction completed for id=%0d", current_trans.arid), UVM_MEDIUM)
+        end
+    endtask
+    
+    // Initialize signals and start handling
+    initial begin
+        // Initialize all slave output signals
+        axi_intf.awready  = '0;
+        axi_intf.wready   = '0;
+        axi_intf.bid      = '0;
+        axi_intf.bresp    = '0;
+        axi_intf.bvalid   = '0;
+        axi_intf.arready  = '0;
+        axi_intf.rid      = '0;
+        axi_intf.rdata    = '0;
+        axi_intf.rresp    = '0;
+        axi_intf.rlast    = '0;
+        axi_intf.rvalid   = '0;
+        
+        `uvm_info("AXI_SLAVE_DRIVER_BFM", "Slave BFM signals initialized", UVM_LOW)
         
         // Wait for reset deassertion
         wait(aresetn == 1'b1);
         repeat(5) @(posedge aclk);
         
-        `uvm_info("AXI_SLAVE_BFM", "Setting slaves to ALWAYS READY mode for guaranteed response", UVM_LOW)
-        
-        // ULTRATHINK: Set always ready - critical for test completion
-        axi_intf.awready <= 1'b1;  // Always accept write addresses
-        axi_intf.wready  <= 1'b1;  // Always accept write data
-        axi_intf.arready <= 1'b1;  // Always accept read addresses
-        
-        // Start response handlers
+        // Start handling transactions
         fork
-            ultrathink_write_response_handler();
-            ultrathink_read_response_handler();
+            handle_write_transactions();
+            handle_read_transactions();
         join_none
     end
-    
-    // ULTRATHINK write response handler - guaranteed completion
-    task ultrathink_write_response_handler();
-        logic [ID_WIDTH-1:0] current_id;
-        int burst_len;
-        int beat_count;
-        
-        forever begin
-            @(posedge aclk);
-            
-            // Capture write address when valid
-            if (axi_intf.awvalid && axi_intf.awready) begin
-                write_id_queue.push_back(axi_intf.awid);
-                write_len_queue.push_back(axi_intf.awlen);
-                `uvm_info("AXI_SLAVE_BFM", $sformatf("ULTRATHINK: Write addr accepted - ID=%0h, ADDR=%0h, LEN=%0d", 
-                          axi_intf.awid, axi_intf.awaddr, axi_intf.awlen), UVM_HIGH)
-            end
-            
-            // Send write response when last data beat received
-            if (axi_intf.wvalid && axi_intf.wready && axi_intf.wlast && !axi_intf.bvalid) begin
-                if (write_id_queue.size() > 0) begin
-                    current_id = write_id_queue.pop_front();
-                    burst_len = write_len_queue.pop_front();
-                    
-                    // Immediate response
-                    axi_intf.bid    <= current_id;
-                    axi_intf.bresp  <= 2'b00;  // OKAY
-                    axi_intf.bvalid <= 1'b1;
-                    
-                    `uvm_info("AXI_SLAVE_BFM", $sformatf("ULTRATHINK: Write response sent - BID=%0h", current_id), UVM_MEDIUM)
-                end
-            end
-            
-            // Clear response when accepted
-            if (axi_intf.bvalid && axi_intf.bready) begin
-                @(posedge aclk);
-                axi_intf.bvalid <= 1'b0;
-            end
-        end
-    endtask
-    
-    // ULTRATHINK read response handler - guaranteed completion
-    task ultrathink_read_response_handler();
-        logic [ID_WIDTH-1:0] current_id;
-        int burst_len;
-        int beat_count;
-        
-        forever begin
-            @(posedge aclk);
-            
-            // Capture read address and respond immediately
-            if (axi_intf.arvalid && axi_intf.arready && !axi_intf.rvalid) begin
-                current_id = axi_intf.arid;
-                burst_len = axi_intf.arlen;
-                
-                `uvm_info("AXI_SLAVE_BFM", $sformatf("ULTRATHINK: Read addr accepted - ID=%0h, ADDR=%0h, LEN=%0d", 
-                          current_id, axi_intf.araddr, burst_len), UVM_HIGH)
-                
-                // Send read data beats immediately
-                for (beat_count = 0; beat_count <= burst_len; beat_count++) begin
-                    @(posedge aclk);
-                    axi_intf.rid    <= current_id;
-                    axi_intf.rdata  <= {{DATA_WIDTH}}{{1'b1}};  // Simple pattern data
-                    axi_intf.rresp  <= 2'b00;  // OKAY
-                    axi_intf.rlast  <= (beat_count == burst_len);
-                    axi_intf.rvalid <= 1'b1;
-                    
-                    // Wait for ready
-                    wait(axi_intf.rready);
-                    @(posedge aclk);
-                    axi_intf.rvalid <= 1'b0;
-                    
-                    `uvm_info("AXI_SLAVE_BFM", $sformatf("ULTRATHINK: Read data sent - RID=%0h, beat=%0d/%0d", 
-                              current_id, beat_count, burst_len), UVM_HIGH)
-                end
-            end
-        end
-    endtask
 
 endmodule : axi4_slave_driver_bfm
 """
-
+    
     def _generate_full_interconnect_connections(self):
         """Generate full interconnect connections for all masters and slaves"""
         num_masters = len(self.config.masters)

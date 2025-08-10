@@ -236,58 +236,22 @@ module axi4_master_driver_bfm #(
         
         `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Read address accepted for transaction %0d", trans_id), UVM_HIGH)
         
-        // Read Data Phase - Enhanced R-channel handling
+        // Read Data Phase
         axi_intf.rready <= 1'b1;
         beat_count = 0;
         
-        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Starting R-channel data phase for transaction %0d, expecting %0d beats", 
-                  trans_id, len + 1), UVM_HIGH)
-        
         while (beat_count <= len) begin
-            // Wait for rvalid with timeout
-            begin
-                int r_timeout = 0;
-                while (!axi_intf.rvalid) begin
-                    @(posedge aclk);
-                    r_timeout++;
-                    if (r_timeout > 1000) begin
-                        `uvm_error("AXI_MASTER_DRIVER_BFM", $sformatf("R-channel timeout for transaction %0d, beat %0d", trans_id, beat_count))
-                        break;
-                    end
-                end
-            end
+            while (!axi_intf.rvalid) @(posedge aclk);
             
-            if (axi_intf.rvalid) begin
-                // Check RID matches expected ARID
-                if (axi_intf.rid !== id) begin
-                    `uvm_warning("AXI_MASTER_DRIVER_BFM", $sformatf("RID mismatch for transaction %0d: expected=%0d, received=%0d", 
-                                trans_id, id, axi_intf.rid))
-                end
-                
-                // Check RRESP
-                case (axi_intf.rresp)
-                    2'b00: `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("R-channel OKAY response for transaction %0d, beat %0d", trans_id, beat_count), UVM_HIGH)
-                    2'b01: `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("R-channel EXOKAY response for transaction %0d, beat %0d", trans_id, beat_count), UVM_HIGH)
-                    2'b10: `uvm_warning("AXI_MASTER_DRIVER_BFM", $sformatf("R-channel SLVERR response for transaction %0d, beat %0d", trans_id, beat_count))
-                    2'b11: `uvm_error("AXI_MASTER_DRIVER_BFM", $sformatf("R-channel DECERR response for transaction %0d, beat %0d", trans_id, beat_count))
-                endcase
-                
-                `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Read data beat %0d received: trans=%0d, rid=%0d, data=0x%016x, rresp=%0b, rlast=%0b", 
-                          beat_count, trans_id, axi_intf.rid, axi_intf.rdata, axi_intf.rresp, axi_intf.rlast), UVM_MEDIUM)
-                
-                @(posedge aclk);
-                beat_count++;
-                
-                if (axi_intf.rlast) begin
-                    if (beat_count - 1 != len) begin
-                        `uvm_warning("AXI_MASTER_DRIVER_BFM", $sformatf("RLAST asserted early: expected at beat %0d, got at %0d", len, beat_count - 1))
-                    end
-                    break;
-                end
-            end
+            `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Read data beat %0d received for transaction %0d, data=0x%016x, rresp=%0d", 
+                      beat_count, trans_id, axi_intf.rdata, axi_intf.rresp), UVM_HIGH)
+            
+            @(posedge aclk);
+            beat_count++;
+            
+            if (axi_intf.rlast) break;
         end
         
-        @(posedge aclk);
         axi_intf.rready <= 1'b0;
         
         `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Read transaction %0d completed", trans_id), UVM_MEDIUM)
@@ -344,8 +308,8 @@ module axi4_master_driver_bfm #(
             end
         end else begin
             // Default: enable BFM driving for signal visibility
-            `uvm_info("AXI_MASTER_DRIVER_BFM", "BFM driving disabled by default - use +BFM_AUTO_DRIVE=1 to enable", UVM_LOW)
-            bfm_enable = 0;  // Disabled by default to prevent interference
+            `uvm_info("AXI_MASTER_DRIVER_BFM", "Enabling BFM driving for signal visibility", UVM_LOW)
+            bfm_enable = 1;
         end
         
         if (bfm_enable) begin

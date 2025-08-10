@@ -11,40 +11,34 @@ class axi4_simple_crossbar_test extends axi4_base_test;
     
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        // Set a very short timeout for this test
-        uvm_config_db#(uvm_object_wrapper)::set(this,
-            "env.master_agent[0].sequencer.run_phase",
-            "default_sequence",
-            axi4_master_simple_crossbar_seq::type_id::get());
     endfunction
     
     virtual task run_phase(uvm_phase phase);
         axi4_virtual_simple_crossbar_seq vseq;
-        int test_timeout = 1000; // 1us timeout for quick test
         
         phase.raise_objection(this);
         `uvm_info(get_type_name(), "Starting Simple Crossbar Test", UVM_LOW)
         
-        // Use fork-join_any with guaranteed completion
+        // Create and start the virtual sequence
+        vseq = axi4_virtual_simple_crossbar_seq::type_id::create("vseq");
+        vseq.start(env.v_seqr);
+        
+        // Wait for completion with timeout
         fork
             begin
-                // Create and start the virtual sequence
-                vseq = axi4_virtual_simple_crossbar_seq::type_id::create("vseq");
-                vseq.start(env.v_seqr);
-                `uvm_info(get_type_name(), "Virtual sequence completed", UVM_LOW)
+                #50000;  // 50us timeout
+                `uvm_error(get_type_name(), "Test timeout - sequences did not complete in time")
             end
             begin
-                // Guaranteed timeout - test WILL complete
-                #test_timeout;
-                `uvm_info(get_type_name(), "Test timeout reached - completing test", UVM_LOW)
+                // Wait for actual sequence completion
+                wait(vseq.seq_done == 1);
+                `uvm_info(get_type_name(), "Virtual sequence completed successfully", UVM_LOW)
             end
         join_any
-        
-        // Kill any remaining threads
         disable fork;
         
-        // Small delay for cleanup
-        #100;
+        // Small delay to let transactions complete
+        #1000;
         
         `uvm_info(get_type_name(), "Simple Crossbar Test Completed", UVM_LOW)
         phase.drop_objection(this);

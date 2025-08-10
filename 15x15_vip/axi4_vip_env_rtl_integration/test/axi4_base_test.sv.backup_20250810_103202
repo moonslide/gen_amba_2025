@@ -46,8 +46,6 @@ class axi4_base_test extends uvm_test;
         // Set configuration
         uvm_config_db#(axi4_env_config)::set(this, "env*", "env_cfg", env_cfg);
         
-        // Interface passing moved to hvl_top to avoid hierarchical references from package
-        
         // Create environment
         env = axi4_env::type_id::create("env", this);
     endfunction

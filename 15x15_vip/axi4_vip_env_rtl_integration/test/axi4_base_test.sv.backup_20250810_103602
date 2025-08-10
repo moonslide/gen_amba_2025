@@ -46,7 +46,13 @@ class axi4_base_test extends uvm_test;
         // Set configuration
         uvm_config_db#(axi4_env_config)::set(this, "env*", "env_cfg", env_cfg);
         
-        // Interface passing moved to hvl_top to avoid hierarchical references from package
+        // Pass interfaces to environment via config_db
+        for (int i = 0; i < NO_OF_MASTERS; i++) begin
+            uvm_config_db#(virtual axi4_if)::set(this, "env", $sformatf("master_if_%0d", i), hdl_top.master_if[i]);
+        end
+        for (int i = 0; i < NO_OF_SLAVES; i++) begin
+            uvm_config_db#(virtual axi4_if)::set(this, "env", $sformatf("slave_if_%0d", i), hdl_top.slave_if[i]);
+        end
         
         // Create environment
         env = axi4_env::type_id::create("env", this);
