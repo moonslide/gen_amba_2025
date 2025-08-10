@@ -108,6 +108,15 @@ package axi4_master_pkg;
                 `uvm_info(get_type_name(), "Waiting for next transaction from sequencer", UVM_HIGH)
                 seq_item_port.get_next_item(req);
                 
+                // Log transaction details
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Got WRITE transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.awaddr, req.awlen, req.awsize, req.awburst), UVM_MEDIUM)
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Got READ transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.araddr, req.arlen, req.arsize, req.arburst), UVM_MEDIUM)
+                end
+                
                 `uvm_info(get_type_name(), $sformatf("Got %s transaction - addr=0x%0h, len=%0d, size=%0d, burst=%0d", 
                     req.tx_type.name(), 
                     (req.tx_type == axi4_master_tx::WRITE) ? req.awaddr : req.araddr,
@@ -266,6 +275,15 @@ package axi4_slave_pkg;
         virtual task run_phase(uvm_phase phase);
             forever begin
                 seq_item_port.get_next_item(req);
+                
+                // Log transaction details
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Got WRITE transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.awaddr, req.awlen, req.awsize, req.awburst), UVM_MEDIUM)
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Got READ transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.araddr, req.arlen, req.arsize, req.arburst), UVM_MEDIUM)
+                end
                 #10ns;
                 seq_item_port.item_done();
             end

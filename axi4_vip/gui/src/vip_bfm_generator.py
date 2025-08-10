@@ -197,6 +197,15 @@ class axi4_master_driver_bfm extends uvm_driver #(axi4_master_tx);
         // Main driver loop
         forever begin
             seq_item_port.get_next_item(req);
+                
+                // Log transaction details
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Got WRITE transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.awaddr, req.awlen, req.awsize, req.awburst), UVM_MEDIUM)
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Got READ transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.araddr, req.arlen, req.arsize, req.arburst), UVM_MEDIUM)
+                end
             drive_transaction(req);
             seq_item_port.item_done();
         end
@@ -970,6 +979,9 @@ class axi4_slave_driver_bfm extends uvm_driver #(axi4_slave_tx);
         vif.rdata <= '0;
         vif.rresp <= '0;
         vif.rlast <= 0;
+                    if (rlast) begin
+                        `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read transaction complete for id=%0d", rid), UVM_MEDIUM)
+                    end
         vif.ruser <= '0;
     endtask
     
@@ -1194,6 +1206,9 @@ class axi4_slave_driver_bfm extends uvm_driver #(axi4_slave_tx);
             vif.rdata <= data;
             vif.rresp <= tr.rresp;
             vif.rlast <= (beat == tr.arlen);
+                    if (rlast) begin
+                        `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Read transaction complete for id=%0d", rid), UVM_MEDIUM)
+                    end
             vif.ruser <= tr.ruser;
             vif.rvalid <= 1;
             

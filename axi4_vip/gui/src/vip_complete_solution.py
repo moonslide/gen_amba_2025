@@ -241,7 +241,7 @@ NEXT STEPS:
         
         if self.results['compilation_success']:
             print(f"\n🎉 SUCCESS: VIP environment is now WARNING-FREE!")
-            print(f"🚀 Your generate flow can work properly ultrathink!")
+            print(f"🚀 Your generate flow can work properly!")
         else:
             print(f"\n⚠️  ATTENTION: Some issues may remain - check the compilation log")
         

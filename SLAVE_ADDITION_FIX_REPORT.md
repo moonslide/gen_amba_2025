@@ -11,7 +11,7 @@
 
 **Problem**: After configuring a slave in the GUI dialog, the slave was not appearing on the bus matrix canvas layout.
 
-**User Report**: "After I configure the slave it still not add the slave to the layout please fix it ultrathink"
+**User Report**: "After I configure the slave it still not add the slave to the layout please fix it"
 
 **Root Cause**: Class definition conflicts between internal GUI classes and imported bus configuration classes.
 

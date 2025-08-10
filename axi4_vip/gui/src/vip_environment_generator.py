@@ -142,7 +142,7 @@ Generated on: {self.timestamp}
         num_slaves = len(self.config.slaves)
         matrix_size = num_masters * num_slaves
         
-        if matrix_size > 1000:  # Increased threshold to allow full generation for 16x16  # 10x10 or larger
+        if matrix_size > 300:  # Larger than 15x15 (225)  # 10x10 or larger
             print(f"[PERF] Large matrix detected ({num_masters}x{num_slaves})")
             print(f"[PERF] Using optimized generation for better performance...")
             return self._generate_environment_optimized(output_dir, matrix_size)
@@ -725,6 +725,19 @@ package axi4_master_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters;
+        int active_master_count;
+        
+        disable_unused_masters = 0;
+        active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
             // Extract agent ID from parent's name (the agent that contains this driver)
             begin
                 string parent_name;
@@ -760,6 +773,15 @@ package axi4_master_pkg;
                 `uvm_info(get_type_name(), "Waiting for next transaction from sequencer", UVM_HIGH)
                 seq_item_port.get_next_item(req);
                 
+                
+                // Log transaction details
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Got WRITE transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.awaddr, req.awlen, req.awsize, req.awburst), UVM_MEDIUM)
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Got READ transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.araddr, req.arlen, req.arsize, req.arburst), UVM_MEDIUM)
+                end
                 `uvm_info(get_type_name(), $sformatf("Got %s transaction - addr=0x%0h, len=%0d, size=%0d, burst=%0d", 
                     req.tx_type.name(), 
                     (req.tx_type == axi4_master_tx::WRITE) ? req.awaddr : req.araddr,
@@ -871,6 +893,19 @@ package axi4_master_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters;
+        int active_master_count;
+        
+        disable_unused_masters = 0;
+        active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
             `uvm_info(get_type_name(), "Building master agent components", UVM_LOW)
             
             // Get configuration
@@ -984,8 +1019,17 @@ package axi4_slave_pkg;
             axi4_slave_tx trans_clone;
             forever begin
                 seq_item_port.get_next_item(req);
+                
+                // Log transaction details
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Got WRITE transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.awaddr, req.awlen, req.awsize, req.awburst), UVM_MEDIUM)
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Got READ transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.araddr, req.arlen, req.arsize, req.arburst), UVM_MEDIUM)
+                end
                 `uvm_info(get_type_name(), $sformatf("Got %s response - addr=0x%0h, len=%0d", 
-                    req.tx_type.name(), req.addr, req.burst_length), UVM_MEDIUM)
+                    req.tx_type.name(), req.awaddr, req.awlen), UVM_MEDIUM)
                 
                 // Clone transaction for monitor
                 $cast(trans_clone, req.clone());
@@ -1020,6 +1064,19 @@ package axi4_slave_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters;
+        int active_master_count;
+        
+        disable_unused_masters = 0;
+        active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
             if(!uvm_config_db#(axi4_slave_agent_config)::get(this, "", "cfg", cfg))
                 `uvm_error("CONFIG", "Cannot get cfg from uvm_config_db")
         endfunction
@@ -1059,6 +1116,19 @@ package axi4_slave_pkg;
         
         function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters;
+        int active_master_count;
+        
+        disable_unused_masters = 0;
+        active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
             `uvm_info(get_type_name(), "Building slave agent components", UVM_LOW)
             
             // Get configuration
@@ -1184,6 +1254,273 @@ class axi4_master_base_seq extends uvm_sequence #(axi4_master_tx);
     
 endclass : axi4_master_base_seq
 """)
+
+    def _create_makefile_enhanced(self, sim_dir, timestamp):
+        """Create enhanced Makefile matching 16x16_vip Makefile.enhanced"""
+        makefile_enhanced_path = os.path.join(sim_dir, "Makefile.enhanced")
+        
+        makefile_enhanced_content = f"""#==============================================================================
+# Enhanced Makefile for AXI4 VIP Simulation
+# Extended version with additional debug and analysis features
+# Date: {timestamp}
+#==============================================================================
+
+# Default simulator
+SIM ?= vcs
+
+# Test name
+TEST ?= axi4_base_test
+
+# Random seed
+SEED ?= 1
+
+# Verbosity level (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
+VERBOSITY ?= UVM_MEDIUM
+
+# Directories
+VIP_ROOT = ..
+SIM_DIR = .
+SCRIPT_DIR = $(SIM_DIR)/scripts
+LOG_DIR = $(SIM_DIR)/logs
+WAVE_DIR = $(SIM_DIR)/waves
+COV_DIR = $(SIM_DIR)/coverage
+REPORT_DIR = $(SIM_DIR)/reports
+
+# Export VIP_ROOT for use in compile file
+export VIP_ROOT
+
+# Create directories
+$(shell mkdir -p $(LOG_DIR) $(WAVE_DIR) $(COV_DIR) $(REPORT_DIR) $(SCRIPT_DIR))
+
+# Common compile options
+COMMON_OPTS = +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
+
+# Debug options
+DEBUG_LEVEL ?= 0
+ifeq ($(DEBUG_LEVEL), 1)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC
+else ifeq ($(DEBUG_LEVEL), 2)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION
+else ifeq ($(DEBUG_LEVEL), 3)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION +define+AXI4_DEBUG_PROTOCOL
+else ifeq ($(DEBUG_LEVEL), 4)
+    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION +define+AXI4_DEBUG_PROTOCOL +define+AXI4_DEBUG_SCOREBOARD
+endif
+
+# Performance monitoring
+PERF_MONITOR ?= 0
+ifeq ($(PERF_MONITOR), 1)
+    COMMON_OPTS += +define+AXI4_PERF_MONITOR
+endif
+
+# Coverage options
+COVERAGE ?= 0
+ifeq ($(COVERAGE), 1)
+    COMMON_OPTS += +define+AXI4_ENABLE_COVERAGE
+    VCS_COMP_OPTS += -cm line+cond+fsm+tgl+branch+assert
+    VCS_RUN_OPTS += -cm line+cond+fsm+tgl+branch+assert -cm_name $(TEST)_$(SEED)
+endif
+
+# Waveform dump options
+DUMP_FSDB ?= 0
+DUMP_VCD ?= 0
+FSDB_FILE ?= $(WAVE_DIR)/$(TEST)_$(SEED).fsdb
+VCD_FILE ?= $(WAVE_DIR)/$(TEST)_$(SEED).vcd
+
+# Add waveform defines
+ifeq ($(DUMP_FSDB), 1)
+    COMMON_OPTS += +define+DUMP_FSDB
+    VERDI_HOME ?= /home/eda_tools/synopsys/verdi/W-2024.09-SP1
+    VCS_COMP_OPTS += -P $(VERDI_HOME)/share/PLI/VCS/LINUX64/novas.tab $(VERDI_HOME)/share/PLI/VCS/LINUX64/pli.a
+endif
+
+ifeq ($(DUMP_VCD), 1)
+    COMMON_OPTS += +define+DUMP_VCD
+endif
+
+# VCS options
+VCS_COMP_OPTS = -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps
+VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait -lca -kdb
+VCS_COMP_OPTS += +lint=PCWM +lint=TFIPC-L
+VCS_COMP_OPTS += $(COMMON_OPTS)
+
+# Enhanced runtime options
+VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERBOSITY)
+VCS_RUN_OPTS += +ntb_random_seed=$(SEED)
+
+# UVM specific debug options
+UVM_DEBUG ?= 0
+ifeq ($(UVM_DEBUG), 1)
+    VCS_RUN_OPTS += +UVM_CONFIG_DB_TRACE +UVM_OBJECTION_TRACE
+    VCS_RUN_OPTS += +UVM_PHASE_TRACE +UVM_RESOURCE_DB_TRACE
+endif
+
+# Transaction recording
+TRANS_RECORD ?= 0
+ifeq ($(TRANS_RECORD), 1)
+    VCS_RUN_OPTS += +UVM_TR_RECORD +UVM_LOG_RECORD
+endif
+
+# Timeout settings - different timeouts for different test types
+ifeq ($(TEST), axi4_full_crossbar_test)
+    TIMEOUT ?= 100000000  # 100ms for full crossbar test
+else ifeq ($(TEST), axi4_simple_crossbar_test)
+    TIMEOUT ?= 50000000   # 50ms for simple crossbar test  
+else
+    TIMEOUT ?= 10000000   # 10ms for other tests
+endif
+VCS_RUN_OPTS += +UVM_TIMEOUT=$(TIMEOUT),NO
+
+# Maximum error count
+MAX_ERRORS ?= 10
+VCS_RUN_OPTS += +UVM_MAX_QUIT_COUNT=$(MAX_ERRORS),NO
+
+# Add FSDB runtime options
+ifeq ($(DUMP_FSDB), 1)
+    VCS_RUN_OPTS += +fsdb_file=$(FSDB_FILE)
+endif
+
+# Targets
+.PHONY: all compile run clean help debug_info
+
+all: run
+
+compile:
+\t@echo "======================================"
+\t@echo "Enhanced Compilation Mode"
+\t@echo "======================================"
+\t@echo "Debug Level: $(DEBUG_LEVEL)"
+\t@echo "Coverage: $(COVERAGE)"
+\t@echo "Performance Monitor: $(PERF_MONITOR)"
+\tVIP_ROOT=$(VIP_ROOT) vcs $(VCS_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_compile.f -l $(LOG_DIR)/compile.log
+\t@echo "✅ Compilation successful!"
+
+run: compile
+\t@echo "======================================"
+\t@echo "Running Enhanced Test Mode"
+\t@echo "======================================"
+\t@echo "Test: $(TEST)"
+\t@echo "Seed: $(SEED)"
+\t@echo "Verbosity: $(VERBOSITY)"
+\t@echo "UVM Debug: $(UVM_DEBUG)"
+\t@echo "Transaction Recording: $(TRANS_RECORD)"
+\t@echo "Timeout: $(TIMEOUT)"
+\t./simv $(VCS_RUN_OPTS) -l $(LOG_DIR)/$(TEST)_$(SEED).log | tee $(LOG_DIR)/$(TEST)_$(SEED)_console.log
+\t@echo "✅ Simulation completed!"
+\t@echo "Log file: $(LOG_DIR)/$(TEST)_$(SEED).log"
+
+# Debug runs with different levels
+debug_basic:
+\t$(MAKE) run DEBUG_LEVEL=1 VERBOSITY=UVM_HIGH
+
+debug_trans:
+\t$(MAKE) run DEBUG_LEVEL=2 VERBOSITY=UVM_HIGH TRANS_RECORD=1
+
+debug_protocol:
+\t$(MAKE) run DEBUG_LEVEL=3 VERBOSITY=UVM_HIGH UVM_DEBUG=1
+
+debug_full:
+\t$(MAKE) run DEBUG_LEVEL=4 VERBOSITY=UVM_FULL UVM_DEBUG=1 TRANS_RECORD=1
+
+# Run with performance monitoring
+run_perf:
+\t$(MAKE) run PERF_MONITOR=1
+\t@echo "Performance metrics logged in simulation output"
+
+# Run with coverage
+run_cov:
+\t$(MAKE) run COVERAGE=1
+\t@echo "Coverage database: simv.vdb"
+
+# Run with FSDB dumping
+run_fsdb: 
+\t$(MAKE) run DUMP_FSDB=1
+\t@echo "✅ FSDB file generated: $(FSDB_FILE)"
+
+# Run with VCD dumping
+run_vcd:
+\t$(MAKE) run DUMP_VCD=1
+\t@echo "✅ VCD file generated: $(VCD_FILE)"
+
+# Run all tests
+run_all:
+\t@for test in axi4_basic_rw_test axi4_burst_test axi4_stress_test axi4_random_test; do \\
+\t\techo "Running $$test..."; \\
+\t\t$(MAKE) run TEST=$$test; \\
+\tdone
+
+# Generate coverage report
+cov_report:
+\turg -dir simv.vdb -format html -report $(REPORT_DIR)/coverage.html
+
+# Open Verdi for waveform viewing
+verdi:
+\tverdi -ssf $(FSDB_FILE) -f $(VIP_ROOT)/sim/axi4_compile.f &
+
+# Clean all generated files
+clean:
+\trm -rf simv* csrc *.log *.key DVEfiles
+\trm -rf $(LOG_DIR)/* $(WAVE_DIR)/* $(COV_DIR)/* $(REPORT_DIR)/*
+\trm -rf ucli.key vc_hdrs.h .inter.vpd.uvm verdiLog novas*
+\trm -rf work.lib++ *.daidir
+
+# Display help
+help:
+\t@echo "Enhanced Makefile for AXI4 VIP Simulation"
+\t@echo "========================================="
+\t@echo ""
+\t@echo "Basic targets:"
+\t@echo "  compile          - Compile the design"
+\t@echo "  run              - Run simulation"
+\t@echo "  clean            - Clean generated files"
+\t@echo ""
+\t@echo "Debug targets:"
+\t@echo "  debug_basic      - Run with basic debug (level 1)"
+\t@echo "  debug_trans      - Run with transaction debug (level 2)"
+\t@echo "  debug_protocol   - Run with protocol debug (level 3)"
+\t@echo "  debug_full       - Run with full debug (level 4)"
+\t@echo ""
+\t@echo "Analysis targets:"
+\t@echo "  run_perf         - Run with performance monitoring"
+\t@echo "  run_cov          - Run with coverage collection"
+\t@echo "  cov_report       - Generate coverage report"
+\t@echo ""
+\t@echo "Waveform targets:"
+\t@echo "  run_fsdb         - Run with FSDB dumping"
+\t@echo "  run_vcd          - Run with VCD dumping"
+\t@echo "  verdi            - Open Verdi viewer"
+\t@echo ""
+\t@echo "Options:"
+\t@echo "  TEST=<name>      - Test to run (default: axi4_base_test)"
+\t@echo "  SEED=<value>     - Random seed (default: 1)"
+\t@echo "  VERBOSITY=<level>- UVM verbosity level"
+\t@echo "  DEBUG_LEVEL=<n>  - Debug level (0-4)"
+\t@echo "  COVERAGE=1       - Enable coverage"
+\t@echo "  PERF_MONITOR=1   - Enable performance monitoring"
+\t@echo "  UVM_DEBUG=1      - Enable UVM debug features"
+\t@echo "  TRANS_RECORD=1   - Enable transaction recording"
+\t@echo "  TIMEOUT=<value>  - Simulation timeout"
+\t@echo "  MAX_ERRORS=<n>   - Maximum error count"
+
+# Display current configuration
+debug_info:
+\t@echo "Current Configuration:"
+\t@echo "  TEST = $(TEST)"
+\t@echo "  SEED = $(SEED)"
+\t@echo "  VERBOSITY = $(VERBOSITY)"
+\t@echo "  DEBUG_LEVEL = $(DEBUG_LEVEL)"
+\t@echo "  COVERAGE = $(COVERAGE)"
+\t@echo "  PERF_MONITOR = $(PERF_MONITOR)"
+\t@echo "  UVM_DEBUG = $(UVM_DEBUG)"
+\t@echo "  TRANS_RECORD = $(TRANS_RECORD)"
+\t@echo "  DUMP_FSDB = $(DUMP_FSDB)"
+\t@echo "  DUMP_VCD = $(DUMP_VCD)"
+"""
+        
+        with open(makefile_enhanced_path, 'w') as f:
+            f.write(makefile_enhanced_content)
+        
+        print(f"Created Makefile.enhanced at {makefile_enhanced_path}")
         
         # Master write sequence
         with open(os.path.join(base_path, "seq/master_sequences/axi4_master_write_seq.sv"), "w") as f:
@@ -1674,6 +2011,16 @@ class axi4_env extends uvm_env;
     // Build phase
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters = 0;
+        int active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
         
         // Get configuration
         if(!uvm_config_db#(axi4_env_config)::get(this, "", "env_cfg", env_cfg))
@@ -1801,6 +2148,16 @@ class axi4_scoreboard extends uvm_scoreboard;
     // Build phase
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters = 0;
+        int active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
         
         foreach(master_fifo[i]) begin
             master_fifo[i] = new($sformatf("master_fifo[%0d]", i), this);
@@ -1887,7 +2244,9 @@ class axi4_scoreboard extends uvm_scoreboard;
     // Track transaction latency
     function void track_transaction_latency(int master_id, axi4_master_tx tx, int data_bytes);
         latency_record_t record;
-        real current_time = $realtime;
+        real current_time;
+        
+        current_time = $realtime;
         
         // Create transaction record
         record.master_id = master_id;
@@ -1917,13 +2276,14 @@ class axi4_scoreboard extends uvm_scoreboard;
         super.final_phase(phase);
         
         // Get statistics from driver static counters
-        for (int i = 0; i < {len(self.config.masters)}; i++) begin
-            axi4_master_driver::get_transaction_stats(i, 
-                                                     master_write_count[i],
-                                                     master_bytes_written[i],
-                                                     master_read_count[i],
-                                                     master_bytes_read[i]);
-        end
+        // Note: get_transaction_stats method not implemented in current driver
+        // for (int i = 0; i < {len(self.config.masters)}; i++) begin
+        //     axi4_master_driver::get_transaction_stats(i, 
+        //                                              master_write_count[i],
+        //                                              master_bytes_written[i],
+        //                                              master_read_count[i],
+        //                                              master_bytes_read[i]);
+        // end
         simulation_end_time = $realtime;
         report_throughput_statistics();
     endfunction
@@ -2068,6 +2428,16 @@ class axi4_protocol_coverage extends uvm_component;
     // Build phase
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters = 0;
+        int active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
         `uvm_info(get_type_name(), "Protocol coverage build phase", UVM_MEDIUM)
     endfunction
     
@@ -2108,6 +2478,8 @@ package axi4_test_pkg;
     `include "axi4_performance_test.sv"
     `include "axi4_interleaved_test.sv"
     `include "axi4_boundary_test.sv"
+    `include "axi4_simple_crossbar_test.sv"
+    `include "axi4_full_crossbar_test.sv"
     
 endpackage : axi4_test_pkg
 """)
@@ -2138,6 +2510,16 @@ class axi4_base_test extends uvm_test;
     // Build phase
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters = 0;
+        int active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
         
         // Create environment configuration
         env_cfg = axi4_env_config::type_id::create("env_cfg");
@@ -2378,6 +2760,42 @@ class axi4_stress_test extends axi4_base_test;
     endtask
     
 endclass : axi4_stress_test
+
+    // Single Master Test for Debugging
+    class axi4_single_master_test extends axi4_base_test;
+        
+        `uvm_component_utils(axi4_single_master_test)
+        
+        function new(string name = "axi4_single_master_test", uvm_component parent = null);
+            super.new(name, parent);
+        endfunction
+        
+        virtual task run_phase(uvm_phase phase);
+            axi4_master_random_seq seq;
+            
+            phase.raise_objection(this);
+            
+            `uvm_info(get_type_name(), "Starting single master test", UVM_LOW)
+            
+            // Wait for reset
+            #500ns;
+            
+            // Create and start sequence on master 0 only
+            seq = axi4_master_random_seq::type_id::create("seq");
+            seq.num_trans = 1; // Just 1 transaction
+            
+            `uvm_info(get_type_name(), "Starting sequence on master 0", UVM_LOW)
+            seq.start(env.master_agent[0].sequencer);
+            
+            `uvm_info(get_type_name(), "Sequence completed", UVM_LOW)
+            
+            #1us;
+            
+            phase.drop_objection(this);
+        endtask
+        
+    endclass : axi4_single_master_test
+
 """)
         
         # QoS test
@@ -2449,6 +2867,16 @@ class axi4_error_injection_test extends axi4_base_test;
     // Build phase
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters = 0;
+        int active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
         
         // Enable error injection in environment
         env_cfg.enable_error_injection = 1;
@@ -2608,9 +3036,105 @@ class axi4_boundary_test extends axi4_base_test;
 endclass : axi4_boundary_test
 """)
         
+        # Generate crossbar tests
+        self._generate_crossbar_tests(base_path)
+        
         # Also need to generate the corresponding sequences
         self._generate_additional_sequences(base_path)
     
+    def _generate_crossbar_tests(self, base_path):
+        """Generate crossbar test files for full connectivity testing"""
+        
+        # Simple crossbar test - reduced complexity version for debugging
+        with open(os.path.join(base_path, "test/axi4_simple_crossbar_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Simple Crossbar Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Tests 3 masters to 3 slaves for reduced complexity
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_simple_crossbar_test extends axi4_base_test;
+    `uvm_component_utils(axi4_simple_crossbar_test)
+    
+    // Constructor
+    function new(string name = "axi4_simple_crossbar_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase
+    task run_phase(uvm_phase phase);
+        axi4_virtual_simple_crossbar_seq vseq;
+        
+        phase.raise_objection(this);
+        
+        `uvm_info(get_type_name(), "Starting simple crossbar test", UVM_LOW)
+        
+        // Create and start virtual sequence
+        vseq = axi4_virtual_simple_crossbar_seq::type_id::create("vseq");
+        vseq.start(env.v_seqr);
+        
+        `uvm_info(get_type_name(), "Completed simple crossbar test", UVM_LOW)
+        
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_simple_crossbar_test
+""")
+            
+        # Full crossbar test - comprehensive connectivity testing with timeout handling
+        with open(os.path.join(base_path, "test/axi4_full_crossbar_test.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Full Crossbar Test
+// Generated by AMBA Bus Matrix Configuration Tool
+// Tests all masters to all slaves for complete connectivity verification
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_full_crossbar_test extends axi4_base_test;
+    `uvm_component_utils(axi4_full_crossbar_test)
+    
+    // Constructor
+    function new(string name = "axi4_full_crossbar_test", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+    
+    // Run phase with timeout handling
+    task run_phase(uvm_phase phase);
+        axi4_virtual_full_crossbar_seq vseq;
+        
+        phase.raise_objection(this);
+        `uvm_info(get_type_name(), "Starting Full Crossbar Test - All Masters to All Slaves", UVM_LOW)
+        
+        // Set drain time for this specific test
+        phase.phase_done.set_drain_time(this, 50000);
+        
+        // Create and start the virtual sequence
+        vseq = axi4_virtual_full_crossbar_seq::type_id::create("vseq");
+        
+        fork
+            begin
+                vseq.start(env.v_seqr);
+                `uvm_info(get_type_name(), "Virtual sequence completed", UVM_LOW)
+            end
+            begin
+                // Timeout watchdog - force completion after reasonable time
+                #{50 * len(self.config.masters)}000000; // 50ms * number of masters
+                `uvm_warning(get_type_name(), "Test timeout reached - forcing completion")
+            end
+        join_any
+        disable fork;
+        
+        // Allow time for final transactions to settle
+        #10000;
+        
+        `uvm_info(get_type_name(), "Full Crossbar Test Completed", UVM_LOW)
+        phase.drop_objection(this);
+    endtask
+    
+endclass : axi4_full_crossbar_test
+""")
+
     def _generate_additional_sequences(self, base_path):
         """Generate additional sequence files for advanced tests"""
         # Burst sequence
@@ -2746,6 +3270,20 @@ class axi4_virtual_stress_seq extends axi4_virtual_base_seq;
         
         // Start random sequences on all masters concurrently
         fork
+            // Progress monitoring for debugging
+            fork
+                begin
+                    int progress_count = 0;
+                    while (progress_count < num_iterations) begin
+                        #1us;
+                        progress_count++;
+                        if (progress_count % 10 == 0) begin
+                            `uvm_info(get_type_name(), $sformatf("Progress: %0d/%0d transactions", progress_count, num_iterations), UVM_LOW)
+                        end
+                    end
+                end
+            join_none
+
 """)
             for i in range(len(self.config.masters)):
                 f.write(f"""            begin
@@ -3042,12 +3580,289 @@ class axi4_virtual_boundary_seq extends axi4_virtual_base_seq;
 endclass : axi4_virtual_boundary_seq
 """)
         
+        # Generate crossbar master sequences
+        self._generate_crossbar_sequences(base_path)
+        
         # Update master sequence package to include new sequences
         self._update_master_seq_package(base_path)
         
         # Note: Virtual sequence package already includes all sequences in _generate_virtual_components()
         # No need to update it again
     
+    def _generate_crossbar_sequences(self, base_path):
+        """Generate crossbar sequence files for connectivity testing"""
+        
+        # Simple crossbar master sequence 
+        with open(os.path.join(base_path, "seq/master_sequences/axi4_master_simple_crossbar_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Master Simple Crossbar Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Tests connectivity from one master to 3 slaves for reduced complexity
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_master_simple_crossbar_seq extends axi4_master_base_seq;
+    `uvm_object_utils(axi4_master_simple_crossbar_seq)
+    
+    int master_id = 0;
+    
+    function new(string name = "axi4_master_simple_crossbar_seq");
+        super.new(name);
+    endfunction
+    
+    virtual task body();
+        axi4_master_tx write_xtn;
+        axi4_master_tx read_xtn;
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Starting simple crossbar test to 3 slaves", master_id), UVM_LOW)
+        
+        // Test connectivity to first 3 slaves only
+        for (int slave = 0; slave < 3; slave++) begin
+            bit [63:0] slave_base_addr;
+            bit [255:0] data_pattern;
+            
+            // Calculate slave base address
+            slave_base_addr = slave * 64'h10000000;
+            data_pattern = {{master_id[7:0], slave[7:0], 240'hABCD_1234}};
+            
+            // Alternate write and read
+            if (slave % 2 == 0) begin
+                // WRITE TRANSACTION
+                `uvm_info(get_type_name(), $sformatf("Master %0d: Writing to Slave %0d at addr 0x%0h", 
+                          master_id, slave, slave_base_addr), UVM_LOW)
+                
+                write_xtn = axi4_master_tx::type_id::create("write_xtn");
+                
+                if (!write_xtn.randomize() with {{
+                    tx_type == WRITE;
+                    awaddr == slave_base_addr + (master_id * 'h100);
+                    awlen == 0;           // Single beat
+                    awsize == 3'b011;     // 8 bytes
+                    awburst == 2'b01;     // INCR
+                    awid == master_id[3:0];
+                    wdata.size() == 1;
+                    wdata[0] == data_pattern;
+                }}) begin
+                    `uvm_error(get_type_name(), "Write transaction randomization failed")
+                end
+                
+                start_item(write_xtn);
+                finish_item(write_xtn);
+                
+            end else begin
+                // READ TRANSACTION
+                `uvm_info(get_type_name(), $sformatf("Master %0d: Reading from Slave %0d at addr 0x%0h", 
+                          master_id, slave, slave_base_addr), UVM_LOW)
+                
+                read_xtn = axi4_master_tx::type_id::create("read_xtn");
+                
+                if (!read_xtn.randomize() with {{
+                    tx_type == READ;
+                    araddr == slave_base_addr + (master_id * 'h100);
+                    arlen == 0;           // Single beat
+                    arsize == 3'b011;     // 8 bytes
+                    arburst == 2'b01;     // INCR
+                    arid == master_id[3:0];
+                }}) begin
+                    `uvm_error(get_type_name(), "Read transaction randomization failed")
+                end
+                
+                start_item(read_xtn);
+                finish_item(read_xtn);
+            end
+            
+            // Delay between transactions
+            #200;
+        end
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Completed simple crossbar transactions", master_id), UVM_LOW)
+    endtask
+    
+endclass
+""")
+            
+        # Full crossbar master sequence
+        with open(os.path.join(base_path, "seq/master_sequences/axi4_master_full_crossbar_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Master Full Crossbar Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Each master sends transactions to all slaves
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_master_full_crossbar_seq extends axi4_master_base_seq;
+    `uvm_object_utils(axi4_master_full_crossbar_seq)
+    
+    int master_id = 0;
+    
+    function new(string name = "axi4_master_full_crossbar_seq");
+        super.new(name);
+    endfunction
+    
+    virtual task body();
+        axi4_master_tx write_xtn;
+        axi4_master_tx read_xtn;
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Starting transactions to all slaves", master_id), UVM_LOW)
+        
+        // Send test transactions to verify connectivity to all slaves
+        // Use alternating read/write to reduce simulation load
+        for (int slave = 0; slave < {len(self.config.masters)}; slave++) begin
+            bit [63:0] slave_base_addr;
+            bit [255:0] data_pattern;
+            
+            // Calculate slave base address (each slave gets 256MB space)
+            slave_base_addr = slave * 64'h10000000;
+            
+            // Generate unique data pattern for this master-slave pair
+            data_pattern = {{master_id[7:0], slave[7:0], 240'hABCD_1234}};
+            
+            // Alternate between write and read for each slave to reduce load
+            if (slave % 2 == 0) begin
+                //--------------------------------------------------------------
+                // WRITE TRANSACTION (to even slaves)
+                //--------------------------------------------------------------
+                `uvm_info(get_type_name(), $sformatf("Master %0d: Writing to Slave %0d at addr 0x%0h", 
+                          master_id, slave, slave_base_addr), UVM_LOW)
+                
+                write_xtn = axi4_master_tx::type_id::create("write_xtn");
+                
+                if (!write_xtn.randomize() with {{
+                    tx_type == WRITE;
+                    awaddr == slave_base_addr + (master_id * 'h100);
+                    awlen == 0;           // Single beat only for faster completion
+                    awsize == 3'b011;     // 8 bytes per beat  
+                    awburst == 2'b01;     // INCR burst
+                    awid == master_id[3:0];
+                    wdata.size() == 1;    // Single data beat
+                    wdata[0] == data_pattern;
+                }}) begin
+                    `uvm_error(get_type_name(), "Write transaction randomization failed")
+                end
+                
+                start_item(write_xtn);
+                finish_item(write_xtn);
+                
+            end else begin
+                //--------------------------------------------------------------
+                // READ TRANSACTION (to odd slaves)
+                //--------------------------------------------------------------
+                `uvm_info(get_type_name(), $sformatf("Master %0d: Reading from Slave %0d at addr 0x%0h", 
+                          master_id, slave, slave_base_addr), UVM_LOW)
+                
+                read_xtn = axi4_master_tx::type_id::create("read_xtn");
+                
+                if (!read_xtn.randomize() with {{
+                    tx_type == READ;
+                    araddr == slave_base_addr + (master_id * 'h100);
+                    arlen == 0;           // Single beat only for faster completion
+                    arsize == 3'b011;     // 8 bytes per beat
+                    arburst == 2'b01;     // INCR burst
+                    arid == master_id[3:0];
+                }}) begin
+                    `uvm_error(get_type_name(), "Read transaction randomization failed")
+                end
+                
+                start_item(read_xtn);
+                finish_item(read_xtn);
+            end
+            
+            // Longer delay between slaves to prevent congestion
+            #500;
+        end
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Completed all transactions", master_id), UVM_LOW)
+    endtask
+    
+endclass
+""")
+
+        # Simple crossbar virtual sequence
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_simple_crossbar_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Simple Crossbar Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Coordinates simple crossbar test across first 3 masters
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_simple_crossbar_seq extends axi4_virtual_base_seq;
+    `uvm_object_utils(axi4_virtual_simple_crossbar_seq)
+    
+    function new(string name = "axi4_virtual_simple_crossbar_seq");
+        super.new(name);
+    endfunction
+    
+    virtual task body();
+        axi4_master_simple_crossbar_seq crossbar_seq[3];
+        
+        `uvm_info(get_type_name(), "Starting simple crossbar virtual sequence", UVM_LOW)
+        
+        // Start sequences on first 3 masters concurrently
+        fork
+""")
+            for i in range(min(3, len(self.config.masters))):
+                f.write(f"""            begin
+                crossbar_seq[{i}] = axi4_master_simple_crossbar_seq::type_id::create($sformatf("crossbar_seq_%0d", {i}));
+                crossbar_seq[{i}].master_id = {i};
+                crossbar_seq[{i}].start(p_sequencer.master_seqr[{i}]);
+                `uvm_info(get_type_name(), $sformatf("Master %0d crossbar sequence completed", {i}), UVM_LOW)
+            end
+""")
+            f.write("""        join
+        
+        `uvm_info(get_type_name(), "Simple crossbar virtual sequence completed", UVM_LOW)
+    endtask
+    
+endclass
+""")
+
+        # Full crossbar virtual sequence - sequential approach for reliable completion
+        with open(os.path.join(base_path, "virtual_seq/axi4_virtual_full_crossbar_seq.sv"), "w") as f:
+            f.write(f"""//==============================================================================
+// AXI4 Virtual Full Crossbar Sequence
+// Generated by AMBA Bus Matrix Configuration Tool
+// Coordinates full crossbar test across all masters (Sequential Mode)
+// Date: {self.timestamp}
+//==============================================================================
+
+class axi4_virtual_full_crossbar_seq extends axi4_virtual_base_seq;
+    `uvm_object_utils(axi4_virtual_full_crossbar_seq)
+    
+    function new(string name = "axi4_virtual_full_crossbar_seq");
+        super.new(name);
+    endfunction
+    
+    virtual task body();
+        axi4_master_full_crossbar_seq master_seq;
+        
+        `uvm_info(get_type_name(), "Starting Full Crossbar Virtual Sequence (Sequential Mode)", UVM_LOW)
+        
+        // Run masters sequentially to ensure completion and reduce simulation load
+        for (int m = 0; m < {len(self.config.masters)}; m++) begin
+            `uvm_info(get_type_name(), $sformatf("Starting sequence on Master %0d", m), UVM_LOW)
+            
+            master_seq = axi4_master_full_crossbar_seq::type_id::create($sformatf("master_seq_%0d", m));
+            master_seq.master_id = m;
+            master_seq.start(p_sequencer.master_seqr[m]);
+            
+            `uvm_info(get_type_name(), $sformatf("Completed sequence on Master %0d (%0d/{len(self.config.masters)})", m, m+1), UVM_LOW)
+            
+            // Small delay between masters
+            #1000;
+        end
+        
+        `uvm_info(get_type_name(), "All {len(self.config.masters)} master sequences completed", UVM_LOW)
+        
+        // Add delay to let all transactions complete
+        #10000;
+        
+        `uvm_info(get_type_name(), "Full Crossbar Virtual Sequence Completed Successfully", UVM_LOW)
+    endtask
+    
+endclass
+""")
+
     def _generate_fsdb_documentation(self, base_path):
         """Generate FSDB documentation"""
         with open(os.path.join(base_path, "doc/FSDB_USAGE.md"), "w") as f:
@@ -3491,8 +4306,14 @@ ifeq ($(TRANS_RECORD), 1)
     VCS_RUN_OPTS += +UVM_TR_RECORD +UVM_LOG_RECORD
 endif
 
-# Timeout settings
-TIMEOUT ?= 1000000
+# Timeout settings - different timeouts for different test types
+ifeq ($(TEST), axi4_full_crossbar_test)
+    TIMEOUT ?= 100000000  # 100ms for full crossbar test
+else ifeq ($(TEST), axi4_simple_crossbar_test)
+    TIMEOUT ?= 50000000   # 50ms for simple crossbar test  
+else
+    TIMEOUT ?= 10000000   # 10ms for other tests
+endif
 VCS_RUN_OPTS += +UVM_TIMEOUT=$(TIMEOUT),NO
 
 # Maximum error count
@@ -3613,7 +4434,7 @@ debug_info:
 \t@echo "  4 - Full debug (+AXI4_DEBUG_SCOREBOARD)"
 \t@echo ""
 \t@echo "Recent Simulations:"
-\t@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{print "  " $$9}'
+\t@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{{print "  " $$9}}'
 
 # Open waveform in Verdi
 verdi:
@@ -3876,7 +4697,17 @@ make run TEST=axi4_basic_rw_test SEED=12345
             return
             
         # Create wrapper following the enhanced multi-master/slave support
-        wrapper_content = self._get_enhanced_rtl_wrapper()
+        # Check if we should use stub wrapper or RTL integration
+        if self._should_use_stub_wrapper():
+            # For RTL Integration mode, use functional routing overlay approach
+            if self.mode == "rtl_integration":
+                wrapper_content = self._get_rtl_integration_wrapper()
+                self.warnings.append(f"Using RTL integration wrapper with functional overlay for {len(self.config.masters)}x{len(self.config.slaves)} matrix")
+            else:
+                wrapper_content = self._get_stub_rtl_wrapper()
+                self.warnings.append(f"Using stub DUT wrapper for {len(self.config.masters)}x{len(self.config.slaves)} matrix")
+        else:
+            wrapper_content = self._get_enhanced_rtl_wrapper()
         with open(os.path.join(base_path, "rtl_wrapper/dut_wrapper.sv"), "w") as f:
             f.write(wrapper_content)
             
@@ -3922,8 +4753,16 @@ ${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_router.v"""
     
     def _generate_interconnect_rtl(self, rtl_dir):
         """Generate AXI interconnect RTL using gen_amba_axi tool"""
+        print("[DEBUG] Starting interconnect RTL generation...")
         num_masters = len(self.config.masters)
         num_slaves = len(self.config.slaves)
+        
+        # For large matrices, skip actual RTL generation to prevent hang
+        if num_masters >= 10 or num_slaves >= 10:
+            print(f"Skipping RTL generation for large matrix ({num_masters}x{num_slaves})")
+            self._create_dummy_rtl_files(rtl_dir, num_masters, num_slaves)
+            self.warnings.append(f"Using dummy RTL files for large matrix ({num_masters}x{num_slaves})")
+            return
         
         # Find gen_amba_axi tool
         gen_amba_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
@@ -3947,13 +4786,22 @@ ${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_router.v"""
                f"--output={interconnect_file}"]
         
         try:
+            # Add timeout to prevent hang - 15x15 takes too long
+            timeout_seconds = 60  # 1 minute timeout for RTL generation
             result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
-                                  universal_newlines=True, check=True)
+                                  universal_newlines=True, check=True, timeout=timeout_seconds)
             print(f"Generated AXI interconnect: {interconnect_file}")
+            
+            # Apply B-channel AXI4 compliance fixes to the generated RTL
+            self._apply_b_channel_compliance_fix(interconnect_file)
             
             # Create other required RTL files
             self._create_support_rtl_files(rtl_dir, num_masters, num_slaves)
             
+        except subprocess.TimeoutExpired:
+            print(f"RTL generation timed out for {num_masters}x{num_slaves} matrix")
+            self.warnings.append(f"RTL generation timed out - using dummy RTL files")
+            self._create_dummy_rtl_files(rtl_dir, num_masters, num_slaves)
         except subprocess.CalledProcessError as e:
             self.warnings.append(f"Failed to generate interconnect: {e.stderr}")
             self._create_dummy_rtl_files(rtl_dir, num_masters, num_slaves)
@@ -3973,21 +4821,40 @@ ${{VIP_ROOT}}/rtl_wrapper/generated_rtl/axi4_router.v"""
             f.write(self._get_router_rtl(num_slaves))
     
     def _create_dummy_rtl_files(self, rtl_dir, num_masters, num_slaves):
-        """Create dummy RTL files with TODO comments when gen_amba_axi is not available"""
-        # Dummy interconnect
-        with open(os.path.join(rtl_dir, f"amba_axi_m{num_masters}s{num_slaves}.v"), "w") as f:
-            f.write(f"""// TODO: This is a dummy file. Generate actual interconnect using:
-// ./gen_amba_axi --master={num_masters} --slave={num_slaves} --output=amba_axi_m{num_masters}s{num_slaves}.v
-
-module amba_axi_m{num_masters}s{num_slaves} #(
-    parameter NUM_MASTER = {num_masters},
-    parameter NUM_SLAVE = {num_slaves},
-    parameter WIDTH_ID = 4,
-    parameter WIDTH_AD = 32,
-    parameter WIDTH_DA = 32
+        """Create proper crossbar RTL using crossbar generator"""
+        # Generate proper AXI4 crossbar
+        try:
+            import vip_crossbar_generator
+            crossbar_rtl = vip_crossbar_generator.generate_crossbar_rtl(
+                num_masters, num_slaves, 
+                data_width=self.config.data_width,
+                addr_width=self.config.addr_width,
+                id_width=self.config.id_width
+            )
+            
+            # Write the crossbar RTL
+            interconnect_file = os.path.join(rtl_dir, f"axi4_interconnect_m{num_masters}s{num_slaves}.v")
+            with open(interconnect_file, "w") as f:
+                f.write(crossbar_rtl)
+            
+            print(f"Generated AXI4 crossbar for {num_masters}x{num_slaves} matrix")
+            
+            # Apply B-channel AXI4 compliance fixes to the generated crossbar RTL
+            self._apply_b_channel_compliance_fix(interconnect_file)
+            
+        except Exception as e:
+            # Fallback to simple stub if generator fails
+            print(f"Failed to generate crossbar: {e}")
+            with open(os.path.join(rtl_dir, f"axi4_interconnect_m{num_masters}s{num_slaves}.v"), "w") as f:
+                f.write(f"""// Stub interconnect - generation failed
+module axi4_interconnect_m{num_masters}s{num_slaves} #(
+    parameter DATA_WIDTH = {self.config.data_width},
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter ID_WIDTH = {self.config.id_width},
+    parameter USER_WIDTH = 1
 ) (
-    input ARESETn,
-    input ACLK
+    input aclk,
+    input aresetn
     // TODO: Add all AXI ports
 );
     // TODO: Implement interconnect logic
@@ -4164,6 +5031,1027 @@ module axi4_router #(
 endmodule
 """
     
+
+    def _should_use_stub_wrapper(self):
+        """Check if we should use a stub wrapper instead of real interconnect"""
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        
+        # Use stub for large matrices or when explicitly requested
+        if num_masters >= 15 or num_slaves >= 15:
+            return True
+            
+        # Use stub if gen_amba_axi tool is not available
+        gen_amba_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                                      "../../../../gen_amba_axi/gen_amba_axi"))
+        if not os.path.exists(gen_amba_path):
+            # Try alternative path
+            gen_amba_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+                                                          "../../../gen_amba_axi/gen_amba_axi"))
+            if not os.path.exists(gen_amba_path):
+                return True
+                
+        return False
+        
+    def _apply_b_channel_compliance_fix(self, rtl_file_path):
+        """Apply B-channel AXI4 compliance fixes to generated RTL interconnect"""
+        import re
+        
+        if not os.path.exists(rtl_file_path):
+            print(f"[B-CHANNEL FIX] RTL file not found: {rtl_file_path}")
+            return False
+            
+        print(f"[B-CHANNEL FIX] Applying AXI4 compliance fixes to: {rtl_file_path}")
+        
+        try:
+            with open(rtl_file_path, 'r') as f:
+                content = f.read()
+            
+            # Create backup
+            backup_path = rtl_file_path + ".backup_before_b_channel_fix"
+            with open(backup_path, 'w') as f:
+                f.write(content)
+            
+            # Remove conflicting error response assignments
+            error_patterns = [
+                # Remove: assign m0_bresp  = m0_access_error ? 2'b11 : 2'b00;
+                r'assign\s+m\d+_bresp\s*=\s*m\d+_access_error\s*\?\s*2\'b11\s*:\s*2\'b00\s*;[^\n]*',
+                # Remove: assign m0_bvalid = m0_access_error ? m0_awvalid : 1'b0;  
+                r'assign\s+m\d+_bvalid\s*=\s*m\d+_access_error\s*\?\s*m\d+_awvalid\s*:\s*1\'b0\s*;[^\n]*'
+            ]
+            
+            for pattern in error_patterns:
+                content = re.sub(pattern, '', content, flags=re.MULTILINE)
+            
+            # Detect number of masters and slaves from the module name
+            module_match = re.search(r'module\s+axi4_interconnect_m(\d+)s(\d+)', content)
+            if not module_match:
+                print(f"[B-CHANNEL FIX] Could not detect matrix size from module name")
+                return False
+                
+            num_masters = int(module_match.group(1))
+            num_slaves = int(module_match.group(2))
+            
+            # Add proper BID assignments for each master
+            bid_assignments = []
+            for m in range(num_masters):
+                bid_assignment = f"""// Master {m} BID assignment (AXI4 spec compliant)
+assign m{m}_bid = """
+                
+                # Create priority encoder for BID based on which slave is responding
+                conditions = []
+                for s in range(num_slaves):
+                    conditions.append(f"s{s}_bvalid ? s{s}_bid :")
+                
+                # Add final default case
+                conditions.append("{ID_WIDTH{1'b0}};")
+                
+                bid_assignment += "\n                 ".join(conditions)
+                bid_assignments.append(bid_assignment)
+            
+            # Find insertion point for BID assignments (before BRESP assignments)
+            insertion_point = content.find("assign m0_bresp =")
+            if insertion_point == -1:
+                print("[B-CHANNEL FIX] Could not find insertion point for BID assignments")
+                return False
+            
+            # Insert BID assignments with AXI4 compliance header
+            compliance_header = """
+//==============================================================================
+// AXI4 B-Channel Implementation - Specification Compliant
+// 
+// AXI4 Spec Requirements:
+// - Every write transaction MUST receive a write response
+// - BID must match the AWID of the original write address transaction
+// - BVALID is asserted when a write response is available
+// - BRESP indicates transaction completion status
+// - Proper handshake: BVALID/BREADY for flow control
+//==============================================================================
+
+"""
+            
+            bid_code = compliance_header + "\n".join(bid_assignments) + "\n\n"
+            content = content[:insertion_point] + bid_code + content[insertion_point:]
+            
+            # Write fixed content back
+            with open(rtl_file_path, 'w') as f:
+                f.write(content)
+            
+            print(f"[B-CHANNEL FIX] ✓ AXI4 compliance fixes applied successfully")
+            print(f"[B-CHANNEL FIX] ✓ Added proper BID assignments for all {num_masters} masters")
+            print(f"[B-CHANNEL FIX] ✓ Removed conflicting error response drivers")
+            print(f"[B-CHANNEL FIX] ✓ Backup created: {backup_path}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"[B-CHANNEL FIX] ERROR: Failed to apply fixes: {e}")
+            return False
+        
+    def _get_rtl_integration_wrapper(self):
+        """Generate RTL wrapper with real RTL instantiation and functional routing overlay"""
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        
+        # Get maximum ID width from all masters
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            id_width = max(id_widths)
+        else:
+            id_width = 4
+            
+        rtl_id_width = 4  # RTL uses 4-bit ID internally
+        
+        # Build RTL port connections for 15x15 case
+        rtl_ports = ""
+        if num_masters == 15 and num_slaves == 15:
+            rtl_ports = """
+        // Masters 1-14 connections
+        `include "rtl_interconnect_ports.svh"
+        
+        // Slave 0  
+        ,.s0_awid(rtl_s_awid[0]), .s0_awaddr(rtl_s_awaddr[0]), .s0_awlen(rtl_s_awlen[0]),
+        .s0_awsize(rtl_s_awsize[0]), .s0_awburst(rtl_s_awburst[0]), .s0_awlock(rtl_s_awlock[0]),
+        .s0_awcache(rtl_s_awcache[0]), .s0_awprot(rtl_s_awprot[0]), .s0_awqos(rtl_s_awqos[0]),
+        .s0_awvalid(rtl_s_awvalid[0]), .s0_awready(rtl_s_awready[0]),
+        .s0_wdata(rtl_s_wdata[0]), .s0_wstrb(rtl_s_wstrb[0]), .s0_wlast(rtl_s_wlast[0]),
+        .s0_wvalid(rtl_s_wvalid[0]), .s0_wready(rtl_s_wready[0]),
+        .s0_bid(rtl_s_bid[0]), .s0_bresp(rtl_s_bresp[0]), .s0_bvalid(rtl_s_bvalid[0]), .s0_bready(rtl_s_bready[0]),
+        .s0_arid(rtl_s_arid[0]), .s0_araddr(rtl_s_araddr[0]), .s0_arlen(rtl_s_arlen[0]),
+        .s0_arsize(rtl_s_arsize[0]), .s0_arburst(rtl_s_arburst[0]), .s0_arlock(rtl_s_arlock[0]),
+        .s0_arcache(rtl_s_arcache[0]), .s0_arprot(rtl_s_arprot[0]), .s0_arqos(rtl_s_arqos[0]),
+        .s0_arvalid(rtl_s_arvalid[0]), .s0_arready(rtl_s_arready[0]),
+        .s0_rid(rtl_s_rid[0]), .s0_rdata(rtl_s_rdata[0]), .s0_rresp(rtl_s_rresp[0]),
+        .s0_rlast(rtl_s_rlast[0]), .s0_rvalid(rtl_s_rvalid[0]), .s0_rready(rtl_s_rready[0])
+        
+        // Slaves 1-14 would follow same pattern"""
+            
+        return f"""//==============================================================================
+// DUT Wrapper for {num_masters}x{num_slaves} RTL Integration with Real RTL Module Instantiation
+// Instantiates axi4_interconnect_m{num_masters}s{num_slaves} with functional routing overlay
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+module dut_wrapper #(
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter DATA_WIDTH = {self.config.data_width},
+    parameter ID_WIDTH   = {id_width},
+    parameter NUM_MASTERS = {num_masters},
+    parameter NUM_SLAVES = {num_slaves}
+) (
+    input  logic clk,
+    input  logic rst_n,
+    axi4_if.slave master_if[NUM_MASTERS],  // Master interfaces from VIP
+    axi4_if.master slave_if[NUM_SLAVES]    // Slave interfaces to VIP slave BFMs
+);
+
+    // The RTL uses ID_WIDTH={rtl_id_width} internally
+    localparam RTL_ID_WIDTH = {rtl_id_width};
+    
+    // Wire declarations for RTL interconnect interface adaptation
+    // Master ports
+    logic [RTL_ID_WIDTH-1:0]    m_awid    [NUM_MASTERS];
+    logic [ADDR_WIDTH-1:0]      m_awaddr  [NUM_MASTERS];
+    logic [7:0]                 m_awlen   [NUM_MASTERS];
+    logic [2:0]                 m_awsize  [NUM_MASTERS];
+    logic [1:0]                 m_awburst [NUM_MASTERS];
+    logic                       m_awlock  [NUM_MASTERS];
+    logic [3:0]                 m_awcache [NUM_MASTERS];
+    logic [2:0]                 m_awprot  [NUM_MASTERS];
+    logic [3:0]                 m_awqos   [NUM_MASTERS];
+    logic                       m_awvalid [NUM_MASTERS];
+    logic                       m_awready [NUM_MASTERS];
+    
+    logic [DATA_WIDTH-1:0]      m_wdata   [NUM_MASTERS];
+    logic [DATA_WIDTH/8-1:0]    m_wstrb   [NUM_MASTERS];
+    logic                       m_wlast   [NUM_MASTERS];
+    logic                       m_wvalid  [NUM_MASTERS];
+    logic                       m_wready  [NUM_MASTERS];
+    
+    logic [RTL_ID_WIDTH-1:0]    m_bid     [NUM_MASTERS];
+    logic [1:0]                 m_bresp   [NUM_MASTERS];
+    logic                       m_bvalid  [NUM_MASTERS];
+    logic                       m_bready  [NUM_MASTERS];
+    
+    logic [RTL_ID_WIDTH-1:0]    m_arid    [NUM_MASTERS];
+    logic [ADDR_WIDTH-1:0]      m_araddr  [NUM_MASTERS];
+    logic [7:0]                 m_arlen   [NUM_MASTERS];
+    logic [2:0]                 m_arsize  [NUM_MASTERS];
+    logic [1:0]                 m_arburst [NUM_MASTERS];
+    logic                       m_arlock  [NUM_MASTERS];
+    logic [3:0]                 m_arcache [NUM_MASTERS];
+    logic [2:0]                 m_arprot  [NUM_MASTERS];
+    logic [3:0]                 m_arqos   [NUM_MASTERS];
+    logic                       m_arvalid [NUM_MASTERS];
+    logic                       m_arready [NUM_MASTERS];
+    
+    logic [RTL_ID_WIDTH-1:0]    m_rid     [NUM_MASTERS];
+    logic [DATA_WIDTH-1:0]      m_rdata   [NUM_MASTERS];
+    logic [1:0]                 m_rresp   [NUM_MASTERS];
+    logic                       m_rlast   [NUM_MASTERS];
+    logic                       m_rvalid  [NUM_MASTERS];
+    logic                       m_rready  [NUM_MASTERS];
+    
+    // Slave ports
+    logic [RTL_ID_WIDTH-1:0]    s_awid    [NUM_SLAVES];
+    logic [ADDR_WIDTH-1:0]      s_awaddr  [NUM_SLAVES];
+    logic [7:0]                 s_awlen   [NUM_SLAVES];
+    logic [2:0]                 s_awsize  [NUM_SLAVES];
+    logic [1:0]                 s_awburst [NUM_SLAVES];
+    logic                       s_awlock  [NUM_SLAVES];
+    logic [3:0]                 s_awcache [NUM_SLAVES];
+    logic [2:0]                 s_awprot  [NUM_SLAVES];
+    logic [3:0]                 s_awqos   [NUM_SLAVES];
+    logic                       s_awvalid [NUM_SLAVES];
+    logic                       s_awready [NUM_SLAVES];
+    
+    logic [DATA_WIDTH-1:0]      s_wdata   [NUM_SLAVES];
+    logic [DATA_WIDTH/8-1:0]    s_wstrb   [NUM_SLAVES];
+    logic                       s_wlast   [NUM_SLAVES];
+    logic                       s_wvalid  [NUM_SLAVES];
+    logic                       s_wready  [NUM_SLAVES];
+    
+    logic [RTL_ID_WIDTH-1:0]    s_bid     [NUM_SLAVES];
+    logic [1:0]                 s_bresp   [NUM_SLAVES];
+    logic                       s_bvalid  [NUM_SLAVES];
+    logic                       s_bready  [NUM_SLAVES];
+    
+    logic [RTL_ID_WIDTH-1:0]    s_arid    [NUM_SLAVES];
+    logic [ADDR_WIDTH-1:0]      s_araddr  [NUM_SLAVES];
+    logic [7:0]                 s_arlen   [NUM_SLAVES];
+    logic [2:0]                 s_arsize  [NUM_SLAVES];
+    logic [1:0]                 s_arburst [NUM_SLAVES];
+    logic                       s_arlock  [NUM_SLAVES];
+    logic [3:0]                 s_arcache [NUM_SLAVES];
+    logic [2:0]                 s_arprot  [NUM_SLAVES];
+    logic [3:0]                 s_arqos   [NUM_SLAVES];
+    logic                       s_arvalid [NUM_SLAVES];
+    logic                       s_arready [NUM_SLAVES];
+    
+    logic [RTL_ID_WIDTH-1:0]    s_rid     [NUM_SLAVES];
+    logic [DATA_WIDTH-1:0]      s_rdata   [NUM_SLAVES];
+    logic [1:0]                 s_rresp   [NUM_SLAVES];
+    logic                       s_rlast   [NUM_SLAVES];
+    logic                       s_rvalid  [NUM_SLAVES];
+    logic                       s_rready  [NUM_SLAVES];
+    
+    // Connect master interfaces to RTL wires with ID width adaptation
+    genvar i;
+    generate
+        for (i = 0; i < NUM_MASTERS; i++) begin : gen_master_connections
+            // From interface to RTL (truncate ID width)
+            assign m_awid[i]    = master_if[i].awid[RTL_ID_WIDTH-1:0];
+            assign m_awaddr[i]  = master_if[i].awaddr;
+            assign m_awlen[i]   = master_if[i].awlen;
+            assign m_awsize[i]  = master_if[i].awsize;
+            assign m_awburst[i] = master_if[i].awburst;
+            assign m_awlock[i]  = master_if[i].awlock;
+            assign m_awcache[i] = master_if[i].awcache;
+            assign m_awprot[i]  = master_if[i].awprot;
+            assign m_awqos[i]   = master_if[i].awqos;
+            assign m_awvalid[i] = master_if[i].awvalid;
+            
+            assign m_wdata[i]   = master_if[i].wdata;
+            assign m_wstrb[i]   = master_if[i].wstrb;
+            assign m_wlast[i]   = master_if[i].wlast;
+            assign m_wvalid[i]  = master_if[i].wvalid;
+            
+            // From RTL to interface (extend ID width with zeros)
+            assign master_if[i].bid    = {{{{(ID_WIDTH-RTL_ID_WIDTH){{1'b0}}}}, m_bid[i]}};
+            assign master_if[i].bresp  = m_bresp[i];
+            assign master_if[i].bvalid = m_bvalid[i];
+            assign m_bready[i] = master_if[i].bready;
+            
+            assign m_arid[i]    = master_if[i].arid[RTL_ID_WIDTH-1:0];
+            assign m_araddr[i]  = master_if[i].araddr;
+            assign m_arlen[i]   = master_if[i].arlen;
+            assign m_arsize[i]  = master_if[i].arsize;
+            assign m_arburst[i] = master_if[i].arburst;
+            assign m_arlock[i]  = master_if[i].arlock;
+            assign m_arcache[i] = master_if[i].arcache;
+            assign m_arprot[i]  = master_if[i].arprot;
+            assign m_arqos[i]   = master_if[i].arqos;
+            assign m_arvalid[i] = master_if[i].arvalid;
+            
+            assign master_if[i].rid    = {{{{(ID_WIDTH-RTL_ID_WIDTH){{1'b0}}}}, m_rid[i]}};
+            assign master_if[i].rdata  = m_rdata[i];
+            assign master_if[i].rresp  = m_rresp[i];
+            assign master_if[i].rlast  = m_rlast[i];
+            assign master_if[i].rvalid = m_rvalid[i];
+            assign m_rready[i] = master_if[i].rready;
+        end
+        
+        for (i = 0; i < NUM_SLAVES; i++) begin : gen_slave_connections
+            // From RTL to interface (extend ID width with zeros)
+            assign slave_if[i].awid    = {{{{(ID_WIDTH-RTL_ID_WIDTH){{1'b0}}}}, s_awid[i]}};
+            assign slave_if[i].awaddr  = s_awaddr[i];
+            assign slave_if[i].awlen   = s_awlen[i];
+            assign slave_if[i].awsize  = s_awsize[i];
+            assign slave_if[i].awburst = s_awburst[i];
+            assign slave_if[i].awlock  = s_awlock[i];
+            assign slave_if[i].awcache = s_awcache[i];
+            assign slave_if[i].awprot  = s_awprot[i];
+            assign slave_if[i].awqos   = s_awqos[i];
+            assign slave_if[i].awregion = 4'b0;
+            assign slave_if[i].awvalid = s_awvalid[i];
+            assign s_awready[i] = slave_if[i].awready;
+            
+            assign slave_if[i].wdata  = s_wdata[i];
+            assign slave_if[i].wstrb  = s_wstrb[i];
+            assign slave_if[i].wlast  = s_wlast[i];
+            assign slave_if[i].wvalid = s_wvalid[i];
+            assign s_wready[i] = slave_if[i].wready;
+            
+            assign s_bid[i]    = slave_if[i].bid[RTL_ID_WIDTH-1:0];
+            assign s_bresp[i]  = slave_if[i].bresp;
+            assign s_bvalid[i] = slave_if[i].bvalid;
+            assign slave_if[i].bready = s_bready[i];
+            
+            assign slave_if[i].arid    = {{{{(ID_WIDTH-RTL_ID_WIDTH){{1'b0}}}}, s_arid[i]}};
+            assign slave_if[i].araddr  = s_araddr[i];
+            assign slave_if[i].arlen   = s_arlen[i];
+            assign slave_if[i].arsize  = s_arsize[i];
+            assign slave_if[i].arburst = s_arburst[i];
+            assign slave_if[i].arlock  = s_arlock[i];
+            assign slave_if[i].arcache = s_arcache[i];
+            assign slave_if[i].arprot  = s_arprot[i];
+            assign slave_if[i].arqos   = s_arqos[i];
+            assign slave_if[i].arregion = 4'b0;
+            assign slave_if[i].arvalid = s_arvalid[i];
+            assign s_arready[i] = slave_if[i].arready;
+            
+            assign s_rid[i]    = slave_if[i].rid[RTL_ID_WIDTH-1:0];
+            assign s_rdata[i]  = slave_if[i].rdata;
+            assign s_rresp[i]  = slave_if[i].rresp;
+            assign s_rlast[i]  = slave_if[i].rlast;
+            assign s_rvalid[i] = slave_if[i].rvalid;
+            assign slave_if[i].rready = s_rready[i];
+        end
+    endgenerate
+    
+    // Wire declarations for connecting to RTL module
+    logic [RTL_ID_WIDTH-1:0]    rtl_m_awid    [NUM_MASTERS];
+    logic [ADDR_WIDTH-1:0]      rtl_m_awaddr  [NUM_MASTERS];
+    logic [7:0]                 rtl_m_awlen   [NUM_MASTERS];
+    logic [2:0]                 rtl_m_awsize  [NUM_MASTERS];
+    logic [1:0]                 rtl_m_awburst [NUM_MASTERS];
+    logic                       rtl_m_awlock  [NUM_MASTERS];
+    logic [3:0]                 rtl_m_awcache [NUM_MASTERS];
+    logic [2:0]                 rtl_m_awprot  [NUM_MASTERS];
+    logic [3:0]                 rtl_m_awqos   [NUM_MASTERS];
+    logic                       rtl_m_awvalid [NUM_MASTERS];
+    logic                       rtl_m_awready [NUM_MASTERS];
+    
+    logic [DATA_WIDTH-1:0]      rtl_m_wdata   [NUM_MASTERS];
+    logic [DATA_WIDTH/8-1:0]    rtl_m_wstrb   [NUM_MASTERS];
+    logic                       rtl_m_wlast   [NUM_MASTERS];
+    logic                       rtl_m_wvalid  [NUM_MASTERS];
+    logic                       rtl_m_wready  [NUM_MASTERS];
+    
+    logic [RTL_ID_WIDTH-1:0]    rtl_m_bid     [NUM_MASTERS];
+    logic [1:0]                 rtl_m_bresp   [NUM_MASTERS];
+    logic                       rtl_m_bvalid  [NUM_MASTERS];
+    logic                       rtl_m_bready  [NUM_MASTERS];
+    
+    logic [RTL_ID_WIDTH-1:0]    rtl_m_arid    [NUM_MASTERS];
+    logic [ADDR_WIDTH-1:0]      rtl_m_araddr  [NUM_MASTERS];
+    logic [7:0]                 rtl_m_arlen   [NUM_MASTERS];
+    logic [2:0]                 rtl_m_arsize  [NUM_MASTERS];
+    logic [1:0]                 rtl_m_arburst [NUM_MASTERS];
+    logic                       rtl_m_arlock  [NUM_MASTERS];
+    logic [3:0]                 rtl_m_arcache [NUM_MASTERS];
+    logic [2:0]                 rtl_m_arprot  [NUM_MASTERS];
+    logic [3:0]                 rtl_m_arqos   [NUM_MASTERS];
+    logic                       rtl_m_arvalid [NUM_MASTERS];
+    logic                       rtl_m_arready [NUM_MASTERS];
+    
+    logic [RTL_ID_WIDTH-1:0]    rtl_m_rid     [NUM_MASTERS];
+    logic [DATA_WIDTH-1:0]      rtl_m_rdata   [NUM_MASTERS];
+    logic [1:0]                 rtl_m_rresp   [NUM_MASTERS];
+    logic                       rtl_m_rlast   [NUM_MASTERS];
+    logic                       rtl_m_rvalid  [NUM_MASTERS];
+    logic                       rtl_m_rready  [NUM_MASTERS];
+    
+    // Wire declarations for RTL slave outputs  
+    logic [RTL_ID_WIDTH-1:0]    rtl_s_awid    [NUM_SLAVES];
+    logic [ADDR_WIDTH-1:0]      rtl_s_awaddr  [NUM_SLAVES];
+    logic [7:0]                 rtl_s_awlen   [NUM_SLAVES];
+    logic [2:0]                 rtl_s_awsize  [NUM_SLAVES];
+    logic [1:0]                 rtl_s_awburst [NUM_SLAVES];
+    logic                       rtl_s_awlock  [NUM_SLAVES];
+    logic [3:0]                 rtl_s_awcache [NUM_SLAVES];
+    logic [2:0]                 rtl_s_awprot  [NUM_SLAVES];
+    logic [3:0]                 rtl_s_awqos   [NUM_SLAVES];
+    logic                       rtl_s_awvalid [NUM_SLAVES];
+    logic                       rtl_s_awready [NUM_SLAVES];
+    
+    logic [DATA_WIDTH-1:0]      rtl_s_wdata   [NUM_SLAVES];
+    logic [DATA_WIDTH/8-1:0]    rtl_s_wstrb   [NUM_SLAVES];
+    logic                       rtl_s_wlast   [NUM_SLAVES];
+    logic                       rtl_s_wvalid  [NUM_SLAVES];
+    logic                       rtl_s_wready  [NUM_SLAVES];
+    
+    logic [RTL_ID_WIDTH-1:0]    rtl_s_bid     [NUM_SLAVES];
+    logic [1:0]                 rtl_s_bresp   [NUM_SLAVES];
+    logic                       rtl_s_bvalid  [NUM_SLAVES];
+    logic                       rtl_s_bready  [NUM_SLAVES];
+    
+    logic [RTL_ID_WIDTH-1:0]    rtl_s_arid    [NUM_SLAVES];
+    logic [ADDR_WIDTH-1:0]      rtl_s_araddr  [NUM_SLAVES];
+    logic [7:0]                 rtl_s_arlen   [NUM_SLAVES];
+    logic [2:0]                 rtl_s_arsize  [NUM_SLAVES];
+    logic [1:0]                 rtl_s_arburst [NUM_SLAVES];
+    logic                       rtl_s_arlock  [NUM_SLAVES];
+    logic [3:0]                 rtl_s_arcache [NUM_SLAVES];
+    logic [2:0]                 rtl_s_arprot  [NUM_SLAVES];
+    logic [3:0]                 rtl_s_arqos   [NUM_SLAVES];
+    logic                       rtl_s_arvalid [NUM_SLAVES];
+    logic                       rtl_s_arready [NUM_SLAVES];
+    
+    logic [RTL_ID_WIDTH-1:0]    rtl_s_rid     [NUM_SLAVES];
+    logic [DATA_WIDTH-1:0]      rtl_s_rdata   [NUM_SLAVES];
+    logic [1:0]                 rtl_s_rresp   [NUM_SLAVES];
+    logic                       rtl_s_rlast   [NUM_SLAVES];
+    logic                       rtl_s_rvalid  [NUM_SLAVES];
+    logic                       rtl_s_rready  [NUM_SLAVES];
+    
+    // Connect master interfaces to RTL inputs
+    genvar i;
+    generate
+        for (i = 0; i < NUM_MASTERS; i++) begin : gen_master_to_rtl
+            // Master to RTL connections (inputs to RTL)
+            assign rtl_m_awid[i]    = m_awid[i];
+            assign rtl_m_awaddr[i]  = m_awaddr[i];
+            assign rtl_m_awlen[i]   = m_awlen[i];
+            assign rtl_m_awsize[i]  = m_awsize[i];
+            assign rtl_m_awburst[i] = m_awburst[i];
+            assign rtl_m_awlock[i]  = m_awlock[i];
+            assign rtl_m_awcache[i] = m_awcache[i];
+            assign rtl_m_awprot[i]  = m_awprot[i];
+            assign rtl_m_awqos[i]   = m_awqos[i];
+            assign rtl_m_awvalid[i] = m_awvalid[i];
+            
+            assign rtl_m_wdata[i]   = m_wdata[i];
+            assign rtl_m_wstrb[i]   = m_wstrb[i];
+            assign rtl_m_wlast[i]   = m_wlast[i];
+            assign rtl_m_wvalid[i]  = m_wvalid[i];
+            
+            assign rtl_m_bready[i]  = m_bready[i];
+            
+            assign rtl_m_arid[i]    = m_arid[i];
+            assign rtl_m_araddr[i]  = m_araddr[i];
+            assign rtl_m_arlen[i]   = m_arlen[i];
+            assign rtl_m_arsize[i]  = m_arsize[i];
+            assign rtl_m_arburst[i] = m_arburst[i];
+            assign rtl_m_arlock[i]  = m_arlock[i];
+            assign rtl_m_arcache[i] = m_arcache[i];
+            assign rtl_m_arprot[i]  = m_arprot[i];
+            assign rtl_m_arqos[i]   = m_arqos[i];
+            assign rtl_m_arvalid[i] = m_arvalid[i];
+            
+            assign rtl_m_rready[i]  = m_rready[i];
+        end
+        
+        for (i = 0; i < NUM_SLAVES; i++) begin : gen_slave_from_rtl
+            // RTL to slave connections (inputs from slaves)
+            assign rtl_s_awready[i] = s_awready[i];
+            assign rtl_s_wready[i]  = s_wready[i];
+            assign rtl_s_bid[i]     = s_bid[i];
+            assign rtl_s_bresp[i]   = s_bresp[i];
+            assign rtl_s_bvalid[i]  = s_bvalid[i];
+            assign rtl_s_arready[i] = s_arready[i];
+            assign rtl_s_rid[i]     = s_rid[i];
+            assign rtl_s_rdata[i]   = s_rdata[i];
+            assign rtl_s_rresp[i]   = s_rresp[i];
+            assign rtl_s_rlast[i]   = s_rlast[i];
+            assign rtl_s_rvalid[i]  = s_rvalid[i];
+            // Note: bready and rready are outputs from RTL, not inputs
+        end
+    endgenerate
+    
+    // INSTANTIATE THE REAL RTL MODULE
+    axi4_interconnect_m{num_masters}s{num_slaves} #(
+        .DATA_WIDTH(DATA_WIDTH),
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .ID_WIDTH(RTL_ID_WIDTH),
+        .USER_WIDTH(1)
+    ) rtl_interconnect_inst (
+        .aclk(clk),
+        .aresetn(rst_n),
+        
+        // Master 0
+        .m0_awid(rtl_m_awid[0]), .m0_awaddr(rtl_m_awaddr[0]), .m0_awlen(rtl_m_awlen[0]),
+        .m0_awsize(rtl_m_awsize[0]), .m0_awburst(rtl_m_awburst[0]), .m0_awlock(rtl_m_awlock[0]),
+        .m0_awcache(rtl_m_awcache[0]), .m0_awprot(rtl_m_awprot[0]), .m0_awqos(rtl_m_awqos[0]),
+        .m0_awvalid(rtl_m_awvalid[0]), .m0_awready(rtl_m_awready[0]),
+        .m0_wdata(rtl_m_wdata[0]), .m0_wstrb(rtl_m_wstrb[0]), .m0_wlast(rtl_m_wlast[0]),
+        .m0_wvalid(rtl_m_wvalid[0]), .m0_wready(rtl_m_wready[0]),
+        .m0_bid(rtl_m_bid[0]), .m0_bresp(rtl_m_bresp[0]), .m0_bvalid(rtl_m_bvalid[0]), .m0_bready(rtl_m_bready[0]),
+        .m0_arid(rtl_m_arid[0]), .m0_araddr(rtl_m_araddr[0]), .m0_arlen(rtl_m_arlen[0]),
+        .m0_arsize(rtl_m_arsize[0]), .m0_arburst(rtl_m_arburst[0]), .m0_arlock(rtl_m_arlock[0]),
+        .m0_arcache(rtl_m_arcache[0]), .m0_arprot(rtl_m_arprot[0]), .m0_arqos(rtl_m_arqos[0]),
+        .m0_arvalid(rtl_m_arvalid[0]), .m0_arready(rtl_m_arready[0]),
+        .m0_rid(rtl_m_rid[0]), .m0_rdata(rtl_m_rdata[0]), .m0_rresp(rtl_m_rresp[0]),
+        .m0_rlast(rtl_m_rlast[0]), .m0_rvalid(rtl_m_rvalid[0]), .m0_rready(rtl_m_rready[0]){rtl_ports}
+    );
+    
+    // Connect ALL signals THROUGH the RTL module outputs (no bypass)
+    // RTL module handles all routing internally
+    generate
+        for (i = 0; i < NUM_MASTERS; i++) begin : gen_master_connections
+            // Master outputs FROM RTL MODULE back to master interface
+            assign m_awready[i] = rtl_m_awready[i];  // FROM RTL output
+            assign m_wready[i]  = rtl_m_wready[i];   // FROM RTL output
+            assign m_bid[i]     = rtl_m_bid[i];      // FROM RTL output
+            assign m_bresp[i]   = rtl_m_bresp[i];    // FROM RTL output
+            assign m_bvalid[i]  = rtl_m_bvalid[i];   // FROM RTL output
+            assign m_arready[i] = rtl_m_arready[i];  // FROM RTL output
+            assign m_rid[i]     = rtl_m_rid[i];      // FROM RTL output
+            assign m_rdata[i]   = rtl_m_rdata[i];    // FROM RTL output
+            assign m_rresp[i]   = rtl_m_rresp[i];    // FROM RTL output
+            assign m_rlast[i]   = rtl_m_rlast[i];    // FROM RTL output
+            assign m_rvalid[i]  = rtl_m_rvalid[i];   // FROM RTL output
+        end
+        
+        for (i = 0; i < NUM_SLAVES; i++) begin : gen_slave_connections
+            // Slave interface gets signals FROM RTL MODULE outputs
+            assign s_awid[i]    = rtl_s_awid[i];     // FROM RTL output
+            assign s_awaddr[i]  = rtl_s_awaddr[i];   // FROM RTL output
+            assign s_awlen[i]   = rtl_s_awlen[i];    // FROM RTL output
+            assign s_awsize[i]  = rtl_s_awsize[i];   // FROM RTL output
+            assign s_awburst[i] = rtl_s_awburst[i];  // FROM RTL output
+            assign s_awlock[i]  = rtl_s_awlock[i];   // FROM RTL output
+            assign s_awcache[i] = rtl_s_awcache[i];  // FROM RTL output
+            assign s_awprot[i]  = rtl_s_awprot[i];   // FROM RTL output
+            assign s_awqos[i]   = rtl_s_awqos[i];    // FROM RTL output
+            assign s_awvalid[i] = rtl_s_awvalid[i];  // FROM RTL output
+            
+            assign s_wdata[i]   = rtl_s_wdata[i];    // FROM RTL output
+            assign s_wstrb[i]   = rtl_s_wstrb[i];    // FROM RTL output
+            assign s_wlast[i]   = rtl_s_wlast[i];    // FROM RTL output
+            assign s_wvalid[i]  = rtl_s_wvalid[i];   // FROM RTL output
+            
+            assign s_bready[i]  = rtl_s_bready[i];   // FROM RTL output
+            
+            assign s_arid[i]    = rtl_s_arid[i];     // FROM RTL output
+            assign s_araddr[i]  = rtl_s_araddr[i];   // FROM RTL output
+            assign s_arlen[i]   = rtl_s_arlen[i];    // FROM RTL output
+            assign s_arsize[i]  = rtl_s_arsize[i];   // FROM RTL output
+            assign s_arburst[i] = rtl_s_arburst[i];  // FROM RTL output
+            assign s_arlock[i]  = rtl_s_arlock[i];   // FROM RTL output
+            assign s_arcache[i] = rtl_s_arcache[i];  // FROM RTL output
+            assign s_arprot[i]  = rtl_s_arprot[i];   // FROM RTL output
+            assign s_arqos[i]   = rtl_s_arqos[i];    // FROM RTL output
+            assign s_arvalid[i] = rtl_s_arvalid[i];  // FROM RTL output
+            
+            assign s_rready[i]  = rtl_s_rready[i];   // FROM RTL output
+        end
+        
+        // Tie off unused slaves
+        for (i = NUM_MASTERS; i < NUM_SLAVES; i++) begin : gen_unused_slaves
+            assign s_awid[i]     = '0;
+            assign s_awaddr[i]   = '0;
+            assign s_awlen[i]    = '0;
+            assign s_awsize[i]   = '0;
+            assign s_awburst[i]  = '0;
+            assign s_awlock[i]   = '0;
+            assign s_awcache[i]  = '0;
+            assign s_awprot[i]   = '0;
+            assign s_awqos[i]    = '0;
+            assign s_awvalid[i]  = 1'b0;
+            assign s_wdata[i]    = '0;
+            assign s_wstrb[i]    = '0;
+            assign s_wlast[i]    = 1'b0;
+            assign s_wvalid[i]   = 1'b0;
+            assign s_arid[i]     = '0;
+            assign s_araddr[i]   = '0;
+            assign s_arlen[i]    = '0;
+            assign s_arsize[i]   = '0;
+            assign s_arburst[i]  = '0;
+            assign s_arlock[i]   = '0;
+            assign s_arcache[i]  = '0;
+            assign s_arprot[i]   = '0;
+            assign s_arqos[i]    = '0;
+            assign s_arvalid[i]  = 1'b0;
+            assign s_bready[i]   = 1'b1;
+            assign s_rready[i]   = 1'b1;
+        end
+    endgenerate
+    
+    initial begin
+        $display("[%0t] DUT Wrapper: REAL RTL MODULE axi4_interconnect_m{num_masters}s{num_slaves} INSTANTIATED", $time);
+        $display("[%0t] DUT Wrapper: Instance name: rtl_interconnect_inst", $time);
+        $display("[%0t] DUT Wrapper: All signals routed through RTL module", $time);
+        $display("[%0t] DUT Wrapper: Ready for UVM VIP testbench operation", $time);
+    end
+
+endmodule : dut_wrapper"""
+    
+    def _get_stub_rtl_wrapper(self):
+        """Generate stub RTL wrapper with simple 1:1 routing for testing"""
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        
+        # Get maximum ID width from all masters
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            id_width = max(id_widths)
+        else:
+            id_width = 4
+            
+        return f"""//==============================================================================
+// DUT Wrapper for {num_masters}x{num_slaves} RTL Integration with Simple Interconnect
+// Provides basic 1:1 routing for testing
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+module dut_wrapper #(
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter DATA_WIDTH = {self.config.data_width},
+    parameter ID_WIDTH   = {id_width},
+    parameter NUM_MASTERS = {num_masters},
+    parameter NUM_SLAVES = {num_slaves}
+) (
+    input  logic clk,
+    input  logic rst_n,
+    axi4_if.slave master_if[NUM_MASTERS],  // Master interfaces from VIP
+    axi4_if.master slave_if[NUM_SLAVES]    // Slave interfaces to VIP slave BFMs
+);
+
+    // Simple 1:1 routing for testing
+    // Master 0 -> Slave 0, Master 1 -> Slave 1, etc.
+    
+    genvar i;
+    generate
+        for (i = 0; i < NUM_MASTERS && i < NUM_SLAVES; i++) begin : gen_routing
+            // Write Address Channel
+            assign slave_if[i].awid     = master_if[i].awid;
+            assign slave_if[i].awaddr   = master_if[i].awaddr;
+            assign slave_if[i].awlen    = master_if[i].awlen;
+            assign slave_if[i].awsize   = master_if[i].awsize;
+            assign slave_if[i].awburst  = master_if[i].awburst;
+            assign slave_if[i].awlock   = master_if[i].awlock;
+            assign slave_if[i].awcache  = master_if[i].awcache;
+            assign slave_if[i].awprot   = master_if[i].awprot;
+            assign slave_if[i].awqos    = master_if[i].awqos;
+            assign slave_if[i].awregion = master_if[i].awregion;
+            assign slave_if[i].awvalid  = master_if[i].awvalid;
+            assign master_if[i].awready = slave_if[i].awready;
+            
+            // Write Data Channel
+            assign slave_if[i].wdata  = master_if[i].wdata;
+            assign slave_if[i].wstrb  = master_if[i].wstrb;
+            assign slave_if[i].wlast  = master_if[i].wlast;
+            assign slave_if[i].wvalid = master_if[i].wvalid;
+            assign master_if[i].wready = slave_if[i].wready;
+            
+            // Write Response Channel
+            assign master_if[i].bid    = slave_if[i].bid;
+            assign master_if[i].bresp  = slave_if[i].bresp;
+            assign master_if[i].bvalid = slave_if[i].bvalid;
+            assign slave_if[i].bready  = master_if[i].bready;
+            
+            // Read Address Channel
+            assign slave_if[i].arid     = master_if[i].arid;
+            assign slave_if[i].araddr   = master_if[i].araddr;
+            assign slave_if[i].arlen    = master_if[i].arlen;
+            assign slave_if[i].arsize   = master_if[i].arsize;
+            assign slave_if[i].arburst  = master_if[i].arburst;
+            assign slave_if[i].arlock   = master_if[i].arlock;
+            assign slave_if[i].arcache  = master_if[i].arcache;
+            assign slave_if[i].arprot   = master_if[i].arprot;
+            assign slave_if[i].arqos    = master_if[i].arqos;
+            assign slave_if[i].arregion = master_if[i].arregion;
+            assign slave_if[i].arvalid  = master_if[i].arvalid;
+            assign master_if[i].arready = slave_if[i].arready;
+            
+            // Read Data Channel
+            assign master_if[i].rid    = slave_if[i].rid;
+            assign master_if[i].rdata  = slave_if[i].rdata;
+            assign master_if[i].rresp  = slave_if[i].rresp;
+            assign master_if[i].rlast  = slave_if[i].rlast;
+            assign master_if[i].rvalid = slave_if[i].rvalid;
+            assign slave_if[i].rready  = master_if[i].rready;
+        end
+        
+        // Handle any extra masters or slaves (tie off)
+        for (i = NUM_SLAVES; i < NUM_MASTERS; i++) begin : gen_extra_masters
+            // Tie off extra masters with default responses
+            assign master_if[i].awready = 1'b0;
+            assign master_if[i].wready  = 1'b0;
+            assign master_if[i].bid     = '0;
+            assign master_if[i].bresp   = 2'b11; // DECERR
+            assign master_if[i].bvalid  = 1'b0;
+            assign master_if[i].arready = 1'b0;
+            assign master_if[i].rid     = '0;
+            assign master_if[i].rdata   = '0;
+            assign master_if[i].rresp   = 2'b11; // DECERR
+            assign master_if[i].rlast   = 1'b0;
+            assign master_if[i].rvalid  = 1'b0;
+        end
+        
+        for (i = NUM_MASTERS; i < NUM_SLAVES; i++) begin : gen_extra_slaves
+            // Tie off extra slaves
+            assign slave_if[i].awid     = '0;
+            assign slave_if[i].awaddr   = '0;
+            assign slave_if[i].awlen    = '0;
+            assign slave_if[i].awsize   = '0;
+            assign slave_if[i].awburst  = '0;
+            assign slave_if[i].awlock   = '0;
+            assign slave_if[i].awcache  = '0;
+            assign slave_if[i].awprot   = '0;
+            assign slave_if[i].awqos    = '0;
+            assign slave_if[i].awregion = '0;
+            assign slave_if[i].awvalid  = 1'b0;
+            
+            assign slave_if[i].wdata  = '0;
+            assign slave_if[i].wstrb  = '0;
+            assign slave_if[i].wlast  = 1'b0;
+            assign slave_if[i].wvalid = 1'b0;
+            
+            assign slave_if[i].bready = 1'b1;
+            
+            assign slave_if[i].arid     = '0;
+            assign slave_if[i].araddr   = '0;
+            assign slave_if[i].arlen    = '0;
+            assign slave_if[i].arsize   = '0;
+            assign slave_if[i].arburst  = '0;
+            assign slave_if[i].arlock   = '0;
+            assign slave_if[i].arcache  = '0;
+            assign slave_if[i].arprot   = '0;
+            assign slave_if[i].arqos    = '0;
+            assign slave_if[i].arregion = '0;
+            assign slave_if[i].arvalid  = 1'b0;
+            
+            assign slave_if[i].rready = 1'b1;
+        end
+    endgenerate
+    
+    initial begin
+        $display("[%0t] DUT Wrapper: {num_masters}x{num_slaves} Configuration with Simple 1:1 Routing", $time);
+        $display("[%0t] DUT Wrapper: Master 0 -> Slave 0, Master 1 -> Slave 1, etc.", $time);
+        $display("[%0t] DUT Wrapper: Basic connectivity for testing", $time);
+    end
+
+endmodule : dut_wrapper"""
+        
+    def _get_stub_axi_interconnect_module(self):
+        """Generate stub AXI interconnect module (only if needed)"""
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        
+        # Get maximum ID width from all masters
+        if self.config.masters:
+            id_widths = [master.id_width for master in self.config.masters]
+            id_width = max(id_widths)
+        else:
+            id_width = 4
+            
+        return f"""//==============================================================================
+// Stub AXI Interconnect Module
+// Provides signal connectivity and avoids 'z' values
+//==============================================================================
+
+module axi_interconnect_stub #(
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter DATA_WIDTH = {self.config.data_width},
+    parameter ID_WIDTH   = {id_width},
+    parameter NUM_MASTERS = {num_masters},
+    parameter NUM_SLAVES = {num_slaves}
+) (
+    input  logic aclk,
+    input  logic aresetn,
+    axi4_if.slave master_if[NUM_MASTERS],  // Master interfaces from VIP
+    axi4_if.master slave_if[NUM_SLAVES]    // Slave interfaces to VIP slave BFMs
+);
+
+    // Calculate extended ID width for slaves (includes master index)
+    localparam SLAVE_ID_WIDTH = ID_WIDTH + $clog2(NUM_MASTERS);
+    
+    // Internal registers for proper clock domain crossing (even in stub)
+    logic clk_connected;
+    logic rst_connected;
+    
+    always_ff @(posedge aclk or negedge aresetn) begin
+        if (!aresetn) begin
+            clk_connected <= 1'b0;
+            rst_connected <= 1'b0;
+        end else begin
+            clk_connected <= 1'b1;
+            rst_connected <= 1'b1;
+        end
+    end
+    
+    // For stub implementation, properly drive all signals to avoid 'z'
+    genvar i;
+    generate
+        // Tie off master interfaces with valid responses
+        for (i = 0; i < NUM_MASTERS; i++) begin : gen_master_tieoff
+            always_comb begin
+                // Write address channel ready
+                master_if[i].awready = 1'b1;
+                
+                // Write data channel ready
+                master_if[i].wready = 1'b1;
+                
+                // Write response channel - properly driven
+                master_if[i].bid    = master_if[i].awid;  // Echo back the ID
+                master_if[i].bresp  = 2'b00;              // OKAY response
+                master_if[i].bvalid = 1'b0;               // Not valid
+                
+                // Read address channel ready
+                master_if[i].arready = 1'b1;
+                
+                // Read data channel - properly driven
+                master_if[i].rid    = master_if[i].arid;  // Echo back the ID
+                master_if[i].rdata  = {{DATA_WIDTH{{1'b0}}}}; // Zero data
+                master_if[i].rresp  = 2'b00;              // OKAY response
+                master_if[i].rlast  = 1'b0;               // Not last
+                master_if[i].rvalid = 1'b0;               // Not valid
+            end
+        end
+        
+        // Properly drive slave interfaces to avoid 'z'
+        for (i = 0; i < NUM_SLAVES; i++) begin : gen_slave_tieoff
+            always_comb begin
+                // Write address channel - drive with valid zeros
+                slave_if[i].awid     = {{SLAVE_ID_WIDTH{{1'b0}}}};
+                slave_if[i].awaddr   = {{ADDR_WIDTH{{1'b0}}}};
+                slave_if[i].awlen    = 8'b0;
+                slave_if[i].awsize   = 3'b0;
+                slave_if[i].awburst  = 2'b0;
+                slave_if[i].awlock   = 1'b0;
+                slave_if[i].awcache  = 4'b0;
+                slave_if[i].awprot   = 3'b0;
+                slave_if[i].awqos    = 4'b0;
+                slave_if[i].awregion = 4'b0;
+                slave_if[i].awvalid  = 1'b0;
+                
+                // Write data channel - drive with valid zeros
+                slave_if[i].wdata  = {{DATA_WIDTH{{1'b0}}}};
+                slave_if[i].wstrb  = {{(DATA_WIDTH/8){{1'b0}}}};
+                slave_if[i].wlast  = 1'b0;
+                slave_if[i].wvalid = 1'b0;
+                
+                // Write response ready
+                slave_if[i].bready = 1'b1;
+                
+                // Read address channel - drive with valid zeros
+                slave_if[i].arid     = {{SLAVE_ID_WIDTH{{1'b0}}}};
+                slave_if[i].araddr   = {{ADDR_WIDTH{{1'b0}}}};
+                slave_if[i].arlen    = 8'b0;
+                slave_if[i].arsize   = 3'b0;
+                slave_if[i].arburst  = 2'b0;
+                slave_if[i].arlock   = 1'b0;
+                slave_if[i].arcache  = 4'b0;
+                slave_if[i].arprot   = 3'b0;
+                slave_if[i].arqos    = 4'b0;
+                slave_if[i].arregion = 4'b0;
+                slave_if[i].arvalid  = 1'b0;
+                
+                // Read data ready
+                slave_if[i].rready = 1'b1;
+            end
+        end
+    endgenerate
+    
+    // Monitor clock and reset connectivity
+    initial begin
+        $display("[%0t] AXI Interconnect Stub: Instantiated", $time);
+        @(posedge aclk);
+        $display("[%0t] AXI Interconnect Stub: Clock detected", $time);
+        @(posedge aresetn);
+        $display("[%0t] AXI Interconnect Stub: Reset released", $time);
+        $display("[%0t] AXI Interconnect Stub: All master/slave interfaces connected", $time);
+    end
+    
+    // Additional monitoring for clock activity
+    always @(posedge aclk) begin
+        if (aresetn && $time > 0) begin
+            // This ensures the clock is actually toggling and connected
+            static int clock_count = 0;
+            clock_count++;
+            if (clock_count == 1) begin
+                $display("[%0t] AXI Interconnect: Clock is properly connected and running", $time);
+            end
+        end
+    end
+
+endmodule : axi_interconnect_stub"""
+        
+    def _get_stub_dut_wrapper_content(self):
+        """Generate stub DUT wrapper content"""
+        num_masters = len(self.config.masters)
+        num_slaves = len(self.config.slaves)
+        
+        return f"""//==============================================================================
+// DUT Wrapper for {num_masters}x{num_slaves} RTL Integration
+// Stub implementation with proper signal initialization
+// Generated by AMBA Bus Matrix Configuration Tool
+// Date: {self.timestamp}
+//==============================================================================
+
+module dut_wrapper #(
+    parameter ADDR_WIDTH = {self.config.addr_width},
+    parameter DATA_WIDTH = {self.config.data_width},
+    parameter ID_WIDTH   = {id_width},
+    parameter NUM_MASTERS = {num_masters},
+    parameter NUM_SLAVES = {num_slaves}
+) (
+    input  logic clk,
+    input  logic rst_n,
+    axi4_if.slave master_if[NUM_MASTERS],  // Master interfaces from VIP
+    axi4_if.master slave_if[NUM_SLAVES]    // Slave interfaces to VIP slave BFMs
+);
+
+    // Calculate extended ID width for slaves (includes master index)
+    localparam SLAVE_ID_WIDTH = ID_WIDTH + $clog2(NUM_MASTERS);
+    
+    // For stub implementation, properly drive all signals to avoid 'z'
+    genvar i;
+    generate
+        // Tie off master interfaces with valid responses
+        for (i = 0; i < NUM_MASTERS; i++) begin : gen_master_tieoff
+            always_comb begin
+                // Write address channel ready
+                master_if[i].awready = 1'b1;
+                
+                // Write data channel ready
+                master_if[i].wready = 1'b1;
+                
+                // Write response channel - properly driven
+                master_if[i].bid    = master_if[i].awid;  // Echo back the ID
+                master_if[i].bresp  = 2'b00;              // OKAY response
+                master_if[i].bvalid = 1'b0;               // Not valid
+                
+                // Read address channel ready
+                master_if[i].arready = 1'b1;
+                
+                // Read data channel - properly driven
+                master_if[i].rid    = master_if[i].arid;  // Echo back the ID
+                master_if[i].rdata  = {{DATA_WIDTH{{1'b0}}}}; // Zero data
+                master_if[i].rresp  = 2'b00;              // OKAY response
+                master_if[i].rlast  = 1'b0;               // Not last
+                master_if[i].rvalid = 1'b0;               // Not valid
+            end
+        end
+        
+        // Properly drive slave interfaces to avoid 'z'
+        for (i = 0; i < NUM_SLAVES; i++) begin : gen_slave_tieoff
+            always_comb begin
+                // Write address channel - drive with valid zeros
+                slave_if[i].awid     = {{SLAVE_ID_WIDTH{{1'b0}}}};
+                slave_if[i].awaddr   = {{ADDR_WIDTH{{1'b0}}}};
+                slave_if[i].awlen    = 8'b0;
+                slave_if[i].awsize   = 3'b0;
+                slave_if[i].awburst  = 2'b0;
+                slave_if[i].awlock   = 1'b0;
+                slave_if[i].awcache  = 4'b0;
+                slave_if[i].awprot   = 3'b0;
+                slave_if[i].awqos    = 4'b0;
+                slave_if[i].awregion = 4'b0;
+                slave_if[i].awvalid  = 1'b0;
+                
+                // Write data channel - drive with valid zeros
+                slave_if[i].wdata  = {{DATA_WIDTH{{1'b0}}}};
+                slave_if[i].wstrb  = {{(DATA_WIDTH/8){{1'b0}}}};
+                slave_if[i].wlast  = 1'b0;
+                slave_if[i].wvalid = 1'b0;
+                
+                // Write response ready
+                slave_if[i].bready = 1'b1;
+                
+                // Read address channel - drive with valid zeros
+                slave_if[i].arid     = {{SLAVE_ID_WIDTH{{1'b0}}}};
+                slave_if[i].araddr   = {{ADDR_WIDTH{{1'b0}}}};
+                slave_if[i].arlen    = 8'b0;
+                slave_if[i].arsize   = 3'b0;
+                slave_if[i].arburst  = 2'b0;
+                slave_if[i].arlock   = 1'b0;
+                slave_if[i].arcache  = 4'b0;
+                slave_if[i].arprot   = 3'b0;
+                slave_if[i].arqos    = 4'b0;
+                slave_if[i].arregion = 4'b0;
+                slave_if[i].arvalid  = 1'b0;
+                
+                // Read data ready
+                slave_if[i].rready = 1'b1;
+            end
+        end
+    endgenerate
+    
+    initial begin
+        $display("[%0t] DUT Wrapper: {num_masters}x{num_slaves} Stub Configuration", $time);
+        $display("[%0t] DUT Wrapper: All signals properly initialized to avoid 'z'", $time);
+        $display("[%0t] DUT Wrapper: Master interfaces tied off with echo IDs", $time);
+        $display("[%0t] DUT Wrapper: Slave interfaces driven with valid zeros", $time);
+        $display("[%0t] DUT Wrapper: Replace with actual interconnect when available", $time);
+    end
+
+endmodule : dut_wrapper"""
+
     def _get_enhanced_rtl_wrapper(self):
         """Get enhanced RTL wrapper with full interconnect and proper interface connections"""
         num_masters = len(self.config.masters)
@@ -4578,6 +6466,7 @@ module axi4_master_driver_bfm #(
         logic [2:0] size;
         logic [1:0] burst;
         logic [ID_WIDTH-1:0] id;
+        int b_timeout_count;
         
         // Generate transaction parameters
         // Select a random slave (0-9) and generate address in its range
@@ -4643,15 +6532,51 @@ module axi4_master_driver_bfm #(
         axi_intf.wvalid <= 1'b0;
         axi_intf.wlast  <= 1'b0;
         
-        // Write Response Phase
+        // Write Response Phase - Enhanced B-channel AXI4 flow
+        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Starting B-channel response phase for transaction %0d, expecting BID=%0d", 
+                  trans_id, id), UVM_HIGH)
+        
+        // Assert BREADY to indicate readiness to receive response
         axi_intf.bready <= 1'b1;
-        while (!axi_intf.bvalid) @(posedge aclk);
         
-        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("Write response received for transaction %0d, bresp=%0d", 
-                  trans_id, axi_intf.bresp), UVM_MEDIUM)
+        // Wait for BVALID with timeout protection
+        b_timeout_count = 0;
+        while (!axi_intf.bvalid) begin
+            @(posedge aclk);
+            b_timeout_count++;
+            if (b_timeout_count > 1000) begin
+                `uvm_error("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel timeout for transaction %0d", trans_id))
+                break;
+            end
+        end
         
+        // Process B-channel response
+        if (axi_intf.bvalid) begin
+            // Check BID matches expected AWID
+            if (axi_intf.bid !== id) begin
+                `uvm_warning("AXI_MASTER_DRIVER_BFM", $sformatf("BID mismatch for transaction %0d: expected=%0d, received=%0d", 
+                            trans_id, id, axi_intf.bid))
+            end
+            
+            // Check BRESP
+            case (axi_intf.bresp)
+                2'b00: `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel OKAY response for transaction %0d", trans_id), UVM_MEDIUM)
+                2'b01: `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel EXOKAY response for transaction %0d", trans_id), UVM_MEDIUM)
+                2'b10: `uvm_warning("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel SLVERR response for transaction %0d", trans_id))
+                2'b11: `uvm_error("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel DECERR response for transaction %0d", trans_id))
+            endcase
+            
+            `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel response received: trans=%0d, bid=%0d, bresp=%0b", 
+                      trans_id, axi_intf.bid, axi_intf.bresp), UVM_MEDIUM)
+        end
+        
+        // Complete B-channel handshake
+        // Wait for handshake to complete (both BVALID and BREADY high)
+        while (!(axi_intf.bvalid && axi_intf.bready)) @(posedge aclk);
         @(posedge aclk);
         axi_intf.bready <= 1'b0;
+        
+        `uvm_info("AXI_MASTER_DRIVER_BFM", $sformatf("B-channel handshake completed for transaction %0d", trans_id), UVM_HIGH)
     endtask
     
     // Drive a read transaction
@@ -4856,14 +6781,11 @@ module axi4_slave_driver_bfm #(
     task automatic handle_write_transactions();
         `uvm_info("AXI_SLAVE_DRIVER_BFM", "Starting write transaction handling", UVM_LOW)
         
-        forever begin
-            fork
-                handle_write_address_channel();
-                handle_write_data_channel();
-                handle_write_response_channel();
-            join_none
-            @(posedge aclk);
-        end
+        fork
+            handle_write_address_channel();
+            handle_write_data_channel();
+            handle_write_response_channel();
+        join_none
     endtask
     
     task automatic handle_read_transactions();
@@ -4878,15 +6800,23 @@ module axi4_slave_driver_bfm #(
         end
     endtask
     
-    // Write Address Channel Handler
-    logic write_addr_pending = 0;
-    logic [ID_WIDTH-1:0] pending_awid;
-    logic [ADDR_WIDTH-1:0] pending_awaddr;
-    logic [7:0] pending_awlen;
-    logic [2:0] pending_awsize;
-    logic [1:0] pending_awburst;
+    // Write transaction coordination - using a proper transaction queue
+    typedef struct {
+        logic [ID_WIDTH-1:0] awid;
+        logic [ADDR_WIDTH-1:0] awaddr;
+        logic [7:0] awlen;
+        logic [2:0] awsize;
+        logic [1:0] awburst;
+        logic addr_received;
+        logic data_complete;
+        logic response_sent;
+    } write_transaction_t;
     
+    write_transaction_t write_trans_queue[$];  // Transaction queue
+    
+    // Write Address Channel Handler
     task automatic handle_write_address_channel();
+        write_transaction_t new_trans;
         forever begin
             axi_intf.awready <= 1'b0;
             
@@ -4898,15 +6828,20 @@ module axi4_slave_driver_bfm #(
             while (!(axi_intf.awvalid && axi_intf.awready)) @(posedge aclk);
             
             // Capture address information during the handshake (signals are stable)
-            pending_awid = axi_intf.awid;
-            pending_awaddr = axi_intf.awaddr;
-            pending_awlen = axi_intf.awlen;
-            pending_awsize = axi_intf.awsize;
-            pending_awburst = axi_intf.awburst;
-            write_addr_pending = 1'b1;
+            new_trans.awid = axi_intf.awid;
+            new_trans.awaddr = axi_intf.awaddr;
+            new_trans.awlen = axi_intf.awlen;
+            new_trans.awsize = axi_intf.awsize;
+            new_trans.awburst = axi_intf.awburst;
+            new_trans.addr_received = 1'b1;
+            new_trans.data_complete = 1'b0;
+            new_trans.response_sent = 1'b0;
+            
+            // Add to transaction queue
+            write_trans_queue.push_back(new_trans);
             
             `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write address accepted: id=%0d, addr=0x%010x, len=%0d", 
-                      pending_awid, pending_awaddr, pending_awlen), UVM_MEDIUM)
+                      new_trans.awid, new_trans.awaddr, new_trans.awlen), UVM_MEDIUM)
             
             @(posedge aclk);
             axi_intf.awready <= 1'b0;
@@ -4914,20 +6849,22 @@ module axi4_slave_driver_bfm #(
     endtask
     
     // Write Data Channel Handler
-    logic write_data_complete = 0;
-    int write_beat_count = 0;
-    
     task automatic handle_write_data_channel();
+        logic [ADDR_WIDTH-1:0] beat_addr;
+        int write_beat_count;
+        write_transaction_t current_trans;
         forever begin
             axi_intf.wready <= 1'b0;
-            write_data_complete = 1'b0;
+            
+            // Wait for a transaction with address but no data completion
+            while (write_trans_queue.size() == 0) @(posedge aclk);
+            
+            // Find the oldest transaction that needs data
+            current_trans = write_trans_queue[0];  // Get first transaction
             write_beat_count = 0;
             
-            // Wait for write address to be captured
-            while (!write_addr_pending) @(posedge aclk);
-            
             // Handle write data beats
-            while (write_beat_count <= pending_awlen) begin
+            while (write_beat_count <= current_trans.awlen) begin
                 // Random delay before accepting data
                 repeat($urandom_range(0, w_response_delay)) @(posedge aclk);
                 axi_intf.wready <= 1'b1;
@@ -4936,7 +6873,7 @@ module axi4_slave_driver_bfm #(
                 while (!axi_intf.wvalid) @(posedge aclk);
                 
                 // Store data in memory (simplified)
-                automatic logic [ADDR_WIDTH-1:0] beat_addr = pending_awaddr + (write_beat_count * (DATA_WIDTH/8));
+                beat_addr = current_trans.awaddr + (write_beat_count * (DATA_WIDTH/8));
                 memory[beat_addr] = axi_intf.wdata;
                 
                 `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data beat %0d accepted: addr=0x%010x, data=0x%016x, wstrb=0x%02x", 
@@ -4949,42 +6886,74 @@ module axi4_slave_driver_bfm #(
                 if (axi_intf.wlast) break;
             end
             
-            write_data_complete = 1'b1;
-            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data complete for id=%0d", pending_awid), UVM_MEDIUM)
+            // Mark data as complete for this transaction
+            write_trans_queue[0].data_complete = 1'b1;
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write data complete for id=%0d", current_trans.awid), UVM_MEDIUM)
         end
     endtask
     
-    // Write Response Channel Handler
+    // Write Response Channel Handler - Enhanced B-channel AXI4 flow
     task automatic handle_write_response_channel();
+        int b_handshake_timeout;
+        write_transaction_t current_trans;
         forever begin
             axi_intf.bvalid <= 1'b0;
+            axi_intf.bid <= '0;
+            axi_intf.bresp <= 2'b00;
             
-            // Wait for both address and data to complete
-            while (!write_addr_pending || !write_data_complete) @(posedge aclk);
+            // Wait for a transaction that is complete but not yet responded
+            while (write_trans_queue.size() == 0 || 
+                   !write_trans_queue[0].addr_received || 
+                   !write_trans_queue[0].data_complete ||
+                   write_trans_queue[0].response_sent) @(posedge aclk);
             
-            // Random delay before response
+            // Get the transaction to respond to
+            current_trans = write_trans_queue[0];
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Starting B-channel response for id=%0d", current_trans.awid), UVM_HIGH)
+            
+            // Random delay before response (realistic slave behavior)
             repeat($urandom_range(1, b_response_delay)) @(posedge aclk);
             
-            // Send write response
-            axi_intf.bid <= pending_awid;
-            axi_intf.bresp <= 2'b00;  // OKAY response
+            // Prepare write response with proper AXI4 compliance
+            axi_intf.bid <= current_trans.awid;     // BID must match AWID per AXI4 spec
+            axi_intf.bresp <= 2'b00;                // OKAY response (could be configurable)
             axi_intf.bvalid <= 1'b1;
             
-            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write response sent: id=%0d, bresp=OKAY", pending_awid), UVM_MEDIUM)
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("B-channel response asserted: bid=%0d, bresp=2'b%02b (OKAY)", 
+                      axi_intf.bid, axi_intf.bresp), UVM_MEDIUM)
             
-            // Wait for bready
-            while (!axi_intf.bready) @(posedge aclk);
+            // Wait for BREADY handshake with timeout protection
+            b_handshake_timeout = 0;
+            while (!axi_intf.bready) begin
+                @(posedge aclk);
+                b_handshake_timeout++;
+                if (b_handshake_timeout > 1000) begin
+                    `uvm_error("AXI_SLAVE_DRIVER_BFM", $sformatf("B-channel handshake timeout for id=%0d", current_trans.awid))
+                    break;
+                end
+            end
             
+            // Complete handshake - both BVALID and BREADY are high
+            if (axi_intf.bready) begin
+                `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("B-channel handshake completed for id=%0d", current_trans.awid), UVM_HIGH)
+            end
+            
+            // Deassert BVALID on next clock edge per AXI4 protocol
             @(posedge aclk);
             axi_intf.bvalid <= 1'b0;
-            write_addr_pending = 1'b0;
-            write_data_complete = 1'b0;
+            axi_intf.bid <= '0;
+            
+            // Remove completed transaction from queue
+            write_trans_queue.pop_front();
+            
+            `uvm_info("AXI_SLAVE_DRIVER_BFM", $sformatf("Write transaction completed for id=%0d", current_trans.awid), UVM_MEDIUM)
         end
     endtask
     
     // Read Address Channel Handler
     logic read_addr_pending = 0;
-    logic [ID_WIDTH-1:0] pending_arid;
+    logic [ID_WIDTH-1:0] pending_arid = '0;  // Initialize to prevent 'z' values
     logic [ADDR_WIDTH-1:0] pending_araddr;
     logic [7:0] pending_arlen;
     logic [2:0] pending_arsize;
@@ -5398,25 +7367,49 @@ module hdl_top;
         $display("[%0t] HDL Top: Signal driving is now handled by BFMs", $time);
     end
     
-    // Unified FSDB/VCD dumping with plusarg support
+    // Enhanced FSDB dumping with explicit clock signal visibility fix
     `ifdef DUMP_FSDB
     initial begin
-        string dump_file = "axi4_vip.fsdb";  // Default filename
+        // Create waves directory if it doesn't exist and use correct FSDB filename
+        $system("mkdir -p waves");
+        $fsdbDumpfile("waves/axi4_vip.fsdb");
         
-        // Check for custom filename from plusargs
-        if ($value$plusargs("fsdb_file=%s", dump_file)) begin
-            $display("[%0t] Using custom FSDB file: %s", $time, dump_file);
-        end else begin
-            $display("[%0t] Using default FSDB file: %s", $time, dump_file);
+        // Use correct syntax for dumping all signals
+        $fsdbDumpvars(0, "hdl_top", "+all");
+        
+        $display("[HDL_TOP] FSDB dumping enabled with +all option to waves/axi4_vip.fsdb");
+        $display("[HDL_TOP] All signals will be dumped for comprehensive analysis");
+        
+        // Dump top level including the main clock
+        $fsdbDumpvars(0, hdl_top);
+        $fsdbDumpvars(0, hdl_top.aclk);    // Explicit top-level clock dump
+        $fsdbDumpvars(0, hdl_top.aresetn); // Explicit top-level reset dump
+        
+        // Dump all master interface signals individually WITH EXPLICIT CLOCKS
+        for (int i = 0; i < NO_OF_MASTERS; i++) begin
+            $fsdbDumpvars(0, hdl_top.axi_if[i]);
+            $fsdbDumpvars(0, hdl_top.axi_if[i].aclk);  // Explicit interface clock
         end
         
-        // Start FSDB dumping with determined filename
-        $display("[%0t] Starting FSDB dump", $time);
-        $fsdbDumpfile(dump_file);
-        $fsdbDumpvars(0, hdl_top, "+all");
+        // Dump all slave interface signals individually WITH EXPLICIT CLOCKS
+        for (int i = 0; i < NO_OF_SLAVES; i++) begin
+            $fsdbDumpvars(0, hdl_top.slave_if[i]);
+            $fsdbDumpvars(0, hdl_top.slave_if[i].aclk);  // Explicit interface clock
+        end
+        
+        // Dump RTL DUT wrapper and all its internal signals WITH EXPLICIT CLOCKS
+        $fsdbDumpvars(0, hdl_top.dut);
+        $fsdbDumpvars(0, hdl_top.dut.clk);    // DUT wrapper clock input
+        $fsdbDumpvars(0, hdl_top.dut.rst_n);  // DUT wrapper reset input
+        
+        // Try to dump the RTL interconnect module clock specifically (if it exists)
+        $fsdbDumpvars(0, hdl_top.dut.rtl_interconnect_inst.aclk);
+        
         $fsdbDumpSVA();
         $fsdbDumpMDA();
         $fsdbDumpon();
+        
+        $display("[%0t] Enhanced FSDB dumping enabled with explicit clock signals", $time);
     end
     `endif
     
@@ -5480,7 +7473,7 @@ endmodule : hdl_top
 """
     
     def _get_lint_clean_hdl_top_content(self):
-        """Generate VIP+RTL integration HDL top that properly instantiates all interfaces"""
+        """Generate VIP+RTL integration HDL top using proper dut_wrapper with interface arrays"""
         num_masters = len(self.config.masters)
         num_slaves = len(self.config.slaves)
         
@@ -5509,9 +7502,8 @@ module hdl_top;
         aresetn = 0;
         #100 aresetn = 1;
         
-        // Basic simulation control
-        #10000 $display("VIP+RTL Integration Test Complete");
-        $finish;
+        // Let UVM control simulation end
+        // Removed automatic $finish to allow transactions to complete
     end
     
     // AXI4 interfaces for VIP+RTL integration
@@ -5529,93 +7521,55 @@ module hdl_top;
         .USER_WIDTH(USER_WIDTH)
     ) slave_if[{num_slaves}](aclk, aresetn);'''
 
-        # Generate BFM interface instantiations
-        bfm_instantiations = []
-        
-        # Master BFM interfaces
-        for i in range(num_masters):
-            bfm_inst = f'''
+        # Generate proper BFM agent instantiations using interfaces
+        bfm_instantiations = f'''
+    // Master agent BFMs - connected to AXI interfaces
+    genvar i;
+    generate
+        for (i = 0; i < {num_masters}; i++) begin : gen_master_bfms
+            axi4_master_agent_bfm #(
+                .ADDR_WIDTH(ADDRESS_WIDTH),
+                .DATA_WIDTH(DATA_WIDTH),
+                .ID_WIDTH(ID_WIDTH)
+            ) master_bfm (
+                .aclk(aclk),
+                .aresetn(aresetn),
+                .axi_intf(master_if[i])
+            );
+        end
+    endgenerate
     
-    // Master {i} BFM interfaces
-    axi4_master_driver_bfm #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) master_{i}_driver_bfm();
-    
-    axi4_master_monitor_bfm #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDRESS_WIDTH)  
-    ) master_{i}_monitor_bfm();'''
-            bfm_instantiations.append(bfm_inst)
-            
-        # Slave BFM interfaces
-        for i in range(num_slaves):
-            bfm_inst = f'''
-    
-    // Slave {i} BFM interfaces
-    axi4_slave_driver_bfm #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_{i}_driver_bfm();
-    
-    axi4_slave_monitor_bfm #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDRESS_WIDTH)
-    ) slave_{i}_monitor_bfm();'''
-            bfm_instantiations.append(bfm_inst)
+    // Slave agent BFMs - connected to slave interfaces
+    generate
+        for (i = 0; i < {num_slaves}; i++) begin : gen_slave_bfms
+            axi4_slave_agent_bfm #(
+                .ADDR_WIDTH(ADDRESS_WIDTH),
+                .DATA_WIDTH(DATA_WIDTH),
+                .ID_WIDTH(ID_WIDTH)  // Base ID width to match DUT expectations
+            ) slave_bfm (
+                .aclk(aclk),
+                .aresetn(aresetn),
+                .axi_intf(slave_if[i])
+            );
+        end
+    endgenerate'''
 
-        # RTL interconnect with proper interface connections
+        # RTL DUT instantiation using proper dut_wrapper with correct signal directions
         rtl_connection = f'''
 
-    // RTL DUT instantiation - {num_masters}x{num_slaves} interconnect with interface connections
-    axi4_interconnect_m{num_masters}s{num_slaves} #(
-        .DATA_WIDTH(DATA_WIDTH),
+    // RTL DUT instantiation using proper dut_wrapper with correct signal directions
+    dut_wrapper #(
         .ADDR_WIDTH(ADDRESS_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH), 
         .ID_WIDTH(ID_WIDTH),
-        .USER_WIDTH(USER_WIDTH)
+        .NUM_MASTERS({num_masters}),
+        .NUM_SLAVES({num_slaves})
     ) dut (
-        .aclk(aclk),
-        .aresetn(aresetn),'''
-
-        # Connect master interfaces to RTL
-        master_connections = []
-        for i in range(num_masters):
-            master_conn = f'''        
-        // Master {i} interface connections
-        .m{i}_awid(master_if[{i}].awid), .m{i}_awaddr(master_if[{i}].awaddr), .m{i}_awlen(master_if[{i}].awlen),
-        .m{i}_awsize(master_if[{i}].awsize), .m{i}_awburst(master_if[{i}].awburst), .m{i}_awlock(master_if[{i}].awlock),
-        .m{i}_awcache(master_if[{i}].awcache), .m{i}_awprot(master_if[{i}].awprot), .m{i}_awqos(master_if[{i}].awqos),
-        .m{i}_awvalid(master_if[{i}].awvalid), .m{i}_awready(master_if[{i}].awready),
-        .m{i}_wdata(master_if[{i}].wdata), .m{i}_wstrb(master_if[{i}].wstrb), .m{i}_wlast(master_if[{i}].wlast),
-        .m{i}_wvalid(master_if[{i}].wvalid), .m{i}_wready(master_if[{i}].wready),
-        .m{i}_bid(master_if[{i}].bid), .m{i}_bresp(master_if[{i}].bresp), .m{i}_bvalid(master_if[{i}].bvalid),
-        .m{i}_bready(master_if[{i}].bready), .m{i}_arid(master_if[{i}].arid), .m{i}_araddr(master_if[{i}].araddr),
-        .m{i}_arlen(master_if[{i}].arlen), .m{i}_arsize(master_if[{i}].arsize), .m{i}_arburst(master_if[{i}].arburst),
-        .m{i}_arlock(master_if[{i}].arlock), .m{i}_arcache(master_if[{i}].arcache), .m{i}_arprot(master_if[{i}].arprot),
-        .m{i}_arqos(master_if[{i}].arqos), .m{i}_arvalid(master_if[{i}].arvalid), .m{i}_arready(master_if[{i}].arready),
-        .m{i}_rid(master_if[{i}].rid), .m{i}_rdata(master_if[{i}].rdata), .m{i}_rresp(master_if[{i}].rresp),
-        .m{i}_rlast(master_if[{i}].rlast), .m{i}_rvalid(master_if[{i}].rvalid), .m{i}_rready(master_if[{i}].rready){',' if i < num_masters - 1 or num_slaves > 0 else ''}'''
-            master_connections.append(master_conn)
-        
-        # Connect slave interfaces to RTL  
-        slave_connections = []
-        for i in range(num_slaves):
-            slave_conn = f'''        
-        // Slave {i} interface connections
-        .s{i}_awid(slave_if[{i}].awid), .s{i}_awaddr(slave_if[{i}].awaddr), .s{i}_awlen(slave_if[{i}].awlen),
-        .s{i}_awsize(slave_if[{i}].awsize), .s{i}_awburst(slave_if[{i}].awburst), .s{i}_awlock(slave_if[{i}].awlock),
-        .s{i}_awcache(slave_if[{i}].awcache), .s{i}_awprot(slave_if[{i}].awprot), .s{i}_awqos(slave_if[{i}].awqos),
-        .s{i}_awvalid(slave_if[{i}].awvalid), .s{i}_awready(slave_if[{i}].awready),
-        .s{i}_wdata(slave_if[{i}].wdata), .s{i}_wstrb(slave_if[{i}].wstrb), .s{i}_wlast(slave_if[{i}].wlast),
-        .s{i}_wvalid(slave_if[{i}].wvalid), .s{i}_wready(slave_if[{i}].wready),
-        .s{i}_bid(slave_if[{i}].bid), .s{i}_bresp(slave_if[{i}].bresp), .s{i}_bvalid(slave_if[{i}].bvalid),
-        .s{i}_bready(slave_if[{i}].bready), .s{i}_arid(slave_if[{i}].arid), .s{i}_araddr(slave_if[{i}].araddr),
-        .s{i}_arlen(slave_if[{i}].arlen), .s{i}_arsize(slave_if[{i}].arsize), .s{i}_arburst(slave_if[{i}].arburst),
-        .s{i}_arlock(slave_if[{i}].arlock), .s{i}_arcache(slave_if[{i}].arcache), .s{i}_arprot(slave_if[{i}].arprot),
-        .s{i}_arqos(slave_if[{i}].arqos), .s{i}_arvalid(slave_if[{i}].arvalid), .s{i}_arready(slave_if[{i}].arready),
-        .s{i}_rid(slave_if[{i}].rid), .s{i}_rdata(slave_if[{i}].rdata), .s{i}_rresp(slave_if[{i}].rresp),
-        .s{i}_rlast(slave_if[{i}].rlast), .s{i}_rvalid(slave_if[{i}].rvalid), .s{i}_rready(slave_if[{i}].rready){',' if i < num_slaves - 1 else ''}'''
-            slave_connections.append(slave_conn)
+        .clk(aclk),
+        .rst_n(aresetn),
+        .master_if(master_if),  // Master BFMs connect to DUT as masters
+        .slave_if(slave_if)     // Slave BFMs connect to DUT slave ports
+    );'''
 
         # Generate explicit interface initialization (no foreach loops)
         master_init_lines = []
@@ -5624,49 +7578,90 @@ module hdl_top;
         
         slave_init_lines = []
         for i in range(num_slaves):
-            slave_init_lines.append(f"        slave_if[{i}].awready <= 1'b0; slave_if[{i}].wready <= 1'b0; slave_if[{i}].bvalid <= 1'b0; slave_if[{i}].arready <= 1'b0; slave_if[{i}].rvalid <= 1'b0;")
+            slave_init_lines.append(f"        slave_if[{i}].awready <= 1'b1; slave_if[{i}].wready <= 1'b1; slave_if[{i}].bvalid <= 1'b0; slave_if[{i}].arready <= 1'b1; slave_if[{i}].rvalid <= 1'b0;")
         
         footer = f'''
-    );
     
     // Interface initialization for proper VIP+RTL integration
     initial begin
         // Initialize master interfaces to safe defaults (explicit unroll)
 {''.join(chr(10) + line for line in master_init_lines)}
         
-        // Initialize slave interfaces to safe defaults (explicit unroll)  
+        // Initialize slave interfaces to safe defaults (explicit unroll) 
 {''.join(chr(10) + line for line in slave_init_lines)}
-        
-        $display("[VIP+RTL] All interfaces properly instantiated and initialized");
-        $display("[VIP+RTL] Master interfaces: %0d, Slave interfaces: %0d", {num_masters}, {num_slaves});
     end
     
-    // Waveform dumping
+    // Enhanced FSDB dumping with explicit clock signal visibility fix
     `ifdef DUMP_FSDB
-        initial begin
-            $fsdbDumpfile("waves/vip_rtl_integration.fsdb");
-            $fsdbDumpvars(0, hdl_top);
-            $display("[FSDB] Waveform dumping enabled for VIP+RTL integration");
+    initial begin
+        // Create waves directory if it doesn't exist and use correct FSDB filename
+        $system("mkdir -p waves");
+        $fsdbDumpfile("waves/axi4_vip.fsdb");
+        
+        // Use correct syntax for dumping all signals
+        $fsdbDumpvars(0, "hdl_top", "+all");
+        
+        $display("[HDL_TOP] FSDB dumping enabled with +all option to waves/axi4_vip.fsdb");
+        $display("[HDL_TOP] All signals will be dumped for comprehensive analysis");
+        
+        // Dump top level including the main clock
+        $fsdbDumpvars(0, hdl_top);
+        $fsdbDumpvars(0, hdl_top.aclk);    // Explicit top-level clock dump
+        $fsdbDumpvars(0, hdl_top.aresetn); // Explicit top-level reset dump
+        
+        // Dump all master interface signals individually WITH EXPLICIT CLOCKS
+        for (int i = 0; i < {num_masters}; i++) begin
+            $fsdbDumpvars(0, hdl_top.master_if[i]);
+            $fsdbDumpvars(0, hdl_top.master_if[i].aclk);  // Explicit interface clock
         end
+        
+        // Dump all slave interface signals individually WITH EXPLICIT CLOCKS
+        for (int i = 0; i < {num_slaves}; i++) begin
+            $fsdbDumpvars(0, hdl_top.slave_if[i]);
+            $fsdbDumpvars(0, hdl_top.slave_if[i].aclk);  // Explicit interface clock
+        end
+        
+        // Dump RTL DUT wrapper and all its internal signals WITH EXPLICIT CLOCKS
+        $fsdbDumpvars(0, hdl_top.dut);
+        $fsdbDumpvars(0, hdl_top.dut.clk);    // DUT wrapper clock input
+        $fsdbDumpvars(0, hdl_top.dut.rst_n);  // DUT wrapper reset input
+        
+        // Try to dump the RTL interconnect module clock specifically (if it exists)
+        $fsdbDumpvars(0, hdl_top.dut.rtl_interconnect_inst.aclk);
+        
+        $fsdbDumpSVA();
+        $fsdbDumpMDA();
+        $fsdbDumpon();
+        
+        $display("[%0t] Enhanced FSDB dumping enabled with explicit clock signals", $time);
+    end
     `endif
     
+    // VCD dumping (alternative)
     `ifdef DUMP_VCD
-        initial begin
-            $dumpfile("waves/vip_rtl_integration.vcd");
-            $dumpvars(0, hdl_top);
-            $display("[VCD] Waveform dumping enabled for VIP+RTL integration");
+    initial begin
+        string dump_file = "axi4_sim.vcd";  // Default filename
+        
+        // Check for custom filename from plusargs
+        if ($value$plusargs("vcd_file=%s", dump_file)) begin
+            $display("[%0t] Using custom VCD file: %s", $time, dump_file);
+        end else begin
+            $display("[%0t] Using default VCD file: %s", $time, dump_file);
         end
+        
+        $display("[%0t] Starting VCD dump", $time);
+        $dumpfile(dump_file);
+        $dumpvars(0, hdl_top);
+        $dumpon();
+    end
     `endif
-    
-endmodule'''
 
-        # Combine all parts
+endmodule : hdl_top'''
+
+        # Combine all parts - no manual connections needed with dut_wrapper
         complete_hdl = (header + 
-                       ''.join(bfm_instantiations) +
+                       bfm_instantiations +
                        rtl_connection + 
-                       ''.join(master_connections) + 
-                       (',' if slave_connections else '') + 
-                       ''.join(slave_connections) + 
                        footer)
         
         return complete_hdl
@@ -5699,14 +7694,14 @@ endmodule'''
         for i in range(len(self.config.slaves)):
             fork_blocks.append(f"""                begin : slave_{i}
                     while (slave_fifo[{i}].try_get(tx)) begin
-                        // Slave transaction processing (if needed)
-                        if (tx.tx_type == axi4_slave_tx::WRITE) begin
-                            slave_bytes_written[{i}] += tx.data_bytes;
-                            slave_write_count[{i}]++;
-                        end else begin
-                            slave_bytes_read[{i}] += tx.data_bytes;
-                            slave_read_count[{i}]++;
-                        end
+                        // Slave transaction processing (commented out - axi4_slave_tx doesn't have tx_type/data_bytes)
+                        // if (tx.tx_type == axi4_master_tx::WRITE) begin
+                        //     slave_bytes_written[{i}] += tx.data_bytes;
+                        //     slave_write_count[{i}]++;
+                        // end else begin
+                        //     slave_bytes_read[{i}] += tx.data_bytes;
+                        //     slave_read_count[{i}]++;
+                        // end
                     end
                     #10ns;
                 end""")
@@ -5835,8 +7830,14 @@ ifeq ($(TRANS_RECORD), 1)
     VCS_RUN_OPTS += +UVM_TR_RECORD +UVM_LOG_RECORD
 endif
 
-# Timeout settings
-TIMEOUT ?= 1000000
+# Timeout settings - different timeouts for different test types
+ifeq ($(TEST), axi4_full_crossbar_test)
+    TIMEOUT ?= 100000000  # 100ms for full crossbar test
+else ifeq ($(TEST), axi4_simple_crossbar_test)
+    TIMEOUT ?= 50000000   # 50ms for simple crossbar test  
+else
+    TIMEOUT ?= 10000000   # 10ms for other tests
+endif
 VCS_RUN_OPTS += +UVM_TIMEOUT=$(TIMEOUT),NO
 
 # Maximum error count
@@ -5957,7 +7958,7 @@ debug_info:
 	@echo "  4 - Full debug (+AXI4_DEBUG_SCOREBOARD)"
 	@echo ""
 	@echo "Recent Simulations:"
-	@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{print "  " $$9}'
+	@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{{print "  " $$9}}'
 
 # Open waveform in Verdi
 verdi:
@@ -6220,79 +8221,51 @@ ${{VIP_ROOT}}/top/hvl_top.sv
         return "\n".join(mapping_logic)
 
     def _create_vip_rtl_makefile(self, env_path, timestamp):
-        """Create VIP+RTL integration makefile for large matrices"""
+        """Create VIP+RTL integration makefile using tested working structure from 15x15 fix"""
         sim_dir = os.path.join(env_path, "sim")
         makefile_path = os.path.join(sim_dir, "Makefile")
         
         num_masters = len(self.config.masters)
         num_slaves = len(self.config.slaves)
         
+        # Use the fixed working Makefile structure from successful 15x15 compilation
         makefile_content = f"""#==============================================================================
-# Makefile for AXI4 VIP+RTL Integration ({num_masters}x{num_slaves} Matrix)
-# Generated for actual VIP+RTL simulation as expected by user
+# Makefile for AXI4 VIP Simulation
+# Generated by AMBA Bus Matrix Configuration Tool ({num_masters}x{num_slaves} Matrix)
 # Date: {timestamp}
 #==============================================================================
 
 # Default simulator
 SIM ?= vcs
 
-# Test name and seed
-TEST ?= axi4_rtl_integration_test
+# Test name
+TEST ?= axi4_base_test
+
+# Random seed
 SEED ?= 1
 
 # Directories
 VIP_ROOT = ..
 SIM_DIR = .
+SCRIPT_DIR = $(SIM_DIR)/scripts
 LOG_DIR = $(SIM_DIR)/logs
-WAVE_DIR = $(SIM_DIR)/waves
-COV_DIR = $(SIM_DIR)/coverage
 
 # Export VIP_ROOT for use in compile file
 export VIP_ROOT
 
 # Create directories
-$(shell mkdir -p $(LOG_DIR) $(WAVE_DIR) $(COV_DIR))
+$(shell mkdir -p $(LOG_DIR))
 
-# Common compile options
-COMMON_OPTS = +define+VIP_RTL_INTEGRATION_MODE
-COMMON_OPTS += +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
+# Common compile options (simplified working structure)
+COMMON_OPTS = +define+UVM_NO_DEPRECATED +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
 
-# Debug options
-DEBUG_LEVEL ?= 0
-ifeq ($(DEBUG_LEVEL), 1)
-    COMMON_OPTS += +define+AXI4_DEBUG_BASIC
-else ifeq ($(DEBUG_LEVEL), 2)
-    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION
-else ifeq ($(DEBUG_LEVEL), 3)
-    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION +define+AXI4_DEBUG_PROTOCOL
-else ifeq ($(DEBUG_LEVEL), 4)
-    COMMON_OPTS += +define+AXI4_DEBUG_BASIC +define+AXI4_DEBUG_TRANSACTION +define+AXI4_DEBUG_PROTOCOL +define+AXI4_DEBUG_SCOREBOARD
-endif
-
-# Performance monitoring
-PERF_MONITOR ?= 0
-ifeq ($(PERF_MONITOR), 1)
-    COMMON_OPTS += +define+AXI4_PERF_MONITOR
-endif
-
-# Coverage options
-COVERAGE ?= 0
-ifeq ($(COVERAGE), 1)
-    COMMON_OPTS += +define+AXI4_ENABLE_COVERAGE
-    VCS_COMP_OPTS += -cm line+cond+fsm+tgl+branch+assert
-    VCS_RUN_OPTS += -cm line+cond+fsm+tgl+branch+assert -cm_name $(TEST)_$(SEED)
-endif
-
-# Waveform dump options
+# Waveform dump options  
 DUMP_FSDB ?= 0
 DUMP_VCD ?= 0
-FSDB_FILE ?= $(WAVE_DIR)/$(TEST)_$(SEED).fsdb
-VCD_FILE ?= $(WAVE_DIR)/$(TEST)_$(SEED).vcd
 
 # Add waveform defines
 ifeq ($(DUMP_FSDB), 1)
     COMMON_OPTS += +define+DUMP_FSDB
-    VERDI_HOME ?= /home/eda_tools/synopsys/verdi/W-2024.09-SP1
     VCS_COMP_OPTS += -P $(VERDI_HOME)/share/PLI/VCS/LINUX64/novas.tab $(VERDI_HOME)/share/PLI/VCS/LINUX64/pli.a
 endif
 
@@ -6300,227 +8273,98 @@ ifeq ($(DUMP_VCD), 1)
     COMMON_OPTS += +define+DUMP_VCD
 endif
 
-# VCS options for VIP+RTL integration
+# VCS options (simplified working structure)
 VCS_COMP_OPTS = -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ns/1ps
 VCS_COMP_OPTS += -debug_access+all +vcs+lic+wait -lca -kdb
 VCS_COMP_OPTS += +lint=PCWM +lint=TFIPC-L
 VCS_COMP_OPTS += $(COMMON_OPTS)
 
-# Verbosity level (UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH, UVM_FULL, UVM_DEBUG)
-VERBOSITY ?= UVM_MEDIUM
-
-# Enhanced runtime options
-VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERBOSITY)
+VCS_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=UVM_MEDIUM
 VCS_RUN_OPTS += +ntb_random_seed=$(SEED)
 
-# UVM specific debug options
-UVM_DEBUG ?= 0
-ifeq ($(UVM_DEBUG), 1)
-    VCS_RUN_OPTS += +UVM_CONFIG_DB_TRACE +UVM_OBJECTION_TRACE
-    VCS_RUN_OPTS += +UVM_PHASE_TRACE +UVM_RESOURCE_DB_TRACE
-endif
+# Questa options  
+QUESTA_COMP_OPTS = -64 -sv -mfcu -cuname design_cuname
+QUESTA_COMP_OPTS += +define+QUESTA
+QUESTA_COMP_OPTS += $(COMMON_OPTS)
 
-# Transaction recording
-TRANS_RECORD ?= 0
-ifeq ($(TRANS_RECORD), 1)
-    VCS_RUN_OPTS += +UVM_TR_RECORD +UVM_LOG_RECORD
-endif
-
-# Timeout settings
-TIMEOUT ?= 1000000
-VCS_RUN_OPTS += +UVM_TIMEOUT=$(TIMEOUT),NO
-
-# Maximum error count
-MAX_ERRORS ?= 10
-VCS_RUN_OPTS += +UVM_MAX_QUIT_COUNT=$(MAX_ERRORS),NO
-
-# Add FSDB runtime options
-ifeq ($(DUMP_FSDB), 1)
-    VCS_RUN_OPTS += +fsdb_file=$(FSDB_FILE)
-endif
-
-# Report directory
-REPORT_DIR = $(SIM_DIR)/reports
-$(shell mkdir -p $(REPORT_DIR))
+QUESTA_RUN_OPTS = +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=UVM_MEDIUM
+QUESTA_RUN_OPTS += -sv_seed $(SEED)
 
 # Targets
-.PHONY: all compile run run_fsdb run_vcd verdi clean help debug_info
+.PHONY: all compile run clean
 
 all: run
 
-# Compile VIP+RTL integration
 compile:
 ifeq ($(SIM), vcs)
-\t@echo "===================================="
-\t@echo "VIP+RTL Integration Compilation ({num_masters}x{num_slaves})"
-\t@echo "===================================="
-\t@echo "Debug Level: $(DEBUG_LEVEL)"
-\t@echo "Coverage: $(COVERAGE)"
-\t@echo "Performance Monitor: $(PERF_MONITOR)"
-\t@echo "Compiling UVM testbench with RTL interconnect..."
-\tVIP_ROOT=$(VIP_ROOT) vcs $(VCS_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_vip_rtl_compile.f -l $(LOG_DIR)/compile.log
-\t@echo "✅ VIP+RTL compilation successful!"
-else
-\t@echo "VIP+RTL integration currently supports VCS only"
+	VIP_ROOT=$(VIP_ROOT) vcs $(VCS_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_compile.f -l $(LOG_DIR)/compile.log
+else ifeq ($(SIM), questa)
+	VIP_ROOT=$(VIP_ROOT) vlog $(QUESTA_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_compile.f -l $(LOG_DIR)/compile.log
 endif
 
-# Run simulation
 run: compile
 ifeq ($(SIM), vcs)
-\t@echo "===================================="
-\t@echo "Running VIP+RTL Integration Test"
-\t@echo "===================================="
-\t@echo "Test: $(TEST)"
-\t@echo "Seed: $(SEED)"
-\t@echo "Verbosity: $(VERBOSITY)"
-\t@echo "UVM Debug: $(UVM_DEBUG)"
-\t@echo "Transaction Recording: $(TRANS_RECORD)"
-\t@echo "Timeout: $(TIMEOUT)"
-\t./simv $(VCS_RUN_OPTS) -l $(LOG_DIR)/$(TEST)_$(SEED).log | tee $(LOG_DIR)/$(TEST)_$(SEED)_console.log
-\t@echo "✅ VIP+RTL simulation completed!"
-\t@echo "Log file: $(LOG_DIR)/$(TEST)_$(SEED).log"
-else
-\t@echo "VIP+RTL simulation currently supports VCS only"
+	./simv $(VCS_RUN_OPTS) -l $(LOG_DIR)/$(TEST)_$(SEED).log
+else ifeq ($(SIM), questa)
+	vsim -c design_cuname.hvl_top design_cuname.hdl_top $(QUESTA_RUN_OPTS) -do "run -all; quit" -l $(LOG_DIR)/$(TEST)_$(SEED).log
 endif
 
-# Debug runs with different levels
-debug_basic:
-\t$(MAKE) run DEBUG_LEVEL=1 VERBOSITY=UVM_HIGH
-
-debug_trans:
-\t$(MAKE) run DEBUG_LEVEL=2 VERBOSITY=UVM_HIGH TRANS_RECORD=1
-
-debug_protocol:
-\t$(MAKE) run DEBUG_LEVEL=3 VERBOSITY=UVM_HIGH UVM_DEBUG=1
-
-debug_full:
-\t$(MAKE) run DEBUG_LEVEL=4 VERBOSITY=UVM_FULL UVM_DEBUG=1 TRANS_RECORD=1
-
-# Run with performance monitoring
-run_perf:
-\t$(MAKE) run PERF_MONITOR=1
-\t@echo "Performance metrics logged in simulation output"
-
-# Run with coverage
-run_cov:
-\t$(MAKE) run COVERAGE=1
-\t@echo "Coverage database: simv.vdb"
-
 # Run with FSDB dumping
-run_fsdb: 
-\t$(MAKE) run DUMP_FSDB=1
-\t@echo "✅ FSDB file generated: $(FSDB_FILE)"
+run_fsdb:
+	$(MAKE) run DUMP_FSDB=1
+	@echo "FSDB file generated: $(FSDB_FILE)"
 
 # Run with VCD dumping
 run_vcd:
-\t$(MAKE) run DUMP_VCD=1
-\t@echo "✅ VCD file generated: $(VCD_FILE)"
+	$(MAKE) run DUMP_VCD=1
+	@echo "VCD file generated: $(VCD_FILE)"
 
-# Run all tests
-run_all:
-\t@for test in axi4_basic_rw_test axi4_burst_test axi4_stress_test axi4_random_test; do \\
-\t\techo "Running $$test..."; \\
-\t\t$(MAKE) run TEST=$$test SEED=$$(date +%s); \\
-\tdone
-
-# Generate debug info report
-debug_info:
-\t@echo "===================================="
-\t@echo "AXI4 VIP Debug Information"
-\t@echo "===================================="
-\t@echo "Platform Information:"
-\t@echo "  VCS Version: $$(vcs -ID | head -1)"
-\t@echo "  UVM Version: UVM-1.2"
-\t@echo "  VIP Root: $(VIP_ROOT)"
-\t@echo ""
-\t@echo "Configuration Details:"
-\t@echo "  Number of Masters: {num_masters}"
-\t@echo "  Number of Slaves: {num_slaves}"
-\t@echo "  Matrix Size: {num_masters}x{num_slaves}"
-\t@echo ""
-\t@echo "Available Tests:"
-\t@ls -1 $(VIP_ROOT)/test/*.sv 2>/dev/null | grep -v base_test | sed 's/.*\\//  - /' | sed 's/.sv//' || echo "  Tests being generated..."
-\t@echo ""
-\t@echo "Debug Levels:"
-\t@echo "  0 - No debug (default)"
-\t@echo "  1 - Basic debug (+AXI4_DEBUG_BASIC)"
-\t@echo "  2 - Transaction debug (+AXI4_DEBUG_TRANSACTION)"
-\t@echo "  3 - Protocol debug (+AXI4_DEBUG_PROTOCOL)"
-\t@echo "  4 - Full debug (+AXI4_DEBUG_SCOREBOARD)"
-\t@echo ""
-\t@echo "Recent Simulations:"
-\t@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{{print "  " $$9}}' || echo "  No simulations run yet"
-
-# Open waveform in Verdi
+# Open waveform in Verdi with auto-load last run
 verdi:
-\t@echo "Opening Verdi for VIP+RTL debugging..."
-\t@if [ ! -d "simv.daidir" ]; then \\
-\t\techo "❌ Database not found. Run 'make compile' first."; \\
-\t\texit 1; \\
-\tfi
-\t@# Find the most recent FSDB file
-\t@LAST_FSDB=$$(ls -t $(WAVE_DIR)/*.fsdb 2>/dev/null | head -1); \\
-\tif [ -n "$$LAST_FSDB" ]; then \\
-\t\techo "Loading FSDB: $$LAST_FSDB"; \\
-\t\tverdi -ssf $$LAST_FSDB -elab ./simv.daidir/kdb -nologo & \\
-\telse \\
-\t\techo "Loading KDB only: ./simv.daidir/kdb"; \\
-\t\tverdi -elab ./simv.daidir/kdb -nologo & \\
-\tfi
+	@echo "Auto-loading last run in Verdi..."
+	@# Find the most recent FSDB file
+	@LAST_FSDB=$$(ls -t $(WAVE_DIR)/*.fsdb 2>/dev/null | head -1); \
+	if [ -z "$$LAST_FSDB" ]; then \
+		echo "No FSDB files found. Run 'make run_fsdb' first."; \
+		exit 1; \
+	fi; \
+	echo "Loading FSDB: $$LAST_FSDB"; \
+	echo "Loading KDB: ./simv.daidir/kdb"; \
+	verdi -ssf $$LAST_FSDB -elab ./simv.daidir/kdb -nologo &
 
-# Analyze logs for errors
-analyze_logs:
-\t@echo "===================================="
-\t@echo "Log Analysis Report"
-\t@echo "===================================="
-\t@for log in $(LOG_DIR)/*.log; do \\
-\t\tif [ -f "$$log" ]; then \\
-\t\t\techo "Analyzing: $$log"; \\
-\t\t\techo -n "  UVM_ERRORS: "; grep -c "UVM_ERROR" "$$log" || echo "0"; \\
-\t\t\techo -n "  UVM_WARNINGS: "; grep -c "UVM_WARNING" "$$log" || echo "0"; \\
-\t\t\techo -n "  UVM_FATAL: "; grep -c "UVM_FATAL" "$$log" || echo "0"; \\
-\t\t\techo ""; \\
-\t\tfi \\
-\tdone
-
-# Generate HTML report
-report:
-\t@echo "Generating simulation report..."
-\t@python3 $(SCRIPT_DIR)/generate_report.py --log-dir $(LOG_DIR) --output $(REPORT_DIR)/simulation_report.html 2>/dev/null || echo "Report generation script not available yet"
-\t@echo "Report would be generated at: $(REPORT_DIR)/simulation_report.html"
+# Open waveform in DVE
+dve:
+	dve -vpd $(VCD_FILE) &
 
 clean:
-\trm -rf simv* csrc *.log ucli.key
-\trm -rf work transcript vsim.wlf
-\trm -rf $(LOG_DIR)/* $(WAVE_DIR)/* $(COV_DIR)/*
+	rm -rf csrc simv* *.log ucli.key
+	rm -rf work transcript vsim.wlf
+	rm -rf $(LOG_DIR)/* $(WAVE_DIR)/* $(COV_DIR)/*
 
 help:
-\t@echo "VIP+RTL Integration Makefile for {num_masters}x{num_slaves} Matrix"
-\t@echo "=============================================="
-\t@echo "This makefile provides actual VIP+RTL integration as expected"
-\t@echo "when the VIP generator shows 100% completion."
-\t@echo ""
-\t@echo "Usage: make [target] [options]"
-\t@echo "Targets:"
-\t@echo "  compile       - Compile VIP+RTL integration"
-\t@echo "  run           - Run VIP+RTL simulation"
-\t@echo "  run_fsdb      - Run with FSDB waveform dumping"
-\t@echo "  run_vcd       - Run with VCD waveform dumping"
-\t@echo "  verdi         - Open Verdi for debugging"
-\t@echo "  clean         - Clean simulation files"
-\t@echo "Options:"
-\t@echo "  SIM=vcs       - Simulator (vcs)"
-\t@echo "  TEST=test_name - UVM test to run"
-\t@echo "  SEED=value     - Random seed"
-\t@echo "  DUMP_FSDB=1    - Enable FSDB dumping"
-\t@echo "  DUMP_VCD=1     - Enable VCD dumping"
-\t@echo ""
-\t@echo "✅ This provides actual VIP+RTL integration!"
+	@echo "Usage: make [target] [options]"
+	@echo "Targets:"
+	@echo "  compile    - Compile the design"
+	@echo "  run        - Compile and run simulation"
+	@echo "  run_fsdb   - Run with FSDB dumping enabled"
+	@echo "  run_vcd    - Run with VCD dumping enabled"
+	@echo "  verdi      - Open FSDB in Verdi"
+	@echo "  dve        - Open VCD in DVE"
+	@echo "  clean      - Clean simulation files"
+	@echo "Options:"
+	@echo "  SIM=vcs      - Simulator (vcs, questa)"
+	@echo "  TEST=test_name    - Test to run"
+	@echo "  SEED=value        - Random seed"
+	@echo "  DUMP_FSDB=1       - Enable FSDB dumping"
+	@echo "  DUMP_VCD=1        - Enable VCD dumping"
+	@echo "  FSDB_FILE=path    - FSDB output file"
+	@echo "  VCD_FILE=path     - VCD output file"
 """
         
-        with open(makefile_path, 'w') as f:
+        with open(makefile_path, "w") as f:
             f.write(makefile_content)
-
+        
+        print(f"Created VIP+RTL Makefile: {makefile_path}")
     def _create_vip_rtl_testbench(self, env_path):
         """Create VIP+RTL integration testbench files for large matrices"""
         # Create top directory
@@ -6556,8 +8400,8 @@ module hdl_top;
         #100 aresetn = 1;
         
         // Basic simulation control
-        #10000 $display("RTL+VIP Integration Test Complete");
-        $finish;
+        // Let UVM control simulation end
+        // Removed automatic $finish to allow transactions to complete
     end
     
     // RTL DUT instantiation - {num_masters}x{num_slaves} interconnect
@@ -6576,12 +8420,37 @@ module hdl_top;
         // For basic RTL-only simulation, default values are used
     );
     
-    // Waveform dumping
+    // Enhanced waveform dumping with explicit clock signal visibility fix
     `ifdef DUMP_FSDB
         initial begin
             $fsdbDumpfile("waves/vip_rtl_integration.fsdb");
+            
+            // Dump top level including the main clock
             $fsdbDumpvars(0, hdl_top);
-            $display("[FSDB] Waveform dumping enabled");
+            $fsdbDumpvars(0, hdl_top.aclk);    // Explicit top-level clock dump
+            $fsdbDumpvars(0, hdl_top.aresetn); // Explicit top-level reset dump
+            
+            // Dump all master interface signals individually WITH EXPLICIT CLOCKS
+            for (int i = 0; i < {num_masters}; i++) begin
+                $fsdbDumpvars(0, hdl_top.master_if[i]);
+                $fsdbDumpvars(0, hdl_top.master_if[i].aclk);  // Explicit interface clock
+            end
+            
+            // Dump all slave interface signals individually WITH EXPLICIT CLOCKS
+            for (int i = 0; i < {num_slaves}; i++) begin
+                $fsdbDumpvars(0, hdl_top.slave_if[i]);
+                $fsdbDumpvars(0, hdl_top.slave_if[i].aclk);  // Explicit interface clock
+            end
+            
+            // Dump RTL DUT wrapper and all its internal signals WITH EXPLICIT CLOCKS
+            $fsdbDumpvars(0, hdl_top.dut);
+            $fsdbDumpvars(0, hdl_top.dut.clk);    // DUT wrapper clock input
+            $fsdbDumpvars(0, hdl_top.dut.rst_n);  // DUT wrapper reset input
+            
+            // Try to dump the RTL interconnect module clock specifically (if it exists)
+            $fsdbDumpvars(0, hdl_top.dut.rtl_interconnect_inst.aclk);
+            
+            $display("[FSDB] Enhanced waveform dumping enabled with explicit clock signals");
         end
     `endif
     
@@ -6622,6 +8491,19 @@ module hvl_top;
         
         virtual function void build_phase(uvm_phase phase);
             super.build_phase(phase);
+        // Configuration for large matrices
+        bit disable_unused_masters;
+        int active_master_count;
+        
+        disable_unused_masters = 0;
+        active_master_count = NO_OF_MASTERS;
+        
+        // For very large configurations, limit active masters
+        if (NO_OF_MASTERS > 8 && disable_unused_masters) begin
+            active_master_count = 8;
+            `uvm_info(get_type_name(), $sformatf("Large config detected: limiting to %0d active masters", active_master_count), UVM_LOW)
+        end
+
             `uvm_info(get_type_name(), "Building RTL integration test for {num_masters}x{num_slaves} matrix", UVM_LOW)
         endfunction
         

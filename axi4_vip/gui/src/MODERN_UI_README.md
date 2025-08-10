@@ -2,7 +2,7 @@
 
 ## Overview
 
-This enhancement transforms the AMBA Bus Matrix Configuration GUI with an "ultrathink" modern design aesthetic, featuring smooth animations, improved visual hierarchy, and enhanced user experience.
+This enhancement transforms the AMBA Bus Matrix Configuration GUI with a modern design aesthetic, featuring smooth animations, improved visual hierarchy, and enhanced user experience.
 
 ## Key Improvements
 

@@ -134,9 +134,9 @@ compile:
 	@echo "Coverage: $(COVERAGE)"
 	@echo "Performance Monitor: $(PERF_MONITOR)"
 ifeq ($(SIM), vcs)
-	VIP_ROOT=$(VIP_ROOT) vcs $(VCS_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_vip_rtl_compile.f -l $(LOG_DIR)/compile.log
+	VIP_ROOT=$(VIP_ROOT) vcs $(VCS_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_compile.f -l $(LOG_DIR)/compile.log
 else ifeq ($(SIM), questa)
-	VIP_ROOT=$(VIP_ROOT) vlog $(QUESTA_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_vip_rtl_compile.f -l $(LOG_DIR)/compile.log
+	VIP_ROOT=$(VIP_ROOT) vlog $(QUESTA_COMP_OPTS) -f $(VIP_ROOT)/sim/axi4_compile.f -l $(LOG_DIR)/compile.log
 endif
 	@echo "✅ Compilation successful!"
 
@@ -208,11 +208,11 @@ debug_info:
 	@echo "  VIP Root: $(VIP_ROOT)"
 	@echo ""
 	@echo "Configuration Details:"
-	@echo "  Number of Masters: $$(grep -c "master_agent\[" $(VIP_ROOT)/env/axi4_env.sv || echo "Unknown")"
-	@echo "  Number of Slaves: $$(grep -c "slave_agent\[" $(VIP_ROOT)/env/axi4_env.sv || echo "Unknown")"
+	@echo "  Number of Masters: $$(grep -c "master_agent\\[" $(VIP_ROOT)/env/axi4_env.sv || echo "Unknown")"
+	@echo "  Number of Slaves: $$(grep -c "slave_agent\\[" $(VIP_ROOT)/env/axi4_env.sv || echo "Unknown")"
 	@echo ""
 	@echo "Available Tests:"
-	@ls -1 $(VIP_ROOT)/test/*.sv | grep -v base_test | sed 's/.*\//  - /' | sed 's/.sv//'
+	@ls -1 $(VIP_ROOT)/test/*.sv 2>/dev/null | grep -v base_test | sed 's/.*\\//  - /' | sed 's/.sv//' || echo "No tests found"
 	@echo ""
 	@echo "Debug Levels:"
 	@echo "  0 - No debug (default)"
@@ -222,11 +222,11 @@ debug_info:
 	@echo "  4 - Full debug (+AXI4_DEBUG_SCOREBOARD)"
 	@echo ""
 	@echo "Recent Simulations:"
-	@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{print "  " $$9}'
+	@ls -lt $(LOG_DIR)/*.log 2>/dev/null | head -5 | awk '{print "  " $$9}' || echo "  No simulations run yet"
 
 # Open waveform in Verdi
 verdi:
-	@echo "Opening Verdi for VIP+RTL debugging..."
+	@echo "Opening Verdi for VIP debugging..."
 	@if [ ! -d "simv.daidir" ]; then \
 		echo "❌ Database not found. Run 'make compile' first."; \
 		exit 1; \
@@ -259,8 +259,12 @@ analyze_logs:
 # Generate HTML report
 report:
 	@echo "Generating simulation report..."
-	@python3 $(SCRIPT_DIR)/generate_report.py --log-dir $(LOG_DIR) --output $(REPORT_DIR)/simulation_report.html
-	@echo "Report generated: $(REPORT_DIR)/simulation_report.html"
+	@if [ -f $(SCRIPT_DIR)/generate_report.py ]; then \
+		python3 $(SCRIPT_DIR)/generate_report.py --log-dir $(LOG_DIR) --output $(REPORT_DIR)/simulation_report.html; \
+		echo "Report generated: $(REPORT_DIR)/simulation_report.html"; \
+	else \
+		echo "Report generation script not available yet"; \
+	fi
 
 # Clean simulation files
 clean:

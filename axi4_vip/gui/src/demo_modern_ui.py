@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Demo script showing the modern UI enhancements for AMBA Bus Matrix GUI
-This demonstrates the ultrathink design aesthetic with animations and modern styling
+This demonstrates the modern design aesthetic with animations and styling
 """
 
 import tkinter as tk
@@ -23,7 +23,7 @@ class ModernUIDemo:
     
     def __init__(self, root):
         self.root = root
-        self.root.title("AMBA Modern UI Demo - Ultrathink Design")
+        self.root.title("AMBA Modern UI Demo - Modern Design")
         
         # Apply modern theme
         self.theme = apply_modern_theme(root, dark_mode=False)
@@ -83,7 +83,7 @@ class ModernUIDemo:
                 fg=self.theme.get_color('text_on_primary')).pack()
         
         # Subtitle
-        tk.Label(content, text="Experience the ultrathink design aesthetic",
+        tk.Label(content, text="Experience the modern design aesthetic",
                 font=self.theme.FONTS['body'],
                 bg=self.theme.get_color('primary'),
                 fg=self.theme.get_color('text_on_primary')).pack(pady=(5, 0))

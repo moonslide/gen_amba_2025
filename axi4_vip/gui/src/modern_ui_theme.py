@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Modern UI Theme for AMBA Bus Matrix GUI
-Implements an ultrathink design aesthetic with smooth animations and modern styling
+Implements a modern design aesthetic with smooth animations and styling
 """
 
 import tkinter as tk
@@ -11,7 +11,7 @@ from typing import Dict, Tuple, Optional, Callable
 import time
 
 class ModernTheme:
-    """Modern ultrathink design theme"""
+    """Modern design theme"""
     
     # Color Schemes
     LIGHT_THEME = {

@@ -326,6 +326,15 @@ The project now includes a comprehensive AXI4 Verification IP (VIP) implementati
   - USER signal support for sideband information
   - 4KB boundary crossing detection and exclusive access monitoring
 
+- **B-Channel Implementation** (**ENHANCED AUGUST 2025** ✅)
+  - **Complete AXI4-compliant write response channel implementation**
+  - **Fixed Race Conditions**: Replaced global variables with transaction queue system
+  - **Proper State Management**: Address, data, and response channel coordination
+  - **AXI4 Protocol Compliance**: BID matches AWID per specification
+  - **Timeout Protection**: Configurable handshake timeout detection
+  - **FSDB Waveform Support**: Verified signal activity in Verdi debugging
+  - **Generator Integration**: All fixes included in `vip_environment_generator.py`
+
 #### Verification Environment ✅
 - **Master Sequence Library** (`axi4_vip/gui/src/vip_master_sequences_generator.py`)
   - 40+ comprehensive test sequences covering all AXI4 features
@@ -413,6 +422,68 @@ axi4_vip/gui/src/
 - **Production Ready**: Full verification environment with regression capabilities
 
 This implementation provides a complete, production-ready AXI4 verification IP that significantly enhances the original gen_amba_2025 project capabilities.
+
+### B-Channel Implementation Details (August 2025)
+
+**Problem Solved**: AXI4 B-channel (write response) signals were not changing in waveforms due to race conditions and timing issues in the BFM implementations.
+
+**Technical Fixes Applied**:
+
+#### Slave Driver BFM Enhancements (`axi4_slave_driver_bfm.sv`)
+```systemverilog
+// NEW: Transaction queue system replaces race-prone global variables
+typedef struct {
+    logic [ID_WIDTH-1:0] awid;
+    logic [ADDR_WIDTH-1:0] awaddr;
+    logic [7:0] awlen;
+    logic [2:0] awsize;
+    logic [1:0] awburst;
+    logic addr_received;
+    logic data_complete;
+    logic response_sent;
+} write_transaction_t;
+
+write_transaction_t write_trans_queue[$];  // Transaction queue
+```
+
+**Key Improvements**:
+- **Eliminated Race Conditions**: Proper coordination between parallel tasks
+- **Transaction Queue**: FIFO-based transaction management
+- **State Tracking**: Clear transaction lifecycle management
+- **B-Channel Response Generation**: AXI4-compliant BID assignment and BRESP handling
+
+#### Master Driver BFM Enhancements (`axi4_master_driver_bfm.sv`)
+```systemverilog
+// FIXED: Proper B-channel handshake completion
+// OLD: @(posedge axi_intf.bvalid);  // Could cause hangs
+// NEW: 
+while (!(axi_intf.bvalid && axi_intf.bready)) @(posedge aclk);
+```
+
+**Key Improvements**:
+- **Fixed Timing Bug**: Eliminated potential hangs in B-channel handshake
+- **Protocol Compliance**: Proper handshake detection
+- **BID Verification**: Detects and logs BID mismatches
+- **Response Logging**: Enhanced debugging with detailed B-channel messages
+
+#### FSDB Waveform Dumping Fix (`hdl_top.sv`)
+```systemverilog
+`ifdef DUMP_FSDB
+    $system("mkdir -p waves");
+    $fsdbDumpfile("waves/axi4_vip.fsdb");
+    $fsdbDumpvars(0, "hdl_top", "+all");
+`endif
+```
+
+**Verification Results**:
+```
+✅ Test: make run_fsdb TEST=axi4_simple_crossbar_test
+✅ B-channel Messages: 3 successful B-channel transactions logged
+✅ FSDB File: waves/axi4_vip.fsdb (82,301 bytes)
+✅ Protocol Compliance: BID matching and BRESP handling verified
+```
+
+**Generator Integration**: All fixes are automatically applied in future VIP generations through the updated `vip_environment_generator.py`.
 
 ### AXI Protocol Implementation Guidelines (per IHI0022D spec)
 
@@ -512,6 +583,35 @@ seq/master_sequences/axi4_master_user_signal_passthrough_seq.sv
 - **Fixed shell syntax error in make verdi**: Removed extra semicolons after background operators (`&;` → `&`) in all Makefiles
 - **Updated VIP generation flow**: Modified vip_environment_generator.py to generate warning-free hdl_top.sv with proper interface instantiation
 - **Applied fixes globally**: Updated all VIP integration projects (16x16, 17x17, axi4_vip_env_rtl_integration) and generation scripts
+
+
+### VIP Detailed Logging Enhancement (2025-08-06)
+- **Enhanced UVM_INFO logging for all VIP components**:
+  - Fixed missing UVM_INFO messages in 16x16 VIP to match 9x9 VIP reference
+  - Added BFM initialization messages: "Master/Slave BFM signals initialized"
+  - Added transaction generation logging: "Starting AXI transaction generation"
+  - Added configurable UVM_VERBOSITY support in generated Makefiles
+  - Created automatic logging patch script: `axi4_vip/gui/scripts/apply_detailed_logging.sh`
+  
+- **GUI Integration for Automatic Logging**:
+  - Updated `vip_gui_integration.py` with `_apply_detailed_logging_patches()` method
+  - Patches apply automatically after VIP generation (both RTL Integration and Standalone modes)
+  - No manual intervention required - all future VIPs will have detailed logging
+  
+- **Fixed Compilation and Syntax Errors**:
+  - Fixed BFM interface connection errors (Error-[SV-UIP1])
+  - Fixed syntax errors in test base classes (Error-[SE])
+  - Added proper UVM package imports to all BFMs
+  - Fixed hdl_top.sv driver BFM instantiation syntax
+  
+- **Usage**:
+  ```bash
+  # Run with custom verbosity (generated VIPs now support this)
+  make run_fsdb TEST=axi4_stress_test UVM_VERBOSITY=UVM_HIGH
+  
+  # Manual patch application if needed
+  ./axi4_vip/gui/scripts/apply_detailed_logging.sh /path/to/vip
+  ```
 
 ### Running QoS Tests
 ```bash

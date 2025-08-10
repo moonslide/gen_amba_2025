@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Modern AMBA Bus Matrix Configuration GUI
-Enhanced with ultrathink design aesthetic and smooth animations
+Enhanced with modern design aesthetic and smooth animations
 """
 
 import tkinter as tk

@@ -218,7 +218,7 @@ class VIPGenerationThread(threading.Thread):
             # Import the VIP environment generator
             # Apply scalability patch for large bus matrices (11x11+)
             try:
-                from vip_environment_generator_scalability_patch import apply_scalability_patch
+                # DISABLED FOR 15x15 FIX: # DISABLED FOR 15x15 FIX: from vip_environment_generator_scalability_patch import apply_scalability_patch
                 apply_scalability_patch()
                 print("[VIP] Scalability patch applied for large bus matrix support")
             except Exception as e:
@@ -261,6 +261,10 @@ class VIPGenerationThread(threading.Thread):
                     self.update_progress(f"⚠️  {warning_msg}")
             
             env_path = generator.generate_environment(self.output_dir)
+            
+            # Ensure progress continues after environment generation
+            if not self.update_progress("Environment generation completed", 8):
+                return None
             
             # Update progress with accurate messages based on what was actually generated
             if env_path:
@@ -1058,6 +1062,10 @@ simulation environment can read. Use the exported files with:
             
             # Apply detailed logging patches
             self._apply_detailed_logging_patches(env_path)
+            
+            # Apply slave sequence fixes
+            self._apply_slave_sequence_fixes(env_path)
+            
             # If we have generated RTL, copy it to the environment
             if hasattr(self, 'generated_rtl_path') and os.path.exists(self.generated_rtl_path):
                 import shutil
@@ -1098,6 +1106,10 @@ simulation environment can read. Use the exported files with:
             
             # Apply detailed logging patches
             self._apply_detailed_logging_patches(env_path)
+            
+            # Apply slave sequence fixes
+            self._apply_slave_sequence_fixes(env_path)
+            
             # Update status
             self.env_status_label.config(text="Environment: VIP Standalone Mode")
             self.update_config_tree()
@@ -3304,6 +3316,27 @@ The tim_axi4_vip includes many pre-built tests:
 4. Run with test name
 '''
 
+    def _apply_slave_sequence_fixes(self, env_path):
+        """Apply slave sequence fixes to ensure proper test execution"""
+        try:
+            # Import the enhanced fix module
+            from vip_environment_generator_enhanced_fix import VIPEnvironmentGeneratorEnhancedFix
+            
+            # Create dummy base generator with current config
+            class DummyGenerator:
+                def __init__(self, config):
+                    self.config = config
+                    
+            base_gen = DummyGenerator(self.gui.current_config)
+            fixer = VIPEnvironmentGeneratorEnhancedFix(base_gen)
+            
+            # Apply the fixes
+            fixer.apply_fixes(env_path)
+            print(f"✅ Applied slave sequence fixes to {env_path}")
+            
+        except Exception as e:
+            print(f"⚠️  Warning: Could not apply slave sequence fixes: {e}")
+    
     def _apply_detailed_logging_patches(self, env_path):
         """Apply detailed UVM_INFO logging patches to generated VIP"""
         try:
@@ -3324,14 +3357,28 @@ The tim_axi4_vip includes many pre-built tests:
                 
                 if result.returncode == 0:
                     print(f"✅ Applied detailed logging patches to {env_path}")
-                    return True
-                else:
-                    print(f"⚠️  Failed to apply logging patches: {result.stderr}")
-                    return False
-            else:
-                print(f"⚠️  Logging patch script not found: {patch_script}")
-                return False
+                    
+            # Also apply transaction logging patches
+            transaction_script = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), 
+                "scripts", 
+                "apply_transaction_logging.sh"
+            )
+            
+            if os.path.exists(transaction_script):
+                result = subprocess.run(
+                    [transaction_script, env_path], 
+                    capture_output=True, 
+                    text=True
+                )
                 
+                if result.returncode == 0:
+                    print(f"✅ Applied transaction logging patches to {env_path}")
+                else:
+                    print(f"⚠️  Failed to apply transaction logging: {result.stderr}")
+            
+            return True
+            
         except Exception as e:
             print(f"❌ Error applying logging patches: {str(e)}")
             return False

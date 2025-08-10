@@ -140,6 +140,15 @@ package axi4_master_pkg;
             forever begin
                 `uvm_info(get_type_name(), "Waiting for next transaction from sequencer", UVM_HIGH)
                 seq_item_port.get_next_item(req);
+                
+                // Log transaction details
+                if (req.tx_type == axi4_master_tx::WRITE) begin
+                    `uvm_info(get_type_name(), $sformatf("Got WRITE transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.awaddr, req.awlen, req.awsize, req.awburst), UVM_MEDIUM)
+                end else begin
+                    `uvm_info(get_type_name(), $sformatf("Got READ transaction - addr=0x%08x, len=%0d, size=%0d, burst=%0d", 
+                        req.araddr, req.arlen, req.arsize, req.arburst), UVM_MEDIUM)
+                end
                 trans_cnt++;
                 
                 `uvm_info(get_type_name(), $sformatf("Transaction #%0d: Got %s transaction", 

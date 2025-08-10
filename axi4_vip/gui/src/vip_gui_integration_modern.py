@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Modern VIP GUI Integration Module
-Enhanced AXI4 Verification IP GUI with ultrathink design aesthetic
+Enhanced AXI4 Verification IP GUI with modern design aesthetic
 """
 
 import tkinter as tk

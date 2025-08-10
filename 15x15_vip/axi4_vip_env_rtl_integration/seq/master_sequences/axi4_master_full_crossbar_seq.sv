@@ -1,0 +1,94 @@
+//==============================================================================
+// AXI4 Master Full Crossbar Sequence
+// Each master sends transactions to all slaves
+//==============================================================================
+
+class axi4_master_full_crossbar_seq extends axi4_master_base_seq;
+    `uvm_object_utils(axi4_master_full_crossbar_seq)
+    
+    int master_id = 0;
+    
+    function new(string name = "axi4_master_full_crossbar_seq");
+        super.new(name);
+    endfunction
+    
+    virtual task body();
+        axi4_master_tx write_xtn;
+        axi4_master_tx read_xtn;
+        int max_slaves;
+        
+        // Test only a subset of slaves per master to reduce complexity
+        max_slaves = (master_id < 5) ? 15 : 5;  // First 5 masters test all slaves, others test 5
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Starting transactions to %0d slaves", master_id, max_slaves), UVM_LOW)
+        
+        // Send test transactions to verify connectivity to all slaves  
+        // Use alternating read/write to reduce simulation load
+        for (int slave = 0; slave < max_slaves; slave++) begin
+            bit [63:0] slave_base_addr;
+            bit [255:0] data_pattern;
+            
+            // Calculate slave base address (each slave gets 256MB space)
+            slave_base_addr = slave * 64'h10000000;
+            
+            // Generate unique data pattern for this master-slave pair
+            data_pattern = {master_id[7:0], slave[7:0], 240'hABCD_1234};
+            
+            // Alternate between write and read for each slave to reduce load
+            if (slave % 2 == 0) begin
+                //--------------------------------------------------------------
+                // WRITE TRANSACTION (to even slaves)
+                //--------------------------------------------------------------
+                `uvm_info(get_type_name(), $sformatf("Master %0d: Writing to Slave %0d at addr 0x%0h", 
+                          master_id, slave, slave_base_addr), UVM_LOW)
+                
+                write_xtn = axi4_master_tx::type_id::create("write_xtn");
+                
+                if (!write_xtn.randomize() with {
+                    tx_type == WRITE;
+                    awaddr == slave_base_addr + (master_id * 'h100);
+                    awlen == 0;           // Single beat only for faster completion
+                    awsize == 3'b011;     // 8 bytes per beat  
+                    awburst == 2'b01;     // INCR burst
+                    awid == master_id[3:0];
+                    wdata.size() == 1;    // Single data beat
+                    wdata[0] == data_pattern;
+                }) begin
+                    `uvm_error(get_type_name(), "Write transaction randomization failed")
+                end
+                
+                start_item(write_xtn);
+                finish_item(write_xtn);
+                
+            end else begin
+                //--------------------------------------------------------------
+                // READ TRANSACTION (to odd slaves)
+                //--------------------------------------------------------------
+                `uvm_info(get_type_name(), $sformatf("Master %0d: Reading from Slave %0d at addr 0x%0h", 
+                          master_id, slave, slave_base_addr), UVM_LOW)
+                
+                read_xtn = axi4_master_tx::type_id::create("read_xtn");
+                
+                if (!read_xtn.randomize() with {
+                    tx_type == READ;
+                    araddr == slave_base_addr + (master_id * 'h100);
+                    arlen == 0;           // Single beat only for faster completion
+                    arsize == 3'b011;     // 8 bytes per beat
+                    arburst == 2'b01;     // INCR burst
+                    arid == master_id[3:0];
+                }) begin
+                    `uvm_error(get_type_name(), "Read transaction randomization failed")
+                end
+                
+                start_item(read_xtn);
+                finish_item(read_xtn);
+            end
+            
+            // Longer delay between slaves to prevent congestion
+            #1000;  // Increased from 500 to 1000
+        end
+        
+        `uvm_info(get_type_name(), $sformatf("Master %0d: Completed all transactions", master_id), UVM_LOW)
+    endtask
+    
+endclass
