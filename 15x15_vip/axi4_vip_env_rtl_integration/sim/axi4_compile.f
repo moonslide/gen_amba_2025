@@ -28,6 +28,9 @@ ${VIP_ROOT}/pkg/axi4_globals_pkg.sv
 # Interface
 ${VIP_ROOT}/intf/axi4_interface/axi4_if.sv
 
+# RTL Monitor Interface for VIF-based RTL signal monitoring
+${VIP_ROOT}/intf/rtl_monitor_if.sv
+
 # BFM stub interfaces (must be compiled before agent BFMs)
 ${VIP_ROOT}/agent/master_agent_bfm/axi4_master_driver_bfm.sv
 ${VIP_ROOT}/agent/master_agent_bfm/axi4_master_monitor_bfm.sv

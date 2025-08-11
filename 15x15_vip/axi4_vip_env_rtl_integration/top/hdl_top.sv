@@ -41,7 +41,11 @@ module hdl_top;
         .ID_WIDTH(ID_WIDTH), 
         .USER_WIDTH(USER_WIDTH)
     ) slave_if[15](aclk, aresetn);
-    // Master agent BFMs - connected to AXI interfaces
+
+    // RTL Monitor Interface for WLAST signal monitoring (SystemVerilog compliant)
+    rtl_monitor_if #(
+        .NUM_MASTERS(15)
+    ) rtl_mon_if(aclk, aresetn);    // Master agent BFMs - connected to AXI interfaces
     genvar i;
     generate
         for (i = 0; i < 15; i++) begin : gen_master_bfms
@@ -72,6 +76,24 @@ module hdl_top;
         end
     endgenerate
 
+    
+    // Connect RTL monitor interface to actual RTL interconnect signals
+    // RTL uses individual signals (m0_wvalid, m1_wvalid, etc.) not arrays
+    assign rtl_mon_if.m_wvalid[0] = dut.rtl_interconnect_inst.m0_wvalid;
+    assign rtl_mon_if.m_wready[0] = dut.rtl_interconnect_inst.m0_wready;
+    assign rtl_mon_if.m_wlast[0]  = dut.rtl_interconnect_inst.m0_wlast;
+    
+    assign rtl_mon_if.m_wvalid[1] = dut.rtl_interconnect_inst.m1_wvalid;
+    assign rtl_mon_if.m_wready[1] = dut.rtl_interconnect_inst.m1_wready;
+    assign rtl_mon_if.m_wlast[1]  = dut.rtl_interconnect_inst.m1_wlast;
+    
+    assign rtl_mon_if.m_wvalid[2] = dut.rtl_interconnect_inst.m2_wvalid;
+    assign rtl_mon_if.m_wready[2] = dut.rtl_interconnect_inst.m2_wready;
+    assign rtl_mon_if.m_wlast[2]  = dut.rtl_interconnect_inst.m2_wlast;
+    
+    // Add more master connections as needed - for now monitoring first 3 masters
+    // Masters 3-14 connections can be added when testing those masters
+    
     // RTL DUT instantiation using proper dut_wrapper with correct signal directions
     dut_wrapper #(
         .ADDR_WIDTH(ADDRESS_WIDTH),

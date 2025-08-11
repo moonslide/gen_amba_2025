@@ -13,6 +13,9 @@ module hvl_top;
         `ifdef DUMP_FSDB
             // FSDB dumping using system tasks
             $fsdbDumpfile("waves/axi4_vip.fsdb");
+        // Pass RTL monitor interface to scoreboard via config_db
+        uvm_config_db#(virtual rtl_monitor_if)::set(uvm_root::get(), 
+            "uvm_test_top.env.scoreboard", "rtl_mon_vif", hdl_top.rtl_mon_if);
             $fsdbDumpvars(0, hdl_top, "+all");
             $fsdbDumpvars(0, hvl_top, "+all");
             $display("[%0t] FSDB dumping enabled to waves/axi4_vip.fsdb", $time);

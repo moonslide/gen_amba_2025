@@ -327,80 +327,111 @@ module axi4_slave_driver_bfm #(
     // Initialize signals and start handling - ALWAYS READY approach
 
     // Ultra-simple slave BFM - always ready, immediate response
+        // AXI4 Spec Compliant BFM - Per IHI0022D_amba_axi_protocol_spec.pdf
     initial begin
-        // Initialize signals
-        axi_intf.awready = '0;
-        axi_intf.wready  = '0;
-        axi_intf.bvalid  = '0;
-        axi_intf.arready = '0;
-        axi_intf.rvalid  = '0;
+        // Initialize all response signals per spec
+        axi_intf.awready = 1'b0;
+        axi_intf.wready  = 1'b0; 
+        axi_intf.bvalid  = 1'b0;
+        axi_intf.bid     = '0;
+        axi_intf.bresp   = 2'b00;
+        axi_intf.arready = 1'b0;
+        axi_intf.rvalid  = 1'b0;
+        axi_intf.rid     = '0;
+        axi_intf.rdata   = '0;
+        axi_intf.rresp   = 2'b00;
+        axi_intf.rlast   = 1'b0;
         
-        // Wait for reset
+        // Wait for reset release
         wait(aresetn == 1'b1);
         #10;
         
-        // Set always ready
-        axi_intf.awready <= 1'b1;
-        axi_intf.wready  <= 1'b1;
-        axi_intf.arready <= 1'b1;
+        // Per IHI0022D - slave can be always ready or add delays
+        axi_intf.awready <= 1'b1;  // Ready to accept write addresses
+        axi_intf.wready  <= 1'b1;  // Ready to accept write data  
+        axi_intf.arready <= 1'b1;  // Ready to accept read addresses
         
-        // Enhanced response loop for proper B and R channels
+        `uvm_info("AXI4_SLAVE_BFM", "AXI4 Slave BFM initialized per IHI0022D spec", UVM_MEDIUM);
+        
+        // AXI4 compliant response handling
         fork
-            // Write response handler
+            // Write Response Handler - Per IHI0022D Section A3.3
             begin
                 logic [ID_WIDTH-1:0] write_id_queue[$];
                 forever begin
                     @(posedge aclk);
                     
-                    // Capture write address ID
+                    // IHI0022D A3.2.2 - Capture AWID during AW handshake
                     if (axi_intf.awvalid && axi_intf.awready) begin
                         write_id_queue.push_back(axi_intf.awid);
+                        `uvm_info("AXI4_SLAVE_BFM", $sformatf("Write address captured: AWID=%0d, AWADDR=0x%0h", 
+                                  axi_intf.awid, axi_intf.awaddr), UVM_HIGH)
                     end
                     
-                    // Send write response when wlast received
+                    // IHI0022D A3.2.1 - Respond when WLAST indicates end of burst
                     if (axi_intf.wvalid && axi_intf.wready && axi_intf.wlast && !axi_intf.bvalid) begin
                         if (write_id_queue.size() > 0) begin
-                            axi_intf.bid    <= write_id_queue.pop_front();
-                            axi_intf.bresp  <= 2'b00;  // OKAY
-                            axi_intf.bvalid <= 1'b1;
+                            automatic logic [ID_WIDTH-1:0] response_id = write_id_queue.pop_front();
+                            
+                            // IHI0022D A3.3.1 - BID must match AWID, BRESP indicates status
+                            axi_intf.bid    <= response_id;  // Must match AWID per spec
+                            axi_intf.bresp  <= 2'b00;        // OKAY response
+                            axi_intf.bvalid <= 1'b1;         // Response valid
+                            
+                            `uvm_info("AXI4_SLAVE_BFM", $sformatf("Write response: BID=%0d, BRESP=OKAY (per IHI0022D A3.3)", 
+                                      response_id), UVM_MEDIUM)
+                        end else begin
+                            `uvm_error("AXI4_SLAVE_BFM", "WLAST without corresponding AWID - AXI4 protocol violation")
                         end
                     end
                     
-                    // Clear response when accepted
+                    // IHI0022D A3.3.2 - Clear response when BREADY handshake completes
                     if (axi_intf.bvalid && axi_intf.bready) begin
                         @(posedge aclk);
                         axi_intf.bvalid <= 1'b0;
-                        axi_intf.bid <= '0;
+                        axi_intf.bid    <= '0;
+                        `uvm_info("AXI4_SLAVE_BFM", "Write response handshake completed", UVM_HIGH)
                     end
                 end
             end
             
-            // Read response handler
+            // Read Response Handler - Per IHI0022D Section A3.4
             begin
                 forever begin
                     @(posedge aclk);
                     
-                    // Handle read request
+                    // IHI0022D A3.4.2 - Handle read request during AR handshake
                     if (axi_intf.arvalid && axi_intf.arready && !axi_intf.rvalid) begin
                         automatic logic [ID_WIDTH-1:0] read_id = axi_intf.arid;
                         automatic logic [7:0] read_len = axi_intf.arlen;
                         automatic logic [ADDR_WIDTH-1:0] read_addr = axi_intf.araddr;
                         
-                        // Send read data beats
-                        for (int i = 0; i <= read_len; i++) begin
+                        `uvm_info("AXI4_SLAVE_BFM", $sformatf("Read request: ARID=%0d, ARADDR=0x%0h, ARLEN=%0d (per IHI0022D A3.4)", 
+                                  read_id, read_addr, read_len), UVM_MEDIUM)
+                        
+                        // IHI0022D A3.4.1 - Send arlen+1 data beats, RLAST on final beat
+                        for (int beat = 0; beat <= read_len; beat++) begin
                             @(posedge aclk);
-                            axi_intf.rid    <= read_id;
-                            axi_intf.rdata  <= {DATA_WIDTH{1'b0}} | (read_addr + i*8);  // Address-based pattern
-                            axi_intf.rresp  <= 2'b00;  // OKAY
-                            axi_intf.rlast  <= (i == read_len);
-                            axi_intf.rvalid <= 1'b1;
                             
-                            // Wait for ready
+                            // IHI0022D A3.4.1 - RID must match ARID
+                            axi_intf.rid    <= read_id;
+                            axi_intf.rdata  <= {DATA_WIDTH{1'b0}} | (read_addr + beat * 8);  // Address pattern
+                            axi_intf.rresp  <= 2'b00;              // OKAY response
+                            axi_intf.rlast  <= (beat == read_len);  // RLAST on final beat per spec
+                            axi_intf.rvalid <= 1'b1;               // Data valid
+                            
+                            `uvm_info("AXI4_SLAVE_BFM", $sformatf("Read response beat %0d/%0d: RID=%0d, RDATA=0x%0h, RLAST=%0b", 
+                                      beat, read_len, read_id, axi_intf.rdata, axi_intf.rlast), UVM_HIGH)
+                            
+                            // IHI0022D A3.4.2 - Wait for RREADY handshake
                             while (!axi_intf.rready) @(posedge aclk);
                             @(posedge aclk);
+                            
                             axi_intf.rvalid <= 1'b0;
                             axi_intf.rlast  <= 1'b0;
                         end
+                        
+                        `uvm_info("AXI4_SLAVE_BFM", $sformatf("Read burst completed for ARID=%0d per AXI4 spec", read_id), UVM_MEDIUM)
                     end
                 end
             end

@@ -71,10 +71,13 @@ package axi4_slave_pkg;
     class axi4_slave_monitor extends uvm_monitor;
         `uvm_component_utils(axi4_slave_monitor)
         
+        // Analysis port to send transactions to scoreboard
+        uvm_analysis_port #(axi4_slave_tx) analysis_port;
         uvm_analysis_port #(axi4_slave_tx) item_collected_port;
         
         function new(string name = "axi4_slave_monitor", uvm_component parent = null);
             super.new(name, parent);
+            analysis_port = new("analysis_port", this);
             item_collected_port = new("item_collected_port", this);
         endfunction
         

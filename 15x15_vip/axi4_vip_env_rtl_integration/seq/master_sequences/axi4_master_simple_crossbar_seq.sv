@@ -15,6 +15,9 @@ class axi4_master_simple_crossbar_seq extends axi4_master_base_seq;
     virtual task body();
         axi4_master_tx write_xtn, read_xtn;
         
+        // Add initial delay based on master_id to prevent simultaneous starts
+        #(master_id * 10);
+        
         `uvm_info(get_type_name(), $sformatf("Master %0d: Starting crossbar test with W and R", master_id), UVM_LOW)
         
         // WRITE TRANSACTION - with proper data pattern

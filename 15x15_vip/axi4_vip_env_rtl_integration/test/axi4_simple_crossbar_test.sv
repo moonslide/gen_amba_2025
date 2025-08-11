@@ -11,16 +11,12 @@ class axi4_simple_crossbar_test extends axi4_base_test;
     
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        // Set a very short timeout for this test
-        uvm_config_db#(uvm_object_wrapper)::set(this,
-            "env.master_agent[0].sequencer.run_phase",
-            "default_sequence",
-            axi4_master_simple_crossbar_seq::type_id::get());
+        // No default sequence - virtual sequence will control all masters
     endfunction
     
     virtual task run_phase(uvm_phase phase);
         axi4_virtual_simple_crossbar_seq vseq;
-        int test_timeout = 1000; // 1us timeout for quick test
+        int test_timeout = 15000; // 15us timeout to allow all masters to complete
         
         phase.raise_objection(this);
         `uvm_info(get_type_name(), "Starting Simple Crossbar Test", UVM_LOW)
