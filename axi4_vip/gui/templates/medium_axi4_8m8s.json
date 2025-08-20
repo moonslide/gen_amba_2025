@@ -1,0 +1,28 @@
+{
+  "name": "Medium AXI4 Matrix (8M x 8S)",
+  "description": "Medium-scale 8x8 AXI4 bus matrix for multi-core systems",
+  "bus_type": "AXI4",
+  "data_width": 128,
+  "addr_width": 40,
+  "arbitration": "QOS",
+  "masters": [
+    {"name": "CPU_Core0", "x": 50, "y": 50, "id_width": 4, "user_width": 2, "priority": 7, "qos_support": true, "exclusive_support": true},
+    {"name": "CPU_Core1", "x": 150, "y": 50, "id_width": 4, "user_width": 2, "priority": 7, "qos_support": true, "exclusive_support": true},
+    {"name": "CPU_Core2", "x": 250, "y": 50, "id_width": 4, "user_width": 2, "priority": 6, "qos_support": true, "exclusive_support": true},
+    {"name": "CPU_Core3", "x": 350, "y": 50, "id_width": 4, "user_width": 2, "priority": 6, "qos_support": true, "exclusive_support": true},
+    {"name": "DMA_Engine", "x": 450, "y": 50, "id_width": 6, "user_width": 4, "priority": 5, "qos_support": true, "exclusive_support": false},
+    {"name": "GPU_Unit", "x": 550, "y": 50, "id_width": 8, "user_width": 8, "priority": 4, "qos_support": true, "exclusive_support": false},
+    {"name": "Network_IF", "x": 650, "y": 50, "id_width": 4, "user_width": 2, "priority": 3, "qos_support": true, "exclusive_support": false},
+    {"name": "Debug_Port", "x": 750, "y": 50, "id_width": 4, "user_width": 0, "priority": 0, "qos_support": false, "exclusive_support": false}
+  ],
+  "slaves": [
+    {"name": "DDR4_Bank0", "base_address": 2147483648, "size": 2097152, "x": 50, "y": 350, "memory_type": "Memory", "read_latency": 15, "write_latency": 12, "priority": 7},
+    {"name": "DDR4_Bank1", "base_address": 4294967296, "size": 2097152, "x": 150, "y": 350, "memory_type": "Memory", "read_latency": 15, "write_latency": 12, "priority": 7},
+    {"name": "L3_Cache", "base_address": 805306368, "size": 8192, "x": 250, "y": 350, "memory_type": "Memory", "read_latency": 5, "write_latency": 5, "priority": 6},
+    {"name": "SRAM_Pool", "base_address": 268435456, "size": 1024, "x": 350, "y": 350, "memory_type": "Memory", "read_latency": 2, "write_latency": 2, "priority": 5},
+    {"name": "PCIe_Space", "base_address": 1073741824, "size": 131072, "x": 450, "y": 350, "memory_type": "Peripheral", "read_latency": 20, "write_latency": 20, "priority": 4},
+    {"name": "GPU_Memory", "base_address": 1207959552, "size": 65536, "x": 550, "y": 350, "memory_type": "Memory", "read_latency": 8, "write_latency": 8, "priority": 3},
+    {"name": "IO_Registers", "base_address": 1610612736, "size": 256, "x": 650, "y": 350, "memory_type": "Register", "read_latency": 3, "write_latency": 3, "priority": 2},
+    {"name": "System_Config", "base_address": 4096, "size": 16, "x": 750, "y": 350, "memory_type": "Register", "read_latency": 1, "write_latency": 1, "priority": 1}
+  ]
+}

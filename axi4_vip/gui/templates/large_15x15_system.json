@@ -1,0 +1,63 @@
+{
+    "name": "Large 15x15 System Example",
+    "description": "Example configuration for 15x15 AXI4 matrix with traffic monitoring",
+    "version": "2025.08.15",
+    "configuration": {
+        "masters": 15,
+        "slaves": 15,
+        "features": {
+            "traffic_monitoring": true,
+            "rtl_integration": true,
+            "fsdb_waveforms": true,
+            "worst_path_analysis": true,
+            "performance_analytics": true
+        },
+        "optimization": {
+            "auto_optimize": true,
+            "memory_optimization": true,
+            "compile_optimization": true
+        },
+        "master_configs": [
+            {
+                "id": 0,
+                "name": "CPU_Master",
+                "priority": "high",
+                "qos_enable": true
+            },
+            {
+                "id": 1, 
+                "name": "DMA_Master",
+                "priority": "medium",
+                "qos_enable": true
+            }
+        ],
+        "slave_configs": [
+            {
+                "id": 0,
+                "name": "DDR_Memory",
+                "base_addr": "0x00000000",
+                "size": "0x10000000"
+            },
+            {
+                "id": 1,
+                "name": "SRAM_Memory", 
+                "base_addr": "0x10000000",
+                "size": "0x01000000"
+            }
+        ]
+    },
+    "build_settings": {
+        "simulator": "vcs",
+        "compile_flags": [
+            "-sverilog",
+            "-ntb_opts uvm",
+            "-debug_access",
+            "+define+TRAFFIC_MONITORING"
+        ],
+        "test_options": {
+            "default_test": "axi4_simple_crossbar_test",
+            "verbosity": "UVM_LOW",
+            "fsdb_enable": true
+        }
+    }
+}

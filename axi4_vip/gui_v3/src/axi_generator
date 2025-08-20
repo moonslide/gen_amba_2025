@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+"""
+AXI Generator CLI - Command-line interface for AXI4 RTL & VIP Generator
+"""
+
+import sys
+import os
+import yaml
+import argparse
+import logging
+from pathlib import Path
+
+# Add src directory to path
+src_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, src_dir)
+
+from main_gui_v3 import (
+    ProjectConfig, NodeConfig, BusConfig, DomainConfig,
+    GenerationSettingsDialog
+)
+
+def setup_logging(level):
+    """Setup logging configuration"""
+    logging.basicConfig(
+        level=getattr(logging, level.upper()),
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    return logging.getLogger(__name__)
+
+def load_config(config_file):
+    """Load project configuration from YAML file"""
+    with open(config_file, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    # Create project from config
+    project = ProjectConfig()
+    project.name = config.get('project_name', 'axi4_project')
+    
+    # Load bus config
+    if 'bus' in config:
+        bus_config = config['bus']
+        project.bus.addr_width = bus_config.get('addr_width', 32)
+        project.bus.data_width = bus_config.get('data_width', 64)
+        project.bus.id_width = bus_config.get('id_width', 4)
+        project.bus.user_width = bus_config.get('user_width', 0)
+        project.bus.arbitration = bus_config.get('arbitration', 'round_robin')
+    
+    # Load masters
+    if 'masters' in config:
+        for m in config['masters']:
+            master = NodeConfig(**m)
+            project.masters.append(master)
+    
+    # Load slaves
+    if 'slaves' in config:
+        for s in config['slaves']:
+            slave = NodeConfig(**s)
+            project.slaves.append(slave)
+    
+    # Load bridges
+    if 'bridges' in config:
+        for b in config['bridges']:
+            bridge = NodeConfig(**b)
+            project.bridges.append(bridge)
+    
+    # Load domains
+    if 'domains' in config:
+        for d in config['domains']:
+            domain = DomainConfig(**d)
+            project.domains.append(domain)
+    
+    return project
+
+def generate_rtl(project, output_dir, logger):
+    """Generate RTL files"""
+    logger.info(f"Generating RTL for project '{project.name}'...")
+    
+    class MockVar:
+        def __init__(self, value):
+            self.value = value
+        def get(self):
+            return self.value
+    
+    dialog = GenerationSettingsDialog.__new__(GenerationSettingsDialog)
+    dialog.project = project
+    dialog.project_name_var = MockVar(project.name)
+    dialog.addr_width_var = MockVar(project.bus.addr_width)
+    dialog.data_width_var = MockVar(project.bus.data_width)
+    dialog.id_width_var = MockVar(project.bus.id_width)
+    dialog.gen_filelist_var = MockVar(True)
+    dialog.gen_header_var = MockVar(True)
+    dialog.file_struct_var = MockVar("File per Module")
+    dialog.rtl_lang_var = MockVar("Verilog")
+    dialog.gen_cdc_var = MockVar(True)
+    
+    dialog.generate_rtl(output_dir)
+    logger.info(f"RTL generated in {output_dir}/rtl/")
+
+def generate_vip(project, output_dir, logger):
+    """Generate VIP files"""
+    logger.info(f"Generating VIP for project '{project.name}'...")
+    
+    class MockVar:
+        def __init__(self, value):
+            self.value = value
+        def get(self):
+            return self.value
+    
+    dialog = GenerationSettingsDialog.__new__(GenerationSettingsDialog)
+    dialog.project = project
+    dialog.project_name_var = MockVar(project.name)
+    dialog.gen_scripts_var = MockVar(True)
+    dialog.simulator_var = MockVar('VCS')
+    dialog.vip_method_var = MockVar('UVM')
+    dialog.integration_var = MockVar('Generated RTL')
+    dialog.gen_agents_var = MockVar(True)
+    dialog.gen_env_var = MockVar(True)
+    dialog.gen_coverage_var = MockVar(True)
+    dialog.gen_basic_test_var = MockVar(True)
+    dialog.gen_random_test_var = MockVar(True)
+    dialog.gen_stress_test_var = MockVar(True)
+    
+    dialog.generate_vip(output_dir)
+    logger.info(f"VIP generated in {output_dir}/vip/")
+
+def save_project_config(project, output_dir, logger):
+    """Save project configuration"""
+    from dataclasses import asdict
+    
+    config_file = os.path.join(output_dir, f"{project.name}_config.yaml")
+    
+    config_dict = {
+        'project_name': project.name,
+        'bus': asdict(project.bus),
+        'masters': [asdict(m) for m in project.masters],
+        'slaves': [asdict(s) for s in project.slaves],
+        'bridges': [asdict(b) for b in project.bridges],
+        'domains': [asdict(d) for d in project.domains]
+    }
+    
+    with open(config_file, 'w') as f:
+        yaml.dump(config_dict, f, default_flow_style=False)
+    
+    logger.info(f"Configuration saved to {config_file}")
+
+def main():
+    """Main CLI entry point"""
+    parser = argparse.ArgumentParser(
+        description='AXI4 RTL & VIP Generator - Command Line Interface',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Examples:
+  # Generate both RTL and VIP
+  %(prog)s --config project.yaml --output ./generated
+
+  # Generate RTL only
+  %(prog)s --config project.yaml --output ./generated --mode rtl
+
+  # Generate VIP only with debug logging
+  %(prog)s --config project.yaml --output ./generated --mode vip --log-level DEBUG
+        '''
+    )
+    
+    parser.add_argument('--config', '-c', required=True,
+                        help='Configuration YAML file')
+    parser.add_argument('--output', '-o', default='./generated',
+                        help='Output directory (default: ./generated)')
+    parser.add_argument('--mode', '-m', choices=['rtl', 'vip', 'both'],
+                        default='both', help='Generation mode (default: both)')
+    parser.add_argument('--log-level', '-l', 
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
+                        default='INFO', help='Logging level (default: INFO)')
+    parser.add_argument('--version', '-v', action='version',
+                        version='AXI Generator v3.0')
+    
+    args = parser.parse_args()
+    
+    # Setup logging
+    logger = setup_logging(args.log_level)
+    
+    # Check config file exists
+    if not os.path.exists(args.config):
+        logger.error(f"Configuration file not found: {args.config}")
+        return 1
+    
+    try:
+        # Load configuration
+        logger.info(f"Loading configuration from {args.config}")
+        project = load_config(args.config)
+        
+        # Create output directory
+        os.makedirs(args.output, exist_ok=True)
+        logger.info(f"Output directory: {args.output}")
+        
+        # Generate based on mode
+        if args.mode in ['rtl', 'both']:
+            generate_rtl(project, args.output, logger)
+        
+        if args.mode in ['vip', 'both']:
+            generate_vip(project, args.output, logger)
+        
+        # Save configuration
+        save_project_config(project, args.output, logger)
+        
+        logger.info("Generation complete!")
+        print(f"\nSuccess! Files generated in {args.output}")
+        
+        # Print summary
+        print(f"\nProject Summary:")
+        print(f"  Name: {project.name}")
+        print(f"  Masters: {len(project.masters)}")
+        print(f"  Slaves: {len(project.slaves)}")
+        if project.bridges:
+            print(f"  Bridges: {len(project.bridges)}")
+        if project.domains:
+            print(f"  Clock Domains: {len(project.domains)}")
+        
+        return 0
+        
+    except Exception as e:
+        logger.error(f"Generation failed: {str(e)}")
+        import traceback
+        if args.log_level == 'DEBUG':
+            traceback.print_exc()
+        return 1
+
+if __name__ == '__main__':
+    sys.exit(main())

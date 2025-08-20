@@ -74,6 +74,18 @@ extern int gen_axi_s2m_mcon_r( char* prefixA, char* prefixB, FILE* fo );
 extern int gen_axi_s2m_scon_b( char* prefixA, char* prefixB, char* postfix, FILE* fo );
 extern int gen_axi_s2m_scon_r( char* prefixA, char* prefixB, char* postfix, FILE* fo );
 
+// Generate Verilog-2001 compatible width calculation instead of $clog2
+static inline int calc_width(int num) {
+    int width = 0;
+    int temp = num - 1;
+    if (temp <= 0) return 1;
+    while (temp > 0) {
+        width++;
+        temp >>= 1;
+    }
+    return width;
+}
+
 //--------------------------------------------------------
 // Revision history:
 //

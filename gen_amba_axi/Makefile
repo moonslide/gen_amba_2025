@@ -67,7 +67,14 @@ SRC	=\
 	gen_axi_arbiter_mtos.c\
 	gen_axi_arbiter_stom.c\
 	gen_axi_default_slave.c\
-        gen_axi_wid.c
+	gen_axi_wid.c\
+	gen_axi_qos.c\
+	gen_axi_firewall.c\
+	gen_axi_cdc.c\
+	gen_axi_ace_lite.c\
+	gen_axi_region.c\
+	gen_axi_optimized.c\
+	gen_axi_verilog_optimized.c
 		
 OBJS	= $(SRC:.c=.o)
 

@@ -17,17 +17,42 @@
 #	include <windows.h>
 #	include <io.h>
 #endif
+#include "gen_amba_axi.h"
 
 const char program[]="gen_amba_axi";
-const unsigned int version=0x20210710;
+const unsigned int version=0x20251218;  // Updated version
 int verbose=0;
 int axi4=1;
 unsigned int numM=2;
 unsigned int numS=2;
+unsigned int widthAD=32;  // address width (32-64 bits)
+unsigned int widthDA=64;  // data width (32-1024 bits) - default changed to 64
 char module[128]="\0\0";
 char prefix[128]="\0\0";
 char file[256]="\0\0";
 FILE *fo;
+
+// Advanced features structure
+axi_features_t features = {
+    .enable_qos = 0,
+    .enable_region = 0,
+    .enable_user = 0,
+    .enable_prot = 1,  // PROT is standard AXI, enabled by default
+    .enable_cache = 1, // CACHE is standard AXI, enabled by default
+    .enable_lock = 1,  // LOCK is standard AXI, enabled by default
+    .enable_firewall = 0,
+    .enable_cdc = 0,
+    .num_clock_domains = 1,
+    .width_qos = 4,
+    .width_region = 4,
+    .width_user = 1,
+    // ACE-Lite defaults
+    .enable_ace_lite = 0,
+    .width_domain = 2,
+    .width_snoop_aw = 3,
+    .width_snoop_ar = 4,
+    .width_bar = 2
+};
 
 //-----------------------------------------------------
 //     *name,  has_arg, *flag, val
@@ -40,7 +65,19 @@ static struct option longopts[] = {
      , {"prefix" , required_argument, 0, 'P'}
      , {"output" , required_argument, 0, 'O'}
      , {"axi3"   , no_argument      , 0, '3'}
-     , {"vebose" , required_argument, 0, 'g'}
+     , {"addr-width", required_argument, 0, 'A'}
+     , {"data-width", required_argument, 0, 'W'}
+     , {"enable-qos", no_argument   , 0, 'q'}
+     , {"enable-region", no_argument, 0, 'r'}
+     , {"enable-user", no_argument  , 0, 'u'}
+     , {"enable-firewall", no_argument, 0, 'f'}
+     , {"enable-cdc", no_argument   , 0, 'c'}
+     , {"clock-domains", required_argument, 0, 'C'}
+     , {"qos-width", required_argument, 0, 'Q'}
+     , {"region-width", required_argument, 0, 'R'}
+     , {"user-width", required_argument, 0, 'U'}
+     , {"enable-ace-lite", no_argument, 0, 'a'}
+     , {"verbose" , required_argument, 0, 'g'}
      , {"version", no_argument      , 0, 'v'}
      , {"license", no_argument      , 0, 'l'}
      , {"help"   , no_argument      , 0, 'h'}
@@ -58,7 +95,7 @@ int arg_parser(int argc, char **argv) {
   extern void print_version(void);
 
   //-----------------------------------------------------
-  while ((opt=getopt_long(argc, argv, "M:S:D:P:O:3g:vlh?", longopts, &longidx))!=-1) {
+  while ((opt=getopt_long(argc, argv, "M:S:D:P:O:3A:W:qrufcC:Q:R:U:ag:vlh?", longopts, &longidx))!=-1) {
      switch (opt) {
      case 'M': numM = atoi(optarg); break;
      case 'S': numS = atoi(optarg); break;
@@ -66,6 +103,18 @@ int arg_parser(int argc, char **argv) {
      case 'P': strcpy(prefix,optarg); break;
      case 'O': strcpy(file,optarg); break;
      case '3': axi4 = 0; break;
+     case 'A': widthAD = atoi(optarg); break;
+     case 'W': widthDA = atoi(optarg); break;
+     case 'q': features.enable_qos = 1; break;
+     case 'r': features.enable_region = 1; break;
+     case 'u': features.enable_user = 1; break;
+     case 'f': features.enable_firewall = 1; break;
+     case 'c': features.enable_cdc = 1; break;
+     case 'C': features.num_clock_domains = atoi(optarg); break;
+     case 'Q': features.width_qos = atoi(optarg); break;
+     case 'R': features.width_region = atoi(optarg); break;
+     case 'U': features.width_user = atoi(optarg); break;
+     case 'a': features.enable_ace_lite = 1; break;
      case 'g': verbose = atoi(optarg); break;
      case 'v': print_version(); exit(0); break;
      case 'l': print_license(); exit(0); break;
@@ -81,6 +130,24 @@ int arg_parser(int argc, char **argv) {
         exit(1);
      }
   }
+  
+  // Validate address width (8-64 bits, any value per AXI spec)
+  if (widthAD < 8 || widthAD > 64) {
+      fprintf(stderr, "Address width must be 8-64 bits per AXI specification, got %d.\n", widthAD);
+      return 1;
+  }
+  
+  // Validate data width (32-1024 bits, must be power of 2)
+  if (widthDA < 32 || widthDA > 1024) {
+      fprintf(stderr, "Data width must be 32-1024 bits, got %d.\n", widthDA);
+      return 1;
+  }
+  // Check if power of 2
+  if ((widthDA & (widthDA - 1)) != 0) {
+      fprintf(stderr, "Data width must be power of 2 (32, 64, 128, 256, 512, 1024), got %d.\n", widthDA);
+      return 1;
+  }
+  
   if (prefix[0]!='\0') {
       if ((prefix[0]<'A')||(prefix[0]>'z')||
           ((prefix[0]>'Z')&&(prefix[0]<'a'))) {
@@ -117,11 +184,32 @@ void help(int argc, char **argv)
   fprintf(stderr, "\t-D,--module=str   module name (default: \"amba_axi_mXsY\")\n");
   fprintf(stderr, "\t-P,--prefix=str   prefix of module (default: none)\n");
   fprintf(stderr, "\t-O,--output=file  output file name (stdout if not given)\n");
-  fprintf(stderr, "\t-3,--axi3         force to use AXI3 (AIX4 by default, if not given)\n");
+  fprintf(stderr, "\t-3,--axi3         force to use AXI3 (AXI4 by default, if not given)\n");
+  fprintf(stderr, "\t-A,--addr-width=num address width in bits (8-64, default: %u)\n", widthAD);
+  fprintf(stderr, "\t-W,--data-width=num data width in bits (32-1024, default: %u)\n", widthDA);
+  fprintf(stderr, "\t-q,--enable-qos   enable QoS support (AXI4)\n");
+  fprintf(stderr, "\t-r,--enable-region enable REGION support (AXI4)\n");
+  fprintf(stderr, "\t-u,--enable-user  enable USER signals\n");
+  fprintf(stderr, "\t-f,--enable-firewall enable security firewall\n");
+  fprintf(stderr, "\t-c,--enable-cdc   enable CDC support\n");
+  fprintf(stderr, "\t-C,--clock-domains=num number of clock domains (default: 1)\n");
+  fprintf(stderr, "\t-Q,--qos-width=num QoS signal width (default: 4)\n");
+  fprintf(stderr, "\t-R,--region-width=num REGION signal width (default: 4)\n");
+  fprintf(stderr, "\t-U,--user-width=num USER signal width (default: 1)\n");
+  fprintf(stderr, "\t-a,--enable-ace-lite enable ACE-Lite coherency\n");
   fprintf(stderr, "\t-g,--verbose=num  verbose level  (default: %d)\n", verbose);
   fprintf(stderr, "\t-v,--version      print version\n");
   fprintf(stderr, "\t-l,--license      print license message\n");
   fprintf(stderr, "\t-h                print help message\n");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Valid data widths: 32, 64, 128, 256, 512, 1024 bits\n");
+  fprintf(stderr, "Valid address widths: 8-64 bits (any value per AXI spec)\n");
+  fprintf(stderr, "\nEnhanced Features (2025):\n");
+  fprintf(stderr, "  QoS: Quality of Service for arbitration\n");
+  fprintf(stderr, "  REGION: Memory region identification\n");
+  fprintf(stderr, "  USER: Custom sideband signals\n");
+  fprintf(stderr, "  Firewall: Security access control\n");
+  fprintf(stderr, "  CDC: Clock Domain Crossing support\n");
   fprintf(stderr, "\n");
 }
 

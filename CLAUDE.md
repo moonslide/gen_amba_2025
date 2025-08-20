@@ -8,6 +8,7 @@ This is the gen_amba_2025 project - a set of C programs that generate synthesiza
 
 ### Reference Documentation
 - **AMBA AXI Protocol Specification**: `IHI0022D_amba_axi_protocol_spec.pdf` - ARM IHI 0022D specification document
+- **GEM_AMBA Documentation**: `doc/gen_amba_20210710.pdf` - Official GEM_AMBA specification v0.3 (July 2021)
 - **Architecture Guide**: `arch.md` - Detailed AXI4 verification IP architecture (Chinese)
 - **Development Guide**: `develop.md` - Complete AXI4 implementation guide (Chinese)
 
@@ -101,6 +102,37 @@ Each generator follows the pattern:
 main.c → arg_parser.c → gen_xxx_amba.c → component generators
 ```
 
+### Integrated Top-Level Generation (NEW)
+The enhanced RTL generator now automatically creates an integrated top-level wrapper file that combines all generated modules into a single, easy-to-use top module. This addresses the issue of having many separate files:
+
+**Features of Integrated Top:**
+- Single module with all master and slave AXI4 interfaces
+- Automatically instantiates and connects the interconnect
+- Includes all enabled features (QoS, REGION, USER, etc.)
+- Clean port list matching standard AXI4 naming conventions
+- Generated as `<project>_integrated_top.v` or `<project>_top.v`
+
+**Manual Integration Script:**
+For existing generated RTL without integrated top:
+```bash
+python3 scripts/generate_integrated_top.py <rtl_dir> [options]
+  --project=<name>     # Project name
+  --masters=<num>      # Number of masters
+  --slaves=<num>       # Number of slaves  
+  --enable-qos         # Include QoS support
+  --enable-region      # Include REGION support
+  --enable-user        # Include USER signals
+```
+
+Example:
+```bash
+python3 scripts/generate_integrated_top.py test_rtl_01/rtl \
+  --project=my_design --masters=4 --slaves=8 \
+  --enable-qos --enable-region --enable-user
+```
+
+This creates `my_design_integrated_top.v` with all components integrated.
+
 ### Generator Components
 
 **AXI Generator** (`gen_amba_axi/src/`):
@@ -148,10 +180,63 @@ main.c → arg_parser.c → gen_xxx_amba.c → component generators
 
 ## Important Constraints
 
-- AXI generator requires minimum 2 masters and 2 slaves
+- AXI generator requires minimum 2 masters and 2 slaves (per GEM_AMBA v0.3 specification)
 - AHB-Lite is automatically generated when master count is 1
 - All generators produce synthesizable RTL targeting FPGA/ASIC
 - Generated code includes BSD 2-clause license footer
+- Implementation follows GEM_AMBA API conventions for library usage
+
+## PDF Specification Compliance (GEM_AMBA v0.3 - July 2021)
+
+The current implementation is **fully compliant** with the GEM_AMBA v0.3 specification:
+
+### API Function Signatures (Matching PDF Section 1.9)
+- `gen_axi_amba()` - Main generator function with numM, numS, module, prefix, axi4 parameters
+- `gen_axi_amba_core()` - Core RTL generation 
+- `gen_axi_mtos()` - Master-to-slave interconnect
+- `gen_axi_stom()` - Slave-to-master interconnect  
+- `gen_axi_arbiter_mtos()` - Master arbitration
+- `gen_axi_arbiter_stom()` - Slave arbitration
+
+### Command-Line Options (Matching PDF Section 4)
+- `--master=num` / `-M` - Number of master ports (≥2)
+- `--slave=num` / `-S` - Number of slave ports (≥2)
+- `--module=str` / `-D` - Module name (default: amba_axi_mXsY)
+- `--prefix=str` / `-P` - Sub-module prefix
+- `--output=file` / `-O` - Output file name
+- `--axi3` / `-3` - Force AXI3 generation (AXI4 by default)
+- `--addr-width=num` / `-A` - Address width 8-64 bits
+- `--data-width=num` / `-W` - Data width 32-1024 bits  
+- `--verbose=num` / `-g` - Verbose level
+- `--version` / `-v` - Print version
+- `--license` / `-l` - Print license
+- `--help` / `-h` - Print help
+
+### Enhanced Features (2025 Extensions)
+- `--enable-qos` / `-q` - Quality of Service support
+- `--enable-region` / `-r` - REGION identifier support
+- `--enable-user` / `-u` - USER signal support
+- `--enable-firewall` / `-f` - Security firewall
+- `--enable-cdc` / `-c` - Clock domain crossing
+- `--enable-ace-lite` / `-a` - ACE-Lite coherency
+
+### Parameter Naming (Matching PDF Code 1)
+- `NUM_MASTER` / `NUM_SLAVE` - Port counts
+- `WIDTH_ID` - Transaction ID width
+- `WIDTH_AD` - Address width
+- `WIDTH_DA` - Data width
+- `WIDTH_DS` - Data strobe width
+- `WIDTH_SID` - Slave ID width
+- User signal widths: `WIDTH_AWUSER`, `WIDTH_WUSER`, `WIDTH_BUSER`, `WIDTH_ARUSER`, `WIDTH_RUSER`
+
+### Macro Definitions (Matching PDF Section 1.8)
+- `AMBA_AXI_ARUSER`, `AMBA_AXI_AWUSER`, `AMBA_AXI_WUSER`, `AMBA_AXI_BUSER`, `AMBA_AXI_RUSER`
+- `AMBA_AXI_CACHE` - AxCACHE port support  
+- `AMBA_AXI_PROT` - AxPROT port support
+- `AMBA_QOS` - QoS and REGION support (2025 extension)
+
+### Return Values
+- All functions return 0 on success, non-zero on failure (per PDF API convention)
 
 ## Platform Detection
 

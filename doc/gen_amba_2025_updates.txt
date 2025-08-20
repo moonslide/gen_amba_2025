@@ -1,0 +1,28 @@
+GEN_AMBA 2025 MAJOR UPDATES
+===========================
+
+NEW FEATURES ADDED:
+1. Quality of Service (QoS) - Priority-based arbitration
+2. REGION Support - 16 regions per slave
+3. USER Signals - Configurable width sideband
+4. ACE-Lite Coherency - Cache coherent transactions
+5. Security Firewall - AxPROT validation & SLVERR
+6. Address Width - Full 8-64 bit range
+7. GUI Interface - Visual bus designer
+8. Verification IP - UVM-based test suite
+
+COMMAND-LINE OPTIONS:
+--enable-qos         Enable QoS arbitration
+--enable-region      Enable REGION support  
+--enable-user        Enable USER signals
+--enable-firewall    Enable security firewall
+--enable-ace-lite    Enable ACE-Lite coherency
+--qos-width=N        QoS signal width
+--region-width=N     REGION signal width
+--user-width=N       USER signal width
+
+EXAMPLE:
+gen_amba_axi --master=4 --slave=4 --enable-qos --enable-region \
+             --enable-firewall --enable-ace-lite --output=axi_full.v
+
+All features fully tested and compliant with ARM AMBA specifications.

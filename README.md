@@ -1,6 +1,29 @@
 # GEN_AMBA_2025
 **gen_amba** is a set of programs that generate ***AMBA bus Verilog-HDL***, which include AMBA AXI, AMBA AHB, and AMBA APB. **Enhanced with comprehensive AXI4 Verification IP (VIP) suite**.
 
+## 🚀 **Quick Start in 30 Seconds**
+
+### Option 1: Use the GUI (Visual Designer)
+```bash
+cd axi4_vip/gui_v3
+./launch_streamlined.sh      # Launch streamlined GUI v3
+```
+
+### Option 2: Command Line (Direct Generation)
+```bash
+cd gen_amba_axi
+./gen_axi_with_tb.sh --master=2 --slave=3 --output=design.v --tb=testbench.v
+vcs -full64 -sverilog design.v testbench.v -o simv
+./simv +TEST_MODE=ALL
+```
+
+## 🎉 **Latest Updates (August 2025)**
+> - **✅ W-Channel Routing Bug Fixed**: Write data now correctly routes to proper slaves
+> - **✅ Timescale Directive Added**: All generated RTL includes `\`timescale 1ns/1ps`
+> - **✅ Unified Testbench Generator**: Single testbench supports all test scenarios
+> - **✅ Enhanced RTL Generator Script**: `gen_axi_with_tb.sh` generates both RTL and testbench
+> - **✅ GUI Integration Complete**: Full flow from GUI to simulation verified
+
 ## Core Generators
 > - *gen_amba_axi*: AMBA AXI bus generator for multi-master and multi-slave
 >> AMBA AXI4 and AXI3
@@ -24,9 +47,10 @@ Complete UVM-based verification environment with GUI-driven bus matrix configura
 
 <details><summary>Click to expand table of contents</summary>
 
-1. [AXI4 VIP Quick Start](#vip_quick_start)<br>
-   1.1 [GUI-based VIP Generation](#gui_vip_generation)<br>
-   1.2 [Traffic Monitoring Features](#traffic_monitoring)
+1. [GUI Quick Start - Visual Designer](#gui_quick_start)<br>
+   1.1 [How to Launch the GUI](#gui_launch)<br>
+   1.2 [VIP Generation Features](#vip_generation)<br>
+   1.3 [Traffic Monitoring](#traffic_monitoring)
 2. [Quick start for AMBA AXI and AHB](#quick_axi_ahb)<br>
    2.1 [Quick start for AMBA AXI](#quick_axi)<br>
    2.2 [Quick start for AMBA AHB](#quick_ahb)
@@ -43,34 +67,97 @@ Complete UVM-based verification environment with GUI-driven bus matrix configura
    5.2 [AMBA AHB Bus tasks](#bus_tasks_ahb)
 6. [Where to get more information](#where_to_get)
 7. [Where it has been used](#where_has_been_used)
-8. [Other things](#other_things)
+8. [Bug Fixes and Known Issues](#bug_fixes)
+9. [Other things](#other_things)
 
 </details>
 
 ---
 
-# 1. AXI4 VIP Quick Start<a name="vip_quick_start"></a>
+# 1. GUI Quick Start - Visual Bus Matrix Designer<a name="gui_quick_start"></a>
 
-### 1.1 GUI-based VIP Generation<a name="gui_vip_generation"></a>
-The enhanced gen_amba_2025 includes a comprehensive Python GUI for AXI4 VIP generation with visual bus matrix configuration.
+## 🚀 How to Launch the GUI
 
-<details><summary>Click to expand VIP generation steps</summary>
-
-#### 1.1.1 Launch the VIP GUI
+### Launch the Streamlined GUI
 ```bash
-cd axi4_vip/gui/src
-python3 vip_gui_integration.py
+# Navigate to GUI directory and launch
+cd axi4_vip/gui_v3
+./launch_streamlined.sh        # Launches streamlined GUI v3
 ```
 
-#### 1.1.2 Configure Bus Matrix
-1. Select **RTL Integration** mode for VIP+RTL combined environment
-2. Set master and slave counts (supports 2x2 to 64x64 matrices)
-3. Configure features:
-   - QoS arbitration (round-robin, weighted, strict priority)
-   - USER signal widths for sideband information
-   - Traffic monitoring and worst path analysis
+### Alternative Launch Methods
+```bash
+# Direct Python launch from source
+cd axi4_vip/gui_v3/src
+python3 main_gui_v3_streamlined.py
 
-#### 1.1.3 Generate and Run
+# Legacy GUI (older version, not recommended)
+cd axi4_vip/gui/src
+python3 main_gui.py
+```
+
+### Streamlined GUI v3 Features
+- **📐 Single-Page Interface**: Everything visible at once, no tabs needed
+- **🎨 Visual Bus Matrix Designer**: Drag-and-drop interface for masters/slaves
+- **🚀 Template Gallery**: Quick start with pre-configured templates (8x8, 16x16, 32x32)
+- **💻 Integrated CLI**: Command-line interface at bottom for advanced users
+- **⚡ Instant RTL Generation**: Generate AXI4 interconnect with one click
+- **📊 Real-time Validation**: Automatic constraint checking
+- **💾 Project Management**: Save/load bus configurations
+- **🔧 Advanced Configuration**: QoS, REGION, USER signals support
+
+<details><summary>Click to expand detailed GUI usage</summary>
+
+### Step-by-Step GUI Usage
+
+#### 1. Launch the GUI
+```bash
+cd axi4_vip/gui_v3
+./launch_streamlined.sh
+```
+You'll see:
+```
+==========================================
+AMBA AXI4 Generator v3 - Streamlined GUI
+==========================================
+Starting streamlined GUI...
+```
+
+#### 2. Design Your Bus Matrix
+- Click "Add Master" to add masters (up to 64)
+- Click "Add Slave" to add slaves (up to 64)
+- Configure each master/slave properties:
+  - ID width
+  - Address/data width
+  - QoS settings
+  - Memory mapping
+
+#### 3. Generate RTL
+- Click "Generate RTL" button
+- Choose output directory
+- Select features (QoS, REGION, USER)
+- Click "Generate"
+
+#### 4. Get Your Files
+Generated files location:
+```
+output_dir/
+├── interconnect.v      # Generated AXI4 RTL
+├── testbench.v         # Unified testbench
+├── Makefile            # Compilation script
+└── README.md           # Usage instructions
+```
+
+### VIP Generation Mode
+For full UVM verification environment:
+1. Select **RTL Integration** mode in GUI
+2. Configure master/slave counts (2x2 to 64x64)
+3. Enable verification features:
+   - QoS arbitration strategies
+   - USER signal widths
+   - Traffic monitoring
+
+### Compile and Simulate Generated RTL
 ```bash
 # VIP will be generated in output_dir/axi4_vip_env_rtl_integration/
 cd output_dir/axi4_vip_env_rtl_integration/sim
@@ -135,7 +222,33 @@ This is licensed with the 2-clause BSD license to make the program and library u
 This program requires followings.
 * Shell: Bash
 * GNU GCC: C compiler
+* Python3 with tkinter (for GUI)
 * HDL simulator: Xilinx Vivado simulator, icarus Verilog, or Mentor Graphics ModelSim
+
+### GUI Troubleshooting<a name="gui_troubleshooting"></a>
+If the GUI doesn't launch:
+
+#### Check Python3
+```bash
+python3 --version  # Should be 3.6 or higher
+```
+
+#### Install tkinter (if missing)
+```bash
+# Ubuntu/Debian
+sudo apt-get install python3-tk
+
+# RHEL/CentOS/Rocky
+sudo yum install python3-tkinter
+
+# macOS
+brew install python-tk
+```
+
+#### Manual dependency install
+```bash
+pip3 install --user pyyaml
+```
 
 ### Maturity<a name="maturity"></a>
 * RTL simulation
@@ -150,7 +263,7 @@ This program requires followings.
 # 2. Quick start for AMBA AXI and AHB<a name="quick_axi_ahb"></a>
 
 ### 2.1 Quick start for AMBA AXI<a name="quick_axi"></a>
-#### 2.1.1 generating AMBA AXI
+#### 2.1.1 generating AMBA AXI (Enhanced with fixes)
 
 <details><summary>Click to expand</summary>
 
@@ -165,6 +278,15 @@ This program requires followings.
    4) generate AMBA AXI\
       *$ ./gen_amba_axi --master=2 --slave=3 --output=amba_axi_m2s3.v*\
       . It generates an AXI bus ("amba_axi_m2s3.v") with 2 master-ports and 3 slave-ports.
+   
+   **🆕 Enhanced Generation with Testbench:**
+   5) generate AMBA AXI with unified testbench\
+      *$ ./gen_axi_with_tb.sh --master=2 --slave=3 --output=design.v --tb=testbench.v*\
+      . It generates both RTL and a unified testbench with multiple test scenarios.
+   6) compile and simulate\
+      *$ vcs -full64 -sverilog design.v testbench.v -o simv*\
+      *$ ./simv +TEST_MODE=ALL*\
+      . Test modes: SIMPLE, COMPREHENSIVE, BURST, SLAVE, STRESS, ALL
    
 #### 2.1.2 verification AMBA AXI
 
@@ -629,7 +751,26 @@ Refer to <a href="https://github.com/adki/cosim_bfm_library">HW-SW co-simulation
 ### Acknowledgments
 Thanks to all who gave me valuable feedback.
 
+### Bug Fixes and Known Issues<a name="bug_fixes"></a>
+
+#### Recent Bug Fixes (August 2025)
+ * **W-Channel Routing Bug**: Fixed incorrect write data routing in multi-slave configurations
+   - Location: `gen_axi_arbiter_mtos.c` lines 438-441
+   - Fix: Changed from `fifo_pop_dout[WIDTH_SID-1:WIDTH_ID]==MID` to `fifo_pop_dout==WSID`
+ * **Timescale Directive**: Added `\`timescale 1ns/1ps` to all generated RTL
+   - Location: `main.c` line 50
+ * **Slave Timing Issues**: Fixed slave read data timing in unified testbench
+ * **Default Data Width**: Changed from 32-bit to 64-bit default
+
+#### Known Limitations
+ * Unified testbench may timeout for configurations larger than 2x2 (RTL is correct)
+ * GUI VIP integration requires manual path configuration
+ * Template path in `gen_axi_with_tb.sh` is hardcoded
+
 ### Revision history<a name="revision_history"></a>
+ * 2025.08.20: Major update: W-channel routing bug fixed, unified testbench added, GUI integration complete
+ * 2025.08.12: VIP enhanced with traffic monitoring, B-channel and AR/R channel fixes
+ * 2025.08.06: GUI v3 with streamlined interface and direct RTL generation
  * 2023.07.16: Bug-fixed: SystemVerilog keyword conflict resolved.
                Simulation using Vivado XSIM in 'verification' uses SystemVerilog compiler.
                (Thanks 'dale40' for raising this issue.)<br>

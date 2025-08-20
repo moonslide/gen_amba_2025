@@ -435,9 +435,9 @@ fprintf(fo, "     always @ ( * ) begin\n");
 fprintf(fo, "     if (~fifo_pop_valid) begin\n");
 fprintf(fo, "         WGRANT = %d'h0;\n", num);
 fprintf(fo, "     end else begin\n");
-fprintf(fo, "              if (fifo_pop_dout[WIDTH_SID-1:WIDTH_ID]==MID0) WGRANT = %d'h%X;\n", num, 1);
+fprintf(fo, "              if (fifo_pop_dout==WSID0) WGRANT = %d'h%X;\n", num, 1);
 for (i=1; i<num; i++) {
-fprintf(fo, "         else if (fifo_pop_dout[WIDTH_SID-1:WIDTH_ID]==MID%d) WGRANT = %d'h%X;\n", i, num, 1<<i);
+fprintf(fo, "         else if (fifo_pop_dout==WSID%d) WGRANT = %d'h%X;\n", i, num, 1<<i);
 }
 fprintf(fo, "         else WGRANT = %d'h0;\n", num);
 fprintf(fo, "     end // if\n");

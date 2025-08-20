@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>gen_amba_20251220</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#gen_amba-user-manual">GEN_AMBA User Manual</a><ul>
+<li><a href="#version-2025.12.20">Version 2025.12.20</a><ul>
+<li><a href="#enhanced-axi4axi3-ahb-and-apb-bus-generator-suite">Enhanced AXI4/AXI3, AHB, and APB Bus Generator Suite</a></li>
+</ul></li>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#introduction">1. Introduction</a><ul>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#authors">Authors</a></li>
+</ul></li>
+<li><a href="#whats-new-in-2025">2. What’s New in 2025</a><ul>
+<li><a href="#major-enhancements">Major Enhancements</a></li>
+</ul></li>
+<li><a href="#installation">3. Installation</a><ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#building-from-source">Building from Source</a></li>
+<li><a href="#directory-structure">Directory Structure</a></li>
+</ul></li>
+<li><a href="#axi-generator-gen_amba_axi">4. AXI Generator (gen_amba_axi)</a><ul>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#command-line-options">Command-Line Options</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#generated-module-interface">Generated Module Interface</a></li>
+</ul></li>
+<li><a href="#ahb-generator-gen_amba_ahb">5. AHB Generator (gen_amba_ahb)</a><ul>
+<li><a href="#basic-usage-1">Basic Usage</a></li>
+<li><a href="#command-line-options-1">Command-Line Options</a></li>
+<li><a href="#example">Example</a></li>
+</ul></li>
+<li><a href="#apb-generator-gen_amba_apb">6. APB Generator (gen_amba_apb)</a><ul>
+<li><a href="#basic-usage-2">Basic Usage</a></li>
+<li><a href="#command-line-options-2">Command-Line Options</a></li>
+<li><a href="#examples-1">Examples</a></li>
+</ul></li>
+<li><a href="#advanced-features">7. Advanced Features</a><ul>
+<li><a href="#quality-of-service-qos-1">7.1 Quality of Service (QoS)</a></li>
+<li><a href="#region-support-1">7.2 REGION Support</a></li>
+<li><a href="#user-signals-1">7.3 USER Signals</a></li>
+<li><a href="#ace-lite-coherency-1">7.4 ACE-Lite Coherency</a></li>
+<li><a href="#security-firewall-1">7.5 Security Firewall</a></li>
+</ul></li>
+<li><a href="#gui-interface-1">8. GUI Interface</a><ul>
+<li><a href="#overview-5">Overview</a></li>
+<li><a href="#features-3">Features</a></li>
+<li><a href="#running-the-gui">Running the GUI</a></li>
+<li><a href="#gui-capabilities">GUI Capabilities</a></li>
+</ul></li>
+<li><a href="#verification">9. Verification</a><ul>
+<li><a href="#simulation-support">Simulation Support</a></li>
+<li><a href="#running-tests">Running Tests</a></li>
+<li><a href="#waveform-viewing">Waveform Viewing</a></li>
+<li><a href="#uvm-verification-ip">UVM Verification IP</a></li>
+</ul></li>
+<li><a href="#examples-2">10. Examples</a><ul>
+<li><a href="#example-1-basic-axi4-system">Example 1: Basic AXI4 System</a></li>
+<li><a href="#example-2-high-performance-system">Example 2: High-Performance System</a></li>
+<li><a href="#example-3-secure-iot-system">Example 3: Secure IoT System</a></li>
+<li><a href="#example-4-coherent-multi-core">Example 4: Coherent Multi-Core</a></li>
+<li><a href="#example-5-complete-system">Example 5: Complete System</a></li>
+</ul></li>
+<li><a href="#appendix-a-signal-reference">Appendix A: Signal Reference</a><ul>
+<li><a href="#standard-axi4-signals">Standard AXI4 Signals</a></li>
+<li><a href="#enhanced-signals-2025">Enhanced Signals (2025)</a></li>
+</ul></li>
+<li><a href="#appendix-b-error-responses">Appendix B: Error Responses</a><ul>
+<li><a href="#response-types">Response Types</a></li>
+</ul></li>
+<li><a href="#appendix-c-compliance">Appendix C: Compliance</a><ul>
+<li><a href="#specifications-supported">Specifications Supported</a></li>
+<li><a href="#synthesis-support">Synthesis Support</a></li>
+</ul></li>
+<li><a href="#support-and-contributing">Support and Contributing</a><ul>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#known-issues">Known Issues</a></li>
+<li><a href="#future-enhancements">Future Enhancements</a></li>
+</ul></li>
+<li><a href="#license">License</a></li>
+<li><a href="#revision-history">Revision History</a><ul>
+<li><a href="#version-2025.12.20-1">Version 2025.12.20</a></li>
+<li><a href="#version-2021.07.10">Version 2021.07.10</a></li>
+<li><a href="#version-2016.03.26">Version 2016.03.26</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="gen_amba-user-manual">GEN_AMBA User Manual</h1>
+<h2 id="version-2025.12.20">Version 2025.12.20</h2>
+<h3 id="enhanced-axi4axi3-ahb-and-apb-bus-generator-suite">Enhanced AXI4/AXI3, AHB, and APB Bus Generator Suite</h3>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#whats-new-in-2025">What’s New in 2025</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#axi-generator">AXI Generator (gen_amba_axi)</a></li>
+<li><a href="#ahb-generator">AHB Generator (gen_amba_ahb)</a></li>
+<li><a href="#apb-generator">APB Generator (gen_amba_apb)</a></li>
+<li><a href="#advanced-features">Advanced Features</a></li>
+<li><a href="#gui-interface">GUI Interface</a></li>
+<li><a href="#verification">Verification</a></li>
+<li><a href="#examples">Examples</a></li>
+</ol>
+<hr />
+<h2 id="introduction">1. Introduction</h2>
+<p>GEN_AMBA is a comprehensive suite of RTL generators for AMBA bus systems, creating synthesizable Verilog code for AXI4/AXI3, AHB, and APB interconnects. The 2025 release includes major enhancements for advanced SoC development.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>AXI4/AXI3</strong>: Full protocol support with advanced features</li>
+<li><strong>AHB/AHB-Lite</strong>: Complete bus matrix generation</li>
+<li><strong>APB</strong>: Bridge generation from AXI or AHB</li>
+<li><strong>GUI Interface</strong>: Visual bus matrix designer</li>
+<li><strong>Verification IP</strong>: Complete UVM-based VIP suite</li>
+</ul>
+<h3 id="authors">Authors</h3>
+<ul>
+<li>Original (2016-2021): Ando Ki (andoki@gmail.com)</li>
+<li>Enhanced (2025): Extended by AI-assisted development</li>
+</ul>
+<hr />
+<h2 id="whats-new-in-2025">2. What’s New in 2025</h2>
+<h3 id="major-enhancements">Major Enhancements</h3>
+<h4 id="quality-of-service-qos">2.1 Quality of Service (QoS) ✅</h4>
+<ul>
+<li>4-bit AWQOS/ARQOS signals</li>
+<li>Priority-based arbitration</li>
+<li>Starvation prevention</li>
+<li>Round-robin within same QoS level</li>
+<li>Debug monitoring</li>
+</ul>
+<h4 id="region-support">2.2 REGION Support ✅</h4>
+<ul>
+<li>4-bit AWREGION/ARREGION signals</li>
+<li>16 regions per slave</li>
+<li>Per-region protection attributes</li>
+<li>Per-region cache policies</li>
+<li>Address boundary checking</li>
+</ul>
+<h4 id="user-signals">2.3 USER Signals ✅</h4>
+<ul>
+<li>Configurable width (1-1024 bits)</li>
+<li>All five USER signals supported</li>
+<li>Transparent routing through interconnect</li>
+</ul>
+<h4 id="ace-lite-coherency">2.4 ACE-Lite Coherency ✅</h4>
+<ul>
+<li>Domain signals (AWDOMAIN, ARDOMAIN)</li>
+<li>Snoop signals (AWSNOOP, ARSNOOP)</li>
+<li>Barrier signals (AWBAR, ARBAR)</li>
+<li>Cache maintenance detection</li>
+<li>Coherency validation</li>
+</ul>
+<h4 id="security-firewall">2.5 Security Firewall ✅</h4>
+<ul>
+<li>AxPROT[1] security bit validation</li>
+<li>SLVERR response generation</li>
+<li>Master/slave security levels</li>
+<li>Address-based protection</li>
+<li>Violation tracking and alerts</li>
+</ul>
+<h4 id="enhanced-address-width">2.6 Enhanced Address Width ✅</h4>
+<ul>
+<li>Full 8-64 bit range support</li>
+<li>No longer limited to 4 fixed values</li>
+<li>Per AXI4 specification compliance</li>
+</ul>
+<h4 id="gui-interface">2.7 GUI Interface ✅</h4>
+<ul>
+<li>Visual bus matrix designer</li>
+<li>Drag-and-drop configuration</li>
+<li>Real-time validation</li>
+<li>Code generation</li>
+<li>Project management</li>
+</ul>
+<h4 id="verification-ip-suite">2.8 Verification IP Suite ✅</h4>
+<ul>
+<li>UVM-based environment</li>
+<li>80+ test sequences</li>
+<li>BFM components</li>
+<li>Coverage and scoreboard</li>
+<li>Regression management</li>
+</ul>
+<hr />
+<h2 id="installation">3. Installation</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Linux, Windows (Cygwin/MinGW), or macOS</li>
+<li>GCC compiler</li>
+<li>Make utility</li>
+<li>Python 3.6+ (for GUI)</li>
+</ul>
+<h3 id="building-from-source">Building from Source</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Clone or extract the repository</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="bu">cd</span> gen_amba_2025</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Build all generators</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="fu">make</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># Build specific generator</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="bu">cd</span> gen_amba_axi <span class="kw">&amp;&amp;</span> <span class="fu">make</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="bu">cd</span> gen_amba_ahb <span class="kw">&amp;&amp;</span> <span class="fu">make</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="bu">cd</span> gen_amba_apb <span class="kw">&amp;&amp;</span> <span class="fu">make</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co"># Install to bin directory</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="fu">make</span> install</a></code></pre></div>
+<h3 id="directory-structure">Directory Structure</h3>
+<pre><code>gen_amba_2025/
+├── gen_amba_axi/     # AXI generator
+├── gen_amba_ahb/     # AHB generator
+├── gen_amba_apb/     # APB generator
+├── axi4_vip/         # Verification IP
+├── doc/              # Documentation
+└── bin/              # Compiled binaries</code></pre>
+<hr />
+<h2 id="axi-generator-gen_amba_axi">4. AXI Generator (gen_amba_axi)</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ex">gen_amba_axi</span> --master=<span class="op">&lt;</span>num<span class="op">&gt;</span> --slave=<span class="op">&lt;</span>num<span class="op">&gt;</span> [options]</a></code></pre></div>
+<h3 id="command-line-options">Command-Line Options</h3>
+<h4 id="required-parameters">Required Parameters</h4>
+<ul>
+<li><code>-M, --master=&lt;num&gt;</code>: Number of masters (minimum 2)</li>
+<li><code>-S, --slave=&lt;num&gt;</code>: Number of slaves (minimum 2)</li>
+</ul>
+<h4 id="optional-parameters">Optional Parameters</h4>
+<ul>
+<li><code>-O, --output=&lt;file&gt;</code>: Output filename (default: stdout)</li>
+<li><code>-D, --module=&lt;name&gt;</code>: Module name (default: amba_axi_mXsY)</li>
+<li><code>-P, --prefix=&lt;str&gt;</code>: Module prefix for namespace</li>
+<li><code>-3, --axi3</code>: Generate AXI3 (default: AXI4)</li>
+<li><code>-A, --addr-width=&lt;8-64&gt;</code>: Address width in bits</li>
+<li><code>-W, --data-width=&lt;32-1024&gt;</code>: Data width (32,64,128,256,512,1024)</li>
+</ul>
+<h4 id="advanced-features-new-in-2025">Advanced Features (New in 2025)</h4>
+<ul>
+<li><code>-q, --enable-qos</code>: Enable Quality of Service</li>
+<li><code>-r, --enable-region</code>: Enable REGION support</li>
+<li><code>-u, --enable-user</code>: Enable USER signals</li>
+<li><code>-f, --enable-firewall</code>: Enable security firewall</li>
+<li><code>-c, --enable-cdc</code>: Enable clock domain crossing</li>
+<li><code>-a, --enable-ace-lite</code>: Enable ACE-Lite coherency</li>
+<li><code>-Q, --qos-width=&lt;num&gt;</code>: QoS signal width (default: 4)</li>
+<li><code>-R, --region-width=&lt;num&gt;</code>: REGION width (default: 4)</li>
+<li><code>-U, --user-width=&lt;num&gt;</code>: USER signal width (default: 1)</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<h4 id="basic-2x3-interconnect">Basic 2x3 Interconnect</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ex">gen_amba_axi</span> --master=2 --slave=3 --output=axi_2x3.v</a></code></pre></div>
+<h4 id="axi4-with-qos-and-region">AXI4 with QoS and REGION</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ex">gen_amba_axi</span> --master=4 --slave=4 --enable-qos --enable-region \</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">             --addr-width=40 --data-width=128 --output=axi_advanced.v</a></code></pre></div>
+<h4 id="secure-system-with-firewall">Secure System with Firewall</h4>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ex">gen_amba_axi</span> --master=4 --slave=4 --enable-firewall --enable-user \</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">             --user-width=8 --output=axi_secure.v</a></code></pre></div>
+<h4 id="ace-lite-coherent-system">ACE-Lite Coherent System</h4>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ex">gen_amba_axi</span> --master=4 --slave=4 --enable-ace-lite --enable-qos \</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">             --output=axi_coherent.v</a></code></pre></div>
+<h3 id="generated-module-interface">Generated Module Interface</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode verilog"><code class="sourceCode verilog"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">module</span> amba_axi_m4s4</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">    #(<span class="dt">parameter</span> NUM_MASTER  = <span class="dv">4</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">             , NUM_SLAVE   = <span class="dv">4</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">             , WIDTH_ID    = <span class="dv">4</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">             , WIDTH_AD    = <span class="dv">32</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">             , WIDTH_DA    = <span class="dv">32</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">             <span class="co">// Advanced parameters (2025)</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">             , WIDTH_QOS   = <span class="dv">4</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">             , WIDTH_REGION= <span class="dv">4</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">             , WIDTH_USER  = <span class="dv">8</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">             )</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">(</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">    <span class="dt">input</span>  ACLK,</a>
+<a class="sourceLine" id="cb8-14" data-line-number="14">    <span class="dt">input</span>  ARESETn,</a>
+<a class="sourceLine" id="cb8-15" data-line-number="15">    <span class="co">// Master ports</span></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16">    <span class="co">// ... AXI signals ...</span></a>
+<a class="sourceLine" id="cb8-17" data-line-number="17">    <span class="co">// QoS signals (if enabled)</span></a>
+<a class="sourceLine" id="cb8-18" data-line-number="18">    <span class="dt">input</span>  [<span class="dv">3</span>:<span class="dv">0</span>] M0_AWQOS,</a>
+<a class="sourceLine" id="cb8-19" data-line-number="19">    <span class="dt">input</span>  [<span class="dv">3</span>:<span class="dv">0</span>] M0_ARQOS,</a>
+<a class="sourceLine" id="cb8-20" data-line-number="20">    <span class="co">// REGION signals (if enabled)</span></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21">    <span class="dt">input</span>  [<span class="dv">3</span>:<span class="dv">0</span>] M0_AWREGION,</a>
+<a class="sourceLine" id="cb8-22" data-line-number="22">    <span class="dt">input</span>  [<span class="dv">3</span>:<span class="dv">0</span>] M0_ARREGION,</a>
+<a class="sourceLine" id="cb8-23" data-line-number="23">    <span class="co">// USER signals (if enabled)</span></a>
+<a class="sourceLine" id="cb8-24" data-line-number="24">    <span class="dt">input</span>  [WIDTH_USER<span class="dv">-1</span>:<span class="dv">0</span>] M0_AWUSER,</a>
+<a class="sourceLine" id="cb8-25" data-line-number="25">    <span class="co">// ACE-Lite signals (if enabled)</span></a>
+<a class="sourceLine" id="cb8-26" data-line-number="26">    <span class="dt">input</span>  [<span class="dv">1</span>:<span class="dv">0</span>] M0_AWDOMAIN,</a>
+<a class="sourceLine" id="cb8-27" data-line-number="27">    <span class="dt">input</span>  [<span class="dv">2</span>:<span class="dv">0</span>] M0_AWSNOOP,</a>
+<a class="sourceLine" id="cb8-28" data-line-number="28">    <span class="co">// ... more signals ...</span></a>
+<a class="sourceLine" id="cb8-29" data-line-number="29">);</a></code></pre></div>
+<hr />
+<h2 id="ahb-generator-gen_amba_ahb">5. AHB Generator (gen_amba_ahb)</h2>
+<h3 id="basic-usage-1">Basic Usage</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ex">gen_amba_ahb</span> --mst=<span class="op">&lt;</span>num<span class="op">&gt;</span> --slv=<span class="op">&lt;</span>num<span class="op">&gt;</span> [options]</a></code></pre></div>
+<h3 id="command-line-options-1">Command-Line Options</h3>
+<ul>
+<li><code>--mst=&lt;num&gt;</code>: Number of masters (1 generates AHB-Lite)</li>
+<li><code>--slv=&lt;num&gt;</code>: Number of slaves</li>
+<li><code>--out=&lt;file&gt;</code>: Output filename</li>
+<li><code>--module=&lt;name&gt;</code>: Module name</li>
+<li><code>--prefix=&lt;str&gt;</code>: Module prefix</li>
+</ul>
+<h3 id="example">Example</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="ex">gen_amba_ahb</span> --mst=3 --slv=4 --out=ahb_3x4.v</a></code></pre></div>
+<hr />
+<h2 id="apb-generator-gen_amba_apb">6. APB Generator (gen_amba_apb)</h2>
+<h3 id="basic-usage-2">Basic Usage</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ex">gen_amba_apb</span> --slave=<span class="op">&lt;</span>num<span class="op">&gt;</span> [--axi<span class="kw">|</span><span class="ex">--ahb</span>] [options]</a></code></pre></div>
+<h3 id="command-line-options-2">Command-Line Options</h3>
+<ul>
+<li><code>--slave=&lt;num&gt;</code>: Number of APB slaves</li>
+<li><code>--axi</code>: Generate AXI-to-APB bridge</li>
+<li><code>--ahb</code>: Generate AHB-to-APB bridge</li>
+<li><code>--out=&lt;file&gt;</code>: Output filename</li>
+</ul>
+<h3 id="examples-1">Examples</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># AXI to APB bridge with 8 slaves</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="ex">gen_amba_apb</span> --axi --slave=8 --out=axi2apb.v</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="co"># AHB to APB bridge with 4 slaves</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="ex">gen_amba_apb</span> --ahb --slave=4 --out=ahb2apb.v</a></code></pre></div>
+<hr />
+<h2 id="advanced-features">7. Advanced Features</h2>
+<h3 id="quality-of-service-qos-1">7.1 Quality of Service (QoS)</h3>
+<h4 id="overview">Overview</h4>
+<p>QoS enables priority-based arbitration in AXI4 systems.</p>
+<h4 id="features">Features</h4>
+<ul>
+<li>16 priority levels (0-15)</li>
+<li>Higher values get higher priority</li>
+<li>Starvation prevention</li>
+<li>Fair round-robin within same priority</li>
+</ul>
+<h4 id="implementation">Implementation</h4>
+<div class="sourceCode" id="cb13"><pre class="sourceCode verilog"><code class="sourceCode verilog"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">// QoS signals in master interface</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="dt">input</span> [<span class="dv">3</span>:<span class="dv">0</span>] M0_AWQOS,  <span class="co">// Write priority</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="dt">input</span> [<span class="dv">3</span>:<span class="dv">0</span>] M0_ARQOS,  <span class="co">// Read priority</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">// Arbiter uses QoS for selection</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="kw">if</span> (m0_awqos &gt; m1_awqos) </a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">    grant &lt;= master_<span class="dv">0</span>;</a></code></pre></div>
+<h3 id="region-support-1">7.2 REGION Support</h3>
+<h4 id="overview-1">Overview</h4>
+<p>REGION allows slaves to have multiple logical interfaces with different attributes.</p>
+<h4 id="features-1">Features</h4>
+<ul>
+<li>16 regions per slave (0-15)</li>
+<li>Per-region protection settings</li>
+<li>Per-region cache policies</li>
+<li>Address boundary validation</li>
+</ul>
+<h4 id="configuration">Configuration</h4>
+<div class="sourceCode" id="cb14"><pre class="sourceCode verilog"><code class="sourceCode verilog"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co">// Each slave can decode regions</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">s0_region_base[<span class="dv">0</span>] = <span class="bn">32&#39;h0000_0000</span>;  <span class="co">// Region 0 base</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">s0_region_size[<span class="dv">0</span>] = <span class="bn">32&#39;h0000_1000</span>;  <span class="co">// 4KB size</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">s0_region_prot[<span class="dv">0</span>] = <span class="bn">3&#39;b010</span>;         <span class="co">// Protection</span></a></code></pre></div>
+<h3 id="user-signals-1">7.3 USER Signals</h3>
+<h4 id="overview-2">Overview</h4>
+<p>USER signals carry sideband information alongside transactions.</p>
+<h4 id="supported-signals">Supported Signals</h4>
+<ul>
+<li>AWUSER: Write address user</li>
+<li>WUSER: Write data user</li>
+<li>BUSER: Write response user</li>
+<li>ARUSER: Read address user</li>
+<li>RUSER: Read data user</li>
+</ul>
+<h4 id="usage">Usage</h4>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="ex">gen_amba_axi</span> --enable-user --user-width=16 ...</a></code></pre></div>
+<h3 id="ace-lite-coherency-1">7.4 ACE-Lite Coherency</h3>
+<h4 id="overview-3">Overview</h4>
+<p>ACE-Lite adds cache coherency support for I/O coherent masters.</p>
+<h4 id="signals">Signals</h4>
+<ul>
+<li><strong>Domain</strong>: Shareability (Non/Inner/Outer/System)</li>
+<li><strong>Snoop</strong>: Transaction type (WriteClean, ReadOnce, etc.)</li>
+<li><strong>Barrier</strong>: Ordering constraints</li>
+</ul>
+<h4 id="encodings">Encodings</h4>
+<div class="sourceCode" id="cb16"><pre class="sourceCode verilog"><code class="sourceCode verilog"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co">// Domain values</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="bn">2&#39;b00</span>: Non-shareable</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="bn">2&#39;b01</span>: Inner shareable</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="bn">2&#39;b10</span>: Outer shareable</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="bn">2&#39;b11</span>: System</a>
+<a class="sourceLine" id="cb16-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="co">// Write snoop types</span></a>
+<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="bn">3&#39;b000</span>: WriteNoSnoop</a>
+<a class="sourceLine" id="cb16-9" data-line-number="9"><span class="bn">3&#39;b001</span>: WriteLineUnique</a>
+<a class="sourceLine" id="cb16-10" data-line-number="10"><span class="bn">3&#39;b010</span>: WriteClean</a></code></pre></div>
+<h3 id="security-firewall-1">7.5 Security Firewall</h3>
+<h4 id="overview-4">Overview</h4>
+<p>Enforces security policies based on AxPROT and configuration.</p>
+<h4 id="features-2">Features</h4>
+<ul>
+<li>AxPROT[1] security bit checking</li>
+<li>Master security levels</li>
+<li>Slave access permissions</li>
+<li>Address-based protection</li>
+<li>SLVERR response generation</li>
+</ul>
+<h4 id="configuration-1">Configuration</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode verilog"><code class="sourceCode verilog"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co">// Security setup</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">master_secure = <span class="bn">4&#39;b0011</span>;     <span class="co">// M0,M1 secure</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">slave_secure = <span class="bn">4&#39;b1100</span>;      <span class="co">// S2,S3 secure</span></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">slave_nonsec_allowed = <span class="bn">4&#39;b0100</span>; <span class="co">// S2 allows non-secure</span></a></code></pre></div>
+<hr />
+<h2 id="gui-interface-1">8. GUI Interface</h2>
+<h3 id="overview-5">Overview</h3>
+<p>Visual bus matrix designer with drag-and-drop configuration.</p>
+<h3 id="features-3">Features</h3>
+<ul>
+<li>Interactive matrix design</li>
+<li>Real-time validation</li>
+<li>Parameter configuration</li>
+<li>Code generation</li>
+<li>Project management</li>
+</ul>
+<h3 id="running-the-gui">Running the GUI</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="bu">cd</span> axi4_vip/gui_v3</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="ex">python3</span> src/main_gui_v3_streamlined.py</a></code></pre></div>
+<h3 id="gui-capabilities">GUI Capabilities</h3>
+<ul>
+<li><strong>Matrix View</strong>: Visual master-slave connections</li>
+<li><strong>Parameters</strong>: Configure all bus parameters</li>
+<li><strong>Advanced Features</strong>: Enable QoS, REGION, etc.</li>
+<li><strong>Generation</strong>: Create RTL or command lines</li>
+<li><strong>Verification</strong>: Generate VIP environment</li>
+</ul>
+<hr />
+<h2 id="verification">9. Verification</h2>
+<h3 id="simulation-support">Simulation Support</h3>
+<ul>
+<li>Icarus Verilog</li>
+<li>ModelSim/QuestaSim</li>
+<li>VCS</li>
+<li>Vivado XSIM</li>
+<li>Xcelium</li>
+</ul>
+<h3 id="running-tests">Running Tests</h3>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="bu">cd</span> gen_amba_axi/verification/sim/iverilog</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="fu">make</span> MST=2 SLV=3</a></code></pre></div>
+<h3 id="waveform-viewing">Waveform Viewing</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="ex">gtkwave</span> wave.vcd</a></code></pre></div>
+<h3 id="uvm-verification-ip">UVM Verification IP</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="bu">cd</span> axi4_vip</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="fu">make</span> compile</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="ex">./simv</span> +UVM_TESTNAME=axi4_base_test</a></code></pre></div>
+<hr />
+<h2 id="examples-2">10. Examples</h2>
+<h3 id="example-1-basic-axi4-system">Example 1: Basic AXI4 System</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co"># Generate 4x4 AXI4 interconnect</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="ex">gen_amba_axi</span> --master=4 --slave=4 --output=basic_axi4.v</a></code></pre></div>
+<h3 id="example-2-high-performance-system">Example 2: High-Performance System</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co"># 64-bit data, 40-bit address, with QoS</span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="ex">gen_amba_axi</span> --master=8 --slave=8 \</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">             --data-width=64 --addr-width=40 \</a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">             --enable-qos --output=hp_system.v</a></code></pre></div>
+<h3 id="example-3-secure-iot-system">Example 3: Secure IoT System</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co"># Security firewall with regions</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="ex">gen_amba_axi</span> --master=4 --slave=6 \</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">             --enable-firewall --enable-region \</a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">             --enable-user --user-width=8 \</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">             --output=iot_secure.v</a></code></pre></div>
+<h3 id="example-4-coherent-multi-core">Example 4: Coherent Multi-Core</h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="co"># ACE-Lite with QoS for coherent system</span></a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="ex">gen_amba_axi</span> --master=4 --slave=4 \</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">             --enable-ace-lite --enable-qos \</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">             --data-width=128 --addr-width=48 \</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">             --output=coherent_mc.v</a></code></pre></div>
+<h3 id="example-5-complete-system">Example 5: Complete System</h3>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="co"># All features enabled</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="ex">gen_amba_axi</span> --master=8 --slave=8 \</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">             --enable-qos --enable-region \</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">             --enable-user --user-width=16 \</a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">             --enable-firewall --enable-ace-lite \</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">             --addr-width=64 --data-width=256 \</a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">             --prefix=main_ --module=main_interconnect \</a>
+<a class="sourceLine" id="cb26-8" data-line-number="8">             --output=full_system.v</a></code></pre></div>
+<hr />
+<h2 id="appendix-a-signal-reference">Appendix A: Signal Reference</h2>
+<h3 id="standard-axi4-signals">Standard AXI4 Signals</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Signal</th>
+<th>Width</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AxID</td>
+<td>WIDTH_ID</td>
+<td>Transaction ID</td>
+</tr>
+<tr class="even">
+<td>AxADDR</td>
+<td>WIDTH_AD</td>
+<td>Address</td>
+</tr>
+<tr class="odd">
+<td>AxLEN</td>
+<td>8</td>
+<td>Burst length</td>
+</tr>
+<tr class="even">
+<td>AxSIZE</td>
+<td>3</td>
+<td>Burst size</td>
+</tr>
+<tr class="odd">
+<td>AxBURST</td>
+<td>2</td>
+<td>Burst type</td>
+</tr>
+<tr class="even">
+<td>AxLOCK</td>
+<td>1</td>
+<td>Lock type</td>
+</tr>
+<tr class="odd">
+<td>AxCACHE</td>
+<td>4</td>
+<td>Cache attributes</td>
+</tr>
+<tr class="even">
+<td>AxPROT</td>
+<td>3</td>
+<td>Protection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="enhanced-signals-2025">Enhanced Signals (2025)</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Signal</th>
+<th>Width</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AxQOS</td>
+<td>4</td>
+<td>Quality of Service</td>
+</tr>
+<tr class="even">
+<td>AxREGION</td>
+<td>4</td>
+<td>Region identifier</td>
+</tr>
+<tr class="odd">
+<td>AxUSER</td>
+<td>1-1024</td>
+<td>User-defined</td>
+</tr>
+<tr class="even">
+<td>AxDOMAIN</td>
+<td>2</td>
+<td>ACE-Lite domain</td>
+</tr>
+<tr class="odd">
+<td>AxSNOOP</td>
+<td>3/4</td>
+<td>ACE-Lite snoop</td>
+</tr>
+<tr class="even">
+<td>AxBAR</td>
+<td>2</td>
+<td>ACE-Lite barrier</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-error-responses">Appendix B: Error Responses</h2>
+<h3 id="response-types">Response Types</h3>
+<ul>
+<li><strong>OKAY (2’b00)</strong>: Normal access success</li>
+<li><strong>EXOKAY (2’b01)</strong>: Exclusive access success</li>
+<li><strong>SLVERR (2’b10)</strong>: Slave error/security violation</li>
+<li><strong>DECERR (2’b11)</strong>: Decode error (no slave)</li>
+</ul>
+<hr />
+<h2 id="appendix-c-compliance">Appendix C: Compliance</h2>
+<h3 id="specifications-supported">Specifications Supported</h3>
+<ul>
+<li>AMBA AXI4 Protocol v2.0 (ARM IHI 0022D)</li>
+<li>AMBA AXI3 Protocol v1.0 (ARM IHI 0022C)</li>
+<li>AMBA AHB Protocol v2.0 (ARM IHI 0011A)</li>
+<li>AMBA APB Protocol v2.0 (ARM IHI 0024C)</li>
+<li>ACE-Lite Protocol (ARM IHI 0022D)</li>
+</ul>
+<h3 id="synthesis-support">Synthesis Support</h3>
+<ul>
+<li>Xilinx Vivado</li>
+<li>Intel Quartus</li>
+<li>Synopsys Design Compiler</li>
+<li>Cadence Genus</li>
+</ul>
+<hr />
+<h2 id="support-and-contributing">Support and Contributing</h2>
+<h3 id="documentation">Documentation</h3>
+<ul>
+<li>User Manual: This document</li>
+<li>CLAUDE.md: AI assistant guidelines</li>
+<li>API Reference: See source headers</li>
+</ul>
+<h3 id="known-issues">Known Issues</h3>
+<ul>
+<li>None reported in 2025 release</li>
+</ul>
+<h3 id="future-enhancements">Future Enhancements</h3>
+<ul>
+<li>AXI5 support</li>
+<li>CHI protocol support</li>
+<li>SystemVerilog interface option</li>
+<li>AMBA 5 features</li>
+</ul>
+<hr />
+<h2 id="license">License</h2>
+<p>BSD 2-Clause License</p>
+<p>Copyright (c) 2016-2021 Ando Ki Copyright (c) 2025 Enhanced Features Contributors</p>
+<hr />
+<h2 id="revision-history">Revision History</h2>
+<h3 id="version-2025.12.20-1">Version 2025.12.20</h3>
+<ul>
+<li>Added QoS arbitration</li>
+<li>Added REGION support</li>
+<li>Added USER signals</li>
+<li>Added ACE-Lite coherency</li>
+<li>Added Security Firewall</li>
+<li>Enhanced address width support</li>
+<li>Added GUI interface</li>
+<li>Added VIP suite</li>
+</ul>
+<h3 id="version-2021.07.10">Version 2021.07.10</h3>
+<ul>
+<li>Added AXI3 support</li>
+<li>Bug fixes</li>
+</ul>
+<h3 id="version-2016.03.26">Version 2016.03.26</h3>
+<ul>
+<li>Initial release</li>
+</ul>
+<hr />
+<p><strong>End of Document</strong></p>
+</body>
+</html>
