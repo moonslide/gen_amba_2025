@@ -50,10 +50,46 @@ class Generator:
             
             if self.project.bus.id_width != 4:
                 cmd.append(f"--id-width={self.project.bus.id_width}")
+                
+            # Add user signal width if specified
+            if hasattr(self.project.bus, 'user_width') and self.project.bus.user_width > 0:
+                cmd.append(f"--user-width={self.project.bus.user_width}")
+                
+            # Add burst length configuration if specified and not default
+            if hasattr(self.project.bus, 'burst_length') and self.project.bus.burst_length != 256:
+                cmd.append(f"--burst-length={self.project.bus.burst_length}")
             
             # Add QoS if enabled
             if self.project.bus.qos:
-                cmd.append("--qos")
+                cmd.append("--enable-qos")
+                
+            # Add region support if enabled
+            if self.project.bus.region:
+                cmd.append("--enable-region")
+                
+            # Add cache support if enabled  
+            if self.project.bus.cache:
+                cmd.append("--enable-cache")
+                
+            # Add protection support if enabled
+            if self.project.bus.prot:
+                cmd.append("--enable-prot")
+            
+            # Add ACE-Lite support if enabled
+            if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+                cmd.append("--enable-ace-lite")
+                
+                # Add SD_xUSER width configurations
+                if hasattr(self.project.bus, 'sd_awuser_width'):
+                    cmd.append(f"--sd-awuser-width={self.project.bus.sd_awuser_width}")
+                if hasattr(self.project.bus, 'sd_wuser_width'):
+                    cmd.append(f"--sd-wuser-width={self.project.bus.sd_wuser_width}")
+                if hasattr(self.project.bus, 'sd_buser_width'):
+                    cmd.append(f"--sd-buser-width={self.project.bus.sd_buser_width}")
+                if hasattr(self.project.bus, 'sd_aruser_width'):
+                    cmd.append(f"--sd-aruser-width={self.project.bus.sd_aruser_width}")
+                if hasattr(self.project.bus, 'sd_ruser_width'):
+                    cmd.append(f"--sd-ruser-width={self.project.bus.sd_ruser_width}")
             
             # Run generator (compatible with older Python)
             # Note: gen_amba_axi creates files relative to cwd
@@ -72,16 +108,40 @@ class Generator:
                 message += f"File: {output_file}\n"
                 message += f"Size: {size_kb} KB\n"
                 message += f"Configuration: {len(self.project.masters)}M × {len(self.project.slaves)}S\n"
-                message += f"Width: {self.project.bus.data_width}-bit data, {self.project.bus.addr_width}-bit address"
+                message += f"Data Width: {self.project.bus.data_width} bits\n"
+                message += f"Address Width: {self.project.bus.addr_width} bits\n"
+                message += f"ID Width: {self.project.bus.id_width} bits\n"
+                
+                if hasattr(self.project.bus, 'user_width') and self.project.bus.user_width > 0:
+                    message += f"User Width: {self.project.bus.user_width} bits\n"
+                
+                if hasattr(self.project.bus, 'burst_length'):
+                    message += f"Burst Length: {self.project.bus.burst_length}\n"
                 
                 if self.project.bus.qos:
-                    message += "\nQoS: Enabled"
+                    message += "QoS: Enabled\n"
+                if self.project.bus.region:
+                    message += "Region: Enabled\n"
+                if self.project.bus.cache:
+                    message += "Cache: Enabled\n"
+                if self.project.bus.prot:
+                    message += "Protection: Enabled\n"
+                    
+                # Add ACE-Lite status
+                if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+                    message += "ACE-Lite: Enabled\n"
+                    message += f"SD_AWUSER Width: {getattr(self.project.bus, 'sd_awuser_width', 8)} bits\n"
+                    message += f"SD_WUSER Width: {getattr(self.project.bus, 'sd_wuser_width', 4)} bits\n"
+                    message += f"SD_BUSER Width: {getattr(self.project.bus, 'sd_buser_width', 4)} bits\n"
+                    message += f"SD_ARUSER Width: {getattr(self.project.bus, 'sd_aruser_width', 8)} bits\n"
+                    message += f"SD_RUSER Width: {getattr(self.project.bus, 'sd_ruser_width', 4)} bits\n"
+                    
                 if self.project.bus.arbitration == "fixed":
-                    message += "\nArbitration: Fixed Priority"
+                    message += "Arbitration: Fixed Priority"
                 elif self.project.bus.arbitration == "rr":
-                    message += "\nArbitration: Round Robin"
+                    message += "Arbitration: Round Robin"
                 elif self.project.bus.arbitration == "qos":
-                    message += "\nArbitration: QoS-based"
+                    message += "Arbitration: QoS-based"
                 
                 return True, message
             else:
@@ -202,7 +262,7 @@ class Generator:
     
     def _generate_vip_package(self, filename: str):
         """Generate VIP package file"""
-        content = f"""// AXI4 VIP Package - UVM-1.2 Compatible
+        content = f"""// AXI4 VIP Package - UVM-1.2 Compatible with ACE-Lite Support
 // Auto-generated from bus configuration
 
 package axi4_vip_pkg;
@@ -218,7 +278,7 @@ package axi4_vip_pkg;
         `endif
     `endif
     
-    // Parameters
+    // Standard AXI4 Parameters
     parameter ADDR_WIDTH = {self.project.bus.addr_width};
     parameter DATA_WIDTH = {self.project.bus.data_width};
     parameter ID_WIDTH = {self.project.bus.id_width};
@@ -229,7 +289,26 @@ package axi4_vip_pkg;
     // QoS configuration
     parameter QOS_ENABLE = {1 if self.project.bus.qos else 0};
     parameter DEFAULT_AWQOS = {self.project.bus.qos_default.aw};
-    parameter DEFAULT_ARQOS = {self.project.bus.qos_default.ar};
+    parameter DEFAULT_ARQOS = {self.project.bus.qos_default.ar};"""
+
+        # Add ACE-Lite parameters if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    
+    // ACE-Lite Configuration  
+    parameter ACE_LITE_ENABLE = 1;
+    parameter SD_AWUSER_WIDTH = {getattr(self.project.bus, 'sd_awuser_width', 8)};
+    parameter SD_WUSER_WIDTH = {getattr(self.project.bus, 'sd_wuser_width', 4)};
+    parameter SD_BUSER_WIDTH = {getattr(self.project.bus, 'sd_buser_width', 4)};
+    parameter SD_ARUSER_WIDTH = {getattr(self.project.bus, 'sd_aruser_width', 8)};
+    parameter SD_RUSER_WIDTH = {getattr(self.project.bus, 'sd_ruser_width', 4)};"""
+        else:
+            content += """
+    
+    // ACE-Lite Configuration (disabled)
+    parameter ACE_LITE_ENABLE = 0;"""
+        
+        content += """
     
     // Utility functions (none needed for basic package)
     
@@ -522,11 +601,24 @@ clean:
     
     def _generate_interface(self, filename: str):
         """Generate AXI4 interface definition"""
-        content = f"""// AXI4 Interface Definition
-interface axi4_if #(
-    parameter ADDR_WIDTH = {self.project.bus.addr_width},
+        
+        # Build parameter list - start with standard AXI4 parameters
+        parameters = f"""    parameter ADDR_WIDTH = {self.project.bus.addr_width},
     parameter DATA_WIDTH = {self.project.bus.data_width},
-    parameter ID_WIDTH = {self.project.bus.id_width}
+    parameter ID_WIDTH = {self.project.bus.id_width}"""
+        
+        # Add ACE-Lite SD_xUSER parameters if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            parameters += f""",
+    parameter SD_AWUSER_WIDTH = {getattr(self.project.bus, 'sd_awuser_width', 8)},
+    parameter SD_WUSER_WIDTH = {getattr(self.project.bus, 'sd_wuser_width', 4)},
+    parameter SD_BUSER_WIDTH = {getattr(self.project.bus, 'sd_buser_width', 4)},
+    parameter SD_ARUSER_WIDTH = {getattr(self.project.bus, 'sd_aruser_width', 8)},
+    parameter SD_RUSER_WIDTH = {getattr(self.project.bus, 'sd_ruser_width', 4)}"""
+        
+        content = f"""// AXI4 Interface Definition with ACE-Lite Support
+interface axi4_if #(
+{parameters}
 ) (
     input logic aclk,
     input logic aresetn
@@ -544,20 +636,41 @@ interface axi4_if #(
     logic [3:0]              awqos;
     logic [3:0]              awregion;
     logic                    awvalid;
-    logic                    awready;
+    logic                    awready;"""
+        
+        # Add ACE-Lite SD_AWUSER signal if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    logic [SD_AWUSER_WIDTH-1:0] sd_awuser; // ACE-Lite write address coherency attributes"""
+        
+        content += """
     
     // Write Data Channel
     logic [DATA_WIDTH-1:0]   wdata;
     logic [(DATA_WIDTH/8)-1:0] wstrb;
     logic                    wlast;
     logic                    wvalid;
-    logic                    wready;
+    logic                    wready;"""
+    
+        # Add ACE-Lite SD_WUSER signal if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    logic [SD_WUSER_WIDTH-1:0] sd_wuser;   // ACE-Lite write data coherency attributes"""
+        
+        content += """
     
     // Write Response Channel
     logic [ID_WIDTH-1:0]     bid;
     logic [1:0]              bresp;
     logic                    bvalid;
-    logic                    bready;
+    logic                    bready;"""
+    
+        # Add ACE-Lite SD_BUSER signal if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    logic [SD_BUSER_WIDTH-1:0] sd_buser;   // ACE-Lite write response coherency attributes"""
+        
+        content += """
     
     // Read Address Channel
     logic [ID_WIDTH-1:0]     arid;
@@ -571,7 +684,14 @@ interface axi4_if #(
     logic [3:0]              arqos;
     logic [3:0]              arregion;
     logic                    arvalid;
-    logic                    arready;
+    logic                    arready;"""
+    
+        # Add ACE-Lite SD_ARUSER signal if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    logic [SD_ARUSER_WIDTH-1:0] sd_aruser; // ACE-Lite read address coherency attributes"""
+        
+        content += """
     
     // Read Data Channel
     logic [ID_WIDTH-1:0]     rid;
@@ -579,7 +699,14 @@ interface axi4_if #(
     logic [1:0]              rresp;
     logic                    rlast;
     logic                    rvalid;
-    logic                    rready;
+    logic                    rready;"""
+    
+        # Add ACE-Lite SD_RUSER signal if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    logic [SD_RUSER_WIDTH-1:0] sd_ruser;   // ACE-Lite read data coherency attributes"""
+        
+        content += """
     
 endinterface
 """
@@ -617,7 +744,20 @@ class axi4_transaction extends uvm_sequence_item;
     rand bit [3:0] qos_ar;
     rand bit [3:0] region;
     rand bit [3:0] cache;
-    rand bit [2:0] prot;
+    rand bit [2:0] prot;"""
+    
+        # Add ACE-Lite SD_xUSER fields if enabled
+        if hasattr(self.project.bus, 'ace_lite') and self.project.bus.ace_lite:
+            content += f"""
+    
+    // ACE-Lite SD_xUSER coherency attributes
+    rand bit [SD_AWUSER_WIDTH-1:0] sd_awuser; // Write address coherency attributes
+    rand bit [SD_WUSER_WIDTH-1:0]  sd_wuser;  // Write data coherency attributes  
+    rand bit [SD_BUSER_WIDTH-1:0]  sd_buser;  // Write response coherency attributes
+    rand bit [SD_ARUSER_WIDTH-1:0] sd_aruser; // Read address coherency attributes
+    rand bit [SD_RUSER_WIDTH-1:0]  sd_ruser;  // Read data coherency attributes"""
+        
+        content += """
     
     // Constraints
     constraint c_len {{

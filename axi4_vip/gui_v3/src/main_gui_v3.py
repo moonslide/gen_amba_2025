@@ -715,155 +715,266 @@ class GenerationSettingsDialog(tk.Toplevel):
         super().__init__(parent)
         self.project = project
         self.title("Generation Settings")
-        self.geometry("600x500")
         
-        # Create notebook for tabs
-        self.notebook = ttk.Notebook(self)
-        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # Set larger initial size and make resizable
+        self.geometry("800x700")
+        self.minsize(750, 650)  # Minimum size to ensure buttons are visible
+        self.resizable(True, True)
+        
+        # Center the dialog on parent
+        self.transient(parent)
+        self.grab_set()
+        
+        # Create main container with top frame for title/buttons and content area
+        main_container = ttk.Frame(self)
+        main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        
+        # Top frame with title and buttons
+        top_frame = ttk.Frame(main_container)
+        top_frame.pack(fill=tk.X, pady=(0, 5))
+        
+        # Dialog title with icon/description
+        title_frame = ttk.Frame(top_frame)
+        title_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        title_label = ttk.Label(title_frame, text="⚙️ Generation Settings", 
+                               font=('TkDefaultFont', 12, 'bold'))
+        title_label.pack(side=tk.LEFT)
+        
+        subtitle_label = ttk.Label(title_frame, text="Configure RTL and VIP generation options", 
+                                  font=('TkDefaultFont', 9), foreground='gray')
+        subtitle_label.pack(side=tk.LEFT, padx=(10, 0))
+        
+        # Buttons frame on the right side of top with better styling
+        button_frame = ttk.Frame(top_frame)
+        button_frame.pack(side=tk.RIGHT, padx=(10, 0))
+        
+        # Generate button with accent styling
+        generate_btn = ttk.Button(button_frame, text="🚀 Generate", 
+                                 command=self.generate, width=14)
+        generate_btn.pack(side=tk.LEFT, padx=(0, 5))
+        
+        # Cancel button
+        cancel_btn = ttk.Button(button_frame, text="Cancel", 
+                               command=self.destroy, width=12)
+        cancel_btn.pack(side=tk.LEFT)
+        
+        # Add separator line below top area
+        separator = ttk.Separator(main_container, orient='horizontal')
+        separator.pack(fill=tk.X, pady=(5, 10))
+        
+        # Create notebook for tabs with proper sizing
+        self.notebook = ttk.Notebook(main_container)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
         
         # Create tabs
         self.create_general_tab()
         self.create_rtl_tab()
         self.create_vip_tab()
         
-        # Buttons
-        button_frame = ttk.Frame(self)
-        button_frame.pack(side=tk.BOTTOM, pady=10)
+        # Focus and center dialog
+        self.focus_set()
+        self.center_dialog()
+    
+    def center_dialog(self):
+        """Center the dialog on the parent window"""
+        self.update_idletasks()  # Ensure geometry is updated
         
-        ttk.Button(button_frame, text="Generate", command=self.generate).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text="Cancel", command=self.destroy).pack(side=tk.LEFT, padx=5)
+        # Get parent window geometry
+        parent_x = self.master.winfo_x()
+        parent_y = self.master.winfo_y()
+        parent_width = self.master.winfo_width()
+        parent_height = self.master.winfo_height()
+        
+        # Get dialog size
+        dialog_width = self.winfo_reqwidth()
+        dialog_height = self.winfo_reqheight()
+        
+        # Calculate center position
+        x = parent_x + (parent_width - dialog_width) // 2
+        y = parent_y + (parent_height - dialog_height) // 2
+        
+        # Ensure dialog stays on screen
+        x = max(0, x)
+        y = max(0, y)
+        
+        self.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
         
     def create_general_tab(self):
-        """Create general settings tab"""
+        """Create general settings tab with improved layout"""
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="General")
         
+        # Configure grid weights for responsive layout
+        tab.columnconfigure(1, weight=1)
+        
         # Output directory
-        ttk.Label(tab, text="Output Directory:").grid(row=0, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(tab, text="Output Directory:").grid(row=0, column=0, sticky='nw', padx=5, pady=5)
         self.output_dir_var = tk.StringVar(value="./generated")
-        ttk.Entry(tab, textvariable=self.output_dir_var, width=40).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Entry(tab, textvariable=self.output_dir_var, width=50).grid(row=0, column=1, sticky='ew', padx=5, pady=5)
         ttk.Button(tab, text="Browse...", command=self.browse_output_dir).grid(row=0, column=2, padx=5, pady=5)
         
         # Project name
-        ttk.Label(tab, text="Project Name:").grid(row=1, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(tab, text="Project Name:").grid(row=1, column=0, sticky='nw', padx=5, pady=5)
         self.project_name_var = tk.StringVar(value=self.project.name)
-        ttk.Entry(tab, textvariable=self.project_name_var, width=40).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Entry(tab, textvariable=self.project_name_var, width=50).grid(row=1, column=1, sticky='ew', padx=5, pady=5)
         
         # Bus parameters
         bus_frame = ttk.LabelFrame(tab, text="Bus Parameters", padding=10)
         bus_frame.grid(row=2, column=0, columnspan=3, sticky='ew', padx=5, pady=10)
+        bus_frame.columnconfigure(1, weight=1)
         
         ttk.Label(bus_frame, text="Address Width:").grid(row=0, column=0, sticky='w', padx=5, pady=5)
         self.addr_width_var = tk.IntVar(value=self.project.bus.addr_width)
-        ttk.Spinbox(bus_frame, from_=16, to=64, textvariable=self.addr_width_var).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Spinbox(bus_frame, from_=8, to=64, textvariable=self.addr_width_var, width=15).grid(row=0, column=1, sticky='w', padx=5, pady=5)
+        ttk.Label(bus_frame, text="bits (8-64)").grid(row=0, column=2, sticky='w', padx=5, pady=5)
         
         ttk.Label(bus_frame, text="Data Width:").grid(row=1, column=0, sticky='w', padx=5, pady=5)
         self.data_width_var = tk.IntVar(value=self.project.bus.data_width)
-        ttk.Combobox(bus_frame, textvariable=self.data_width_var,
-                    values=[32, 64, 128, 256, 512]).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Combobox(bus_frame, textvariable=self.data_width_var, width=15,
+                    values=[8, 16, 32, 64, 128, 256, 512, 1024]).grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        ttk.Label(bus_frame, text="bits").grid(row=1, column=2, sticky='w', padx=5, pady=5)
         
         ttk.Label(bus_frame, text="ID Width:").grid(row=2, column=0, sticky='w', padx=5, pady=5)
         self.id_width_var = tk.IntVar(value=self.project.bus.id_width)
-        ttk.Spinbox(bus_frame, from_=1, to=16, textvariable=self.id_width_var).grid(row=2, column=1, padx=5, pady=5)
+        ttk.Spinbox(bus_frame, from_=1, to=16, textvariable=self.id_width_var, width=15).grid(row=2, column=1, sticky='w', padx=5, pady=5)
+        ttk.Label(bus_frame, text="bits (1-16)").grid(row=2, column=2, sticky='w', padx=5, pady=5)
+        
+        # Masters/Slaves info
+        info_frame = ttk.LabelFrame(tab, text="Configuration Summary", padding=10)
+        info_frame.grid(row=3, column=0, columnspan=3, sticky='ew', padx=5, pady=10)
+        info_frame.columnconfigure(1, weight=1)
+        
+        masters_count = len(self.project.masters) if hasattr(self.project, 'masters') else 0
+        slaves_count = len(self.project.slaves) if hasattr(self.project, 'slaves') else 0
+        
+        ttk.Label(info_frame, text="Masters:").grid(row=0, column=0, sticky='w', padx=5, pady=2)
+        ttk.Label(info_frame, text=f"{masters_count}").grid(row=0, column=1, sticky='w', padx=5, pady=2)
+        
+        ttk.Label(info_frame, text="Slaves:").grid(row=1, column=0, sticky='w', padx=5, pady=2)
+        ttk.Label(info_frame, text=f"{slaves_count}").grid(row=1, column=1, sticky='w', padx=5, pady=2)
+        
+        ttk.Label(info_frame, text="Total Components:").grid(row=2, column=0, sticky='w', padx=5, pady=2)
+        ttk.Label(info_frame, text=f"{masters_count + slaves_count}").grid(row=2, column=1, sticky='w', padx=5, pady=2)
         
     def create_rtl_tab(self):
-        """Create RTL settings tab"""
+        """Create RTL settings tab with improved layout"""
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="RTL Settings")
         
+        # Configure grid weights for responsive layout
+        tab.columnconfigure(1, weight=1)
+        
+        # Basic RTL settings frame
+        basic_frame = ttk.LabelFrame(tab, text="Basic Settings", padding=10)
+        basic_frame.grid(row=0, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
+        basic_frame.columnconfigure(1, weight=1)
+        
         # Output language
-        ttk.Label(tab, text="Output Language:").grid(row=0, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(basic_frame, text="Output Language:").grid(row=0, column=0, sticky='w', padx=5, pady=5)
         self.rtl_lang_var = tk.StringVar(value="Verilog")
-        ttk.Combobox(tab, textvariable=self.rtl_lang_var,
-                    values=["Verilog", "SystemVerilog"]).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Combobox(basic_frame, textvariable=self.rtl_lang_var, width=20,
+                    values=["Verilog", "SystemVerilog"]).grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
         # File structure
-        ttk.Label(tab, text="File Structure:").grid(row=1, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(basic_frame, text="File Structure:").grid(row=1, column=0, sticky='w', padx=5, pady=5)
         self.file_struct_var = tk.StringVar(value="File per Module")
-        ttk.Combobox(tab, textvariable=self.file_struct_var,
-                    values=["Single File", "File per Module"]).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Combobox(basic_frame, textvariable=self.file_struct_var, width=20,
+                    values=["Single File", "File per Module"]).grid(row=1, column=1, sticky='w', padx=5, pady=5)
         
         # Synthesis target
-        ttk.Label(tab, text="Target Technology:").grid(row=2, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(basic_frame, text="Target Technology:").grid(row=2, column=0, sticky='w', padx=5, pady=5)
         self.target_tech_var = tk.StringVar(value="FPGA")
-        ttk.Combobox(tab, textvariable=self.target_tech_var,
-                    values=["ASIC", "FPGA"]).grid(row=2, column=1, padx=5, pady=5)
+        ttk.Combobox(basic_frame, textvariable=self.target_tech_var, width=20,
+                    values=["ASIC", "FPGA"]).grid(row=2, column=1, sticky='w', padx=5, pady=5)
         
         # Generate options
-        options_frame = ttk.LabelFrame(tab, text="Generate Options", padding=10)
-        options_frame.grid(row=3, column=0, columnspan=2, sticky='ew', padx=5, pady=10)
+        options_frame = ttk.LabelFrame(tab, text="Generation Options", padding=10)
+        options_frame.grid(row=1, column=0, columnspan=2, sticky='ew', padx=5, pady=10)
         
         self.gen_filelist_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(options_frame, text="Generate Filelist", 
-                       variable=self.gen_filelist_var).pack(anchor='w')
+        ttk.Checkbutton(options_frame, text="Generate Filelist (.f)", 
+                       variable=self.gen_filelist_var).pack(anchor='w', pady=2)
         
         self.gen_header_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(options_frame, text="Add Generated Header", 
-                       variable=self.gen_header_var).pack(anchor='w')
+        ttk.Checkbutton(options_frame, text="Add Generated Header Comments", 
+                       variable=self.gen_header_var).pack(anchor='w', pady=2)
         
         self.gen_cdc_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(options_frame, text="Generate CDC Logic", 
-                       variable=self.gen_cdc_var).pack(anchor='w')
+        ttk.Checkbutton(options_frame, text="Generate Clock Domain Crossing Logic", 
+                       variable=self.gen_cdc_var).pack(anchor='w', pady=2)
+        
+        self.gen_wrapper_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(options_frame, text="Generate Top-level Wrapper", 
+                       variable=self.gen_wrapper_var).pack(anchor='w', pady=2)
         
     def create_vip_tab(self):
-        """Create VIP settings tab"""
+        """Create VIP settings tab with improved layout"""
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="VIP Settings")
         
+        # Configure grid weights for responsive layout
+        tab.columnconfigure(1, weight=1)
+        
+        # Basic VIP settings frame
+        basic_frame = ttk.LabelFrame(tab, text="Basic Settings", padding=10)
+        basic_frame.grid(row=0, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
+        basic_frame.columnconfigure(1, weight=1)
+        
         # Methodology
-        ttk.Label(tab, text="Verification Methodology:").grid(row=0, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(basic_frame, text="Verification Methodology:").grid(row=0, column=0, sticky='w', padx=5, pady=5)
         self.vip_method_var = tk.StringVar(value="UVM")
-        ttk.Combobox(tab, textvariable=self.vip_method_var,
-                    values=["UVM", "Simple Testbench"]).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Combobox(basic_frame, textvariable=self.vip_method_var, width=25,
+                    values=["UVM", "Simple Testbench"]).grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
         # Simulator
-        ttk.Label(tab, text="Target Simulator:").grid(row=1, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(basic_frame, text="Target Simulator:").grid(row=1, column=0, sticky='w', padx=5, pady=5)
         self.simulator_var = tk.StringVar(value="VCS")
-        ttk.Combobox(tab, textvariable=self.simulator_var,
-                    values=["VCS", "Xcelium", "Questa", "Vivado"]).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Combobox(basic_frame, textvariable=self.simulator_var, width=25,
+                    values=["VCS", "Xcelium", "Questa", "Vivado"]).grid(row=1, column=1, sticky='w', padx=5, pady=5)
         
         # Integration level
-        ttk.Label(tab, text="Integration Level:").grid(row=2, column=0, sticky='w', padx=5, pady=5)
+        ttk.Label(basic_frame, text="Integration Level:").grid(row=2, column=0, sticky='w', padx=5, pady=5)
         self.integration_var = tk.StringVar(value="Generated RTL")
-        ttk.Combobox(tab, textvariable=self.integration_var,
+        ttk.Combobox(basic_frame, textvariable=self.integration_var, width=25,
                     values=["VIP Only", "Generated RTL", "External IPs Only", 
-                           "Generated RTL & External IPs"]).grid(row=2, column=1, padx=5, pady=5)
+                           "Generated RTL & External IPs"]).grid(row=2, column=1, sticky='w', padx=5, pady=5)
         
         # Component generation
         comp_frame = ttk.LabelFrame(tab, text="Component Generation", padding=10)
-        comp_frame.grid(row=3, column=0, columnspan=2, sticky='ew', padx=5, pady=10)
+        comp_frame.grid(row=1, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
         
         self.gen_agents_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(comp_frame, text="Generate Agents", 
-                       variable=self.gen_agents_var).pack(anchor='w')
+        ttk.Checkbutton(comp_frame, text="Generate Master/Slave Agents (BFM)", 
+                       variable=self.gen_agents_var).pack(anchor='w', pady=2)
         
         self.gen_env_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(comp_frame, text="Generate Environment", 
-                       variable=self.gen_env_var).pack(anchor='w')
+        ttk.Checkbutton(comp_frame, text="Generate UVM Environment", 
+                       variable=self.gen_env_var).pack(anchor='w', pady=2)
         
         self.gen_coverage_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(comp_frame, text="Generate Coverage", 
-                       variable=self.gen_coverage_var).pack(anchor='w')
+        ttk.Checkbutton(comp_frame, text="Generate Functional Coverage", 
+                       variable=self.gen_coverage_var).pack(anchor='w', pady=2)
         
         self.gen_scripts_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(comp_frame, text="Generate Makefile/Scripts", 
-                       variable=self.gen_scripts_var).pack(anchor='w')
+        ttk.Checkbutton(comp_frame, text="Generate Makefile and Simulation Scripts", 
+                       variable=self.gen_scripts_var).pack(anchor='w', pady=2)
         
         # Test sequences
         seq_frame = ttk.LabelFrame(tab, text="Test Sequences", padding=10)
-        seq_frame.grid(row=4, column=0, columnspan=2, sticky='ew', padx=5, pady=10)
+        seq_frame.grid(row=2, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
         
         self.gen_basic_test_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(seq_frame, text="Basic Read/Write", 
-                       variable=self.gen_basic_test_var).pack(anchor='w')
+        ttk.Checkbutton(seq_frame, text="Basic Read/Write Tests", 
+                       variable=self.gen_basic_test_var).pack(anchor='w', pady=2)
         
         self.gen_random_test_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(seq_frame, text="Random Test", 
-                       variable=self.gen_random_test_var).pack(anchor='w')
+        ttk.Checkbutton(seq_frame, text="Random Transaction Tests", 
+                       variable=self.gen_random_test_var).pack(anchor='w', pady=2)
         
         self.gen_stress_test_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(seq_frame, text="Stress Test", 
-                       variable=self.gen_stress_test_var).pack(anchor='w')
+        ttk.Checkbutton(seq_frame, text="Stress and Performance Tests", 
+                       variable=self.gen_stress_test_var).pack(anchor='w', pady=2)
         
     def browse_output_dir(self):
         """Browse for output directory"""

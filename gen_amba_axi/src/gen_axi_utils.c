@@ -396,6 +396,21 @@ fprintf(fo, "     wire  [ 1:0]              %sRRESP    ;\n", prefix);
 fprintf(fo, "     wire                      %sRLAST    ;\n", prefix);
 fprintf(fo, "     wire                      %sRVALID   ;\n", prefix);
 fprintf(fo, "     wire                      %sRREADY   ;\n", prefix);
+fprintf(fo, "     `ifdef AMBA_AXI_AWUSER\n");
+fprintf(fo, "     wire  [WIDTH_AWUSER-1:0]  %sAWUSER   ;\n", prefix);
+fprintf(fo, "     `endif\n");
+fprintf(fo, "     `ifdef AMBA_AXI_WUSER\n");
+fprintf(fo, "     wire  [WIDTH_WUSER-1:0]   %sWUSER    ;\n", prefix);
+fprintf(fo, "     `endif\n");
+fprintf(fo, "     `ifdef AMBA_AXI_BUSER\n");
+fprintf(fo, "     wire  [WIDTH_BUSER-1:0]   %sBUSER    ;\n", prefix);
+fprintf(fo, "     `endif\n");
+fprintf(fo, "     `ifdef AMBA_AXI_ARUSER\n");
+fprintf(fo, "     wire  [WIDTH_ARUSER-1:0]  %sARUSER   ;\n", prefix);
+fprintf(fo, "     `endif\n");
+fprintf(fo, "     `ifdef AMBA_AXI_RUSER\n");
+fprintf(fo, "     wire  [WIDTH_RUSER-1:0]   %sRUSER    ;\n", prefix);
+fprintf(fo, "     `endif\n");
 
     return 0;
 }

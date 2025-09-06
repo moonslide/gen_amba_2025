@@ -40,6 +40,12 @@ class BusCanvas(tk.Canvas):
         self.grid_snap = True
         self.grid_size = 20
         
+        # Zoom functionality
+        self.zoom_factor = 1.0
+        self.min_zoom = 0.2
+        self.max_zoom = 3.0
+        self.zoom_step = 0.1
+        
         # Node visuals
         self.node_items = {}  # node -> canvas item mapping
         self.edge_items = []  # edge line items
@@ -54,9 +60,59 @@ class BusCanvas(tk.Canvas):
         self.bind('<ButtonRelease-1>', self.on_release)
         self.bind('<Button-3>', self.on_right_click)
         self.bind('<Double-Button-1>', self.on_double_click)
+        self.bind('<MouseWheel>', self.on_mouse_wheel)
+        self.bind('<Control-plus>', self.zoom_in)
+        self.bind('<Control-minus>', self.zoom_out)
+        self.bind('<Control-0>', self.zoom_reset)
         
         # Initial layout
         self.refresh()
+    
+    def zoom_in(self, event=None):
+        """Zoom in the canvas"""
+        if self.zoom_factor < self.max_zoom:
+            self.zoom_factor = min(self.max_zoom, self.zoom_factor + self.zoom_step)
+            self.apply_zoom()
+    
+    def zoom_out(self, event=None):
+        """Zoom out the canvas"""
+        if self.zoom_factor > self.min_zoom:
+            self.zoom_factor = max(self.min_zoom, self.zoom_factor - self.zoom_step)
+            self.apply_zoom()
+    
+    def zoom_reset(self, event=None):
+        """Reset zoom to 100%"""
+        self.zoom_factor = 1.0
+        self.apply_zoom()
+    
+    def on_mouse_wheel(self, event):
+        """Handle mouse wheel zoom"""
+        if event.state & 0x4:  # Control key held
+            if event.delta > 0:
+                self.zoom_in()
+            else:
+                self.zoom_out()
+    
+    def apply_zoom(self):
+        """Apply zoom transformation to all canvas items"""
+        # Scale all items
+        self.scale("all", 0, 0, self.zoom_factor / getattr(self, '_last_zoom', 1.0), 
+                  self.zoom_factor / getattr(self, '_last_zoom', 1.0))
+        
+        # Update node positions in project data to match zoom
+        for master in self.project.masters:
+            if hasattr(self, '_last_zoom'):
+                scale_factor = self.zoom_factor / self._last_zoom
+                master.x = int(master.x * scale_factor)
+                master.y = int(master.y * scale_factor)
+        
+        for slave in self.project.slaves:
+            if hasattr(self, '_last_zoom'):
+                scale_factor = self.zoom_factor / self._last_zoom
+                slave.x = int(slave.x * scale_factor)
+                slave.y = int(slave.y * scale_factor)
+        
+        self._last_zoom = self.zoom_factor
     
     def refresh(self):
         """Refresh the entire canvas"""

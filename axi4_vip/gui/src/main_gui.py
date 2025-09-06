@@ -242,38 +242,58 @@ class AXI4GeneratorGUI:
         config_frame = ttk.LabelFrame(bus_frame, text="Bus Configuration", padding=10)
         config_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        # Address width
+        # Address width - allow arbitrary input
         ttk.Label(config_frame, text="Address Width:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=2)
-        self.addr_width_var = tk.IntVar(value=self.project.bus.addr_width)
-        # Use tk.Spinbox instead of ttk.Spinbox for compatibility
-        addr_spin = tk.Spinbox(config_frame, from_=8, to=64, textvariable=self.addr_width_var, width=10)
-        addr_spin.grid(row=0, column=1, padx=5, pady=2)
-        addr_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        self.addr_width_var = tk.StringVar(value=str(self.project.bus.addr_width))
+        addr_entry = ttk.Entry(config_frame, textvariable=self.addr_width_var, width=10)
+        addr_entry.grid(row=0, column=1, padx=5, pady=2)
+        addr_entry.bind('<FocusOut>', lambda e: self.update_bus_config())
+        addr_entry.bind('<KeyRelease>', lambda e: self.validate_width_field(e, "addr"))
+        ttk.Label(config_frame, text="(8-64)", font=('Arial', 7)).grid(row=0, column=2, sticky=tk.W, padx=2)
         
-        # Data width
+        # Data width - allow arbitrary input
         ttk.Label(config_frame, text="Data Width:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=2)
         self.data_width_var = tk.StringVar(value=str(self.project.bus.data_width))
-        data_combo = ttk.Combobox(config_frame, textvariable=self.data_width_var,
-                                 values=["8", "16", "32", "64", "128", "256", "512", "1024"],
-                                 state="readonly", width=10)
-        data_combo.grid(row=1, column=1, padx=5, pady=2)
-        data_combo.bind('<<ComboboxSelected>>', lambda e: self.update_bus_config())
+        data_entry = ttk.Entry(config_frame, textvariable=self.data_width_var, width=10)
+        data_entry.grid(row=1, column=1, padx=5, pady=2)
+        data_entry.bind('<FocusOut>', lambda e: self.update_bus_config())
+        data_entry.bind('<KeyRelease>', lambda e: self.validate_width_field(e, "data"))
+        ttk.Label(config_frame, text="(8,16,32,64,128,256,512,1024)", font=('Arial', 7)).grid(row=1, column=2, sticky=tk.W, padx=2)
         
-        # ID width
+        # ID width - allow arbitrary input
         ttk.Label(config_frame, text="ID Width:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=2)
-        self.id_width_var = tk.IntVar(value=self.project.bus.id_width)
-        # Use tk.Spinbox instead of ttk.Spinbox for compatibility
-        id_spin = tk.Spinbox(config_frame, from_=1, to=16, textvariable=self.id_width_var, width=10)
-        id_spin.grid(row=2, column=1, padx=5, pady=2)
-        id_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        self.id_width_var = tk.StringVar(value=str(self.project.bus.id_width))
+        id_entry = ttk.Entry(config_frame, textvariable=self.id_width_var, width=10)
+        id_entry.grid(row=2, column=1, padx=5, pady=2)
+        id_entry.bind('<FocusOut>', lambda e: self.update_bus_config())
+        id_entry.bind('<KeyRelease>', lambda e: self.validate_width_field(e, "id"))
+        ttk.Label(config_frame, text="(1-16)", font=('Arial', 7)).grid(row=2, column=2, sticky=tk.W, padx=2)
+        
+        # User Width - allow arbitrary input
+        ttk.Label(config_frame, text="User Width:").grid(row=3, column=0, sticky=tk.W, padx=5, pady=2)
+        self.user_width_var = tk.StringVar(value=str(self.project.bus.user_width))
+        user_entry = ttk.Entry(config_frame, textvariable=self.user_width_var, width=10)
+        user_entry.grid(row=3, column=1, padx=5, pady=2)
+        user_entry.bind('<FocusOut>', lambda e: self.update_bus_config())
+        user_entry.bind('<KeyRelease>', lambda e: self.validate_width_field(e, "user"))
+        ttk.Label(config_frame, text="(0=disable)", font=('Arial', 7)).grid(row=3, column=2, sticky=tk.W, padx=2)
+        
+        # Burst Length - allow arbitrary input
+        ttk.Label(config_frame, text="Burst Length:").grid(row=4, column=0, sticky=tk.W, padx=5, pady=2)
+        self.burst_length_var = tk.StringVar(value=str(self.project.bus.burst_length))
+        burst_entry = ttk.Entry(config_frame, textvariable=self.burst_length_var, width=10)
+        burst_entry.grid(row=4, column=1, padx=5, pady=2)
+        burst_entry.bind('<FocusOut>', lambda e: self.update_bus_config())
+        burst_entry.bind('<KeyRelease>', lambda e: self.validate_width_field(e, "burst"))
+        ttk.Label(config_frame, text="(1-256)", font=('Arial', 7)).grid(row=4, column=2, sticky=tk.W, padx=2)
         
         # Arbitration
-        ttk.Label(config_frame, text="Arbitration:").grid(row=3, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(config_frame, text="Arbitration:").grid(row=5, column=0, sticky=tk.W, padx=5, pady=2)
         self.arbitration_var = tk.StringVar(value=self.project.bus.arbitration)
         arb_combo = ttk.Combobox(config_frame, textvariable=self.arbitration_var,
                                 values=["fixed", "rr", "qos"],
                                 state="readonly", width=10)
-        arb_combo.grid(row=3, column=1, padx=5, pady=2)
+        arb_combo.grid(row=5, column=1, padx=5, pady=2)
         arb_combo.bind('<<ComboboxSelected>>', lambda e: self.update_bus_config())
         
         # Features
@@ -296,6 +316,12 @@ class AXI4GeneratorGUI:
         ttk.Checkbutton(features_frame, text="Region Support", variable=self.region_var,
                        command=self.update_bus_config).pack(anchor=tk.W)
         
+        # ACE-Lite Support
+        self.ace_lite_var = tk.BooleanVar(value=getattr(self.project.bus, 'ace_lite', False))
+        ace_lite_cb = ttk.Checkbutton(features_frame, text="ACE-Lite Coherency", variable=self.ace_lite_var,
+                                     command=self.toggle_ace_lite)
+        ace_lite_cb.pack(anchor=tk.W)
+        
         # Default QoS
         qos_frame = ttk.LabelFrame(bus_frame, text="Default QoS", padding=10)
         qos_frame.pack(fill=tk.X, padx=5, pady=5)
@@ -313,6 +339,54 @@ class AXI4GeneratorGUI:
         arqos_spin = tk.Spinbox(qos_frame, from_=0, to=15, textvariable=self.default_arqos_var, width=10)
         arqos_spin.grid(row=1, column=1, padx=5, pady=2)
         arqos_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        
+        # ACE-Lite SD_xUSER Width Configuration
+        self.ace_lite_frame = ttk.LabelFrame(bus_frame, text="ACE-Lite SD_USER Signal Widths", padding=10)
+        # Initially hidden - will be shown when ACE-Lite is enabled
+        
+        # SD_AWUSER Width
+        ttk.Label(self.ace_lite_frame, text="SD_AWUSER Width:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=2)
+        self.sd_awuser_width_var = tk.IntVar(value=getattr(self.project.bus, 'sd_awuser_width', 8))
+        sd_awuser_spin = tk.Spinbox(self.ace_lite_frame, from_=1, to=32, textvariable=self.sd_awuser_width_var, width=10)
+        sd_awuser_spin.grid(row=0, column=1, padx=5, pady=2)
+        sd_awuser_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        ttk.Label(self.ace_lite_frame, text="(1-32)", font=('Arial', 7)).grid(row=0, column=2, sticky=tk.W, padx=2)
+        
+        # SD_WUSER Width
+        ttk.Label(self.ace_lite_frame, text="SD_WUSER Width:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=2)
+        self.sd_wuser_width_var = tk.IntVar(value=getattr(self.project.bus, 'sd_wuser_width', 4))
+        sd_wuser_spin = tk.Spinbox(self.ace_lite_frame, from_=1, to=32, textvariable=self.sd_wuser_width_var, width=10)
+        sd_wuser_spin.grid(row=1, column=1, padx=5, pady=2)
+        sd_wuser_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        ttk.Label(self.ace_lite_frame, text="(1-32)", font=('Arial', 7)).grid(row=1, column=2, sticky=tk.W, padx=2)
+        
+        # SD_BUSER Width
+        ttk.Label(self.ace_lite_frame, text="SD_BUSER Width:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=2)
+        self.sd_buser_width_var = tk.IntVar(value=getattr(self.project.bus, 'sd_buser_width', 4))
+        sd_buser_spin = tk.Spinbox(self.ace_lite_frame, from_=1, to=32, textvariable=self.sd_buser_width_var, width=10)
+        sd_buser_spin.grid(row=2, column=1, padx=5, pady=2)
+        sd_buser_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        ttk.Label(self.ace_lite_frame, text="(1-32)", font=('Arial', 7)).grid(row=2, column=2, sticky=tk.W, padx=2)
+        
+        # SD_ARUSER Width
+        ttk.Label(self.ace_lite_frame, text="SD_ARUSER Width:").grid(row=3, column=0, sticky=tk.W, padx=5, pady=2)
+        self.sd_aruser_width_var = tk.IntVar(value=getattr(self.project.bus, 'sd_aruser_width', 8))
+        sd_aruser_spin = tk.Spinbox(self.ace_lite_frame, from_=1, to=32, textvariable=self.sd_aruser_width_var, width=10)
+        sd_aruser_spin.grid(row=3, column=1, padx=5, pady=2)
+        sd_aruser_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        ttk.Label(self.ace_lite_frame, text="(1-32)", font=('Arial', 7)).grid(row=3, column=2, sticky=tk.W, padx=2)
+        
+        # SD_RUSER Width
+        ttk.Label(self.ace_lite_frame, text="SD_RUSER Width:").grid(row=4, column=0, sticky=tk.W, padx=5, pady=2)
+        self.sd_ruser_width_var = tk.IntVar(value=getattr(self.project.bus, 'sd_ruser_width', 4))
+        sd_ruser_spin = tk.Spinbox(self.ace_lite_frame, from_=1, to=32, textvariable=self.sd_ruser_width_var, width=10)
+        sd_ruser_spin.grid(row=4, column=1, padx=5, pady=2)
+        sd_ruser_spin.bind('<FocusOut>', lambda e: self.update_bus_config())
+        ttk.Label(self.ace_lite_frame, text="(1-32)", font=('Arial', 7)).grid(row=4, column=2, sticky=tk.W, padx=2)
+        
+        # Show/hide ACE-Lite frame based on initial state
+        if getattr(self.project.bus, 'ace_lite', False):
+            self.ace_lite_frame.pack(fill=tk.X, padx=5, pady=5)
     
     def setup_node_properties_tab(self):
         """Setup node properties tab"""
@@ -625,12 +699,45 @@ class AXI4GeneratorGUI:
         self.project.preferences.show_region = self.show_region_var.get()
         self.canvas.refresh()
     
+    def validate_width_field(self, event, field_type):
+        """Real-time validation of width fields"""
+        value = event.widget.get()
+        if not value:
+            return
+        
+        try:
+            int_val = int(value)
+            valid = False
+            
+            if field_type == "addr" and 8 <= int_val <= 64:
+                valid = True
+            elif field_type == "data" and int_val in [8, 16, 32, 64, 128, 256, 512, 1024]:
+                valid = True
+            elif field_type == "id" and 1 <= int_val <= 16:
+                valid = True
+            elif field_type == "user" and int_val >= 0:
+                valid = True
+            elif field_type == "burst" and 1 <= int_val <= 256:
+                valid = True
+            
+            # Visual feedback
+            if valid:
+                event.widget.config(background='white')
+            else:
+                event.widget.config(background='#ffcccc')  # Light red for invalid
+                
+        except ValueError:
+            event.widget.config(background='#ffcccc')  # Light red for non-numeric
+
     def update_bus_config(self):
         """Update bus configuration from UI"""
         try:
-            self.project.bus.addr_width = self.addr_width_var.get()
+            # Validate and convert string inputs to integers
+            self.project.bus.addr_width = int(self.addr_width_var.get())
             self.project.bus.data_width = int(self.data_width_var.get())
-            self.project.bus.id_width = self.id_width_var.get()
+            self.project.bus.id_width = int(self.id_width_var.get())
+            self.project.bus.user_width = int(self.user_width_var.get())
+            self.project.bus.burst_length = int(self.burst_length_var.get())
             self.project.bus.arbitration = self.arbitration_var.get()
             self.project.bus.qos = self.qos_var.get()
             self.project.bus.cache = self.cache_var.get()
@@ -639,11 +746,49 @@ class AXI4GeneratorGUI:
             self.project.bus.qos_default.aw = self.default_awqos_var.get()
             self.project.bus.qos_default.ar = self.default_arqos_var.get()
             
+            # Update ACE-Lite configuration if available
+            if hasattr(self, 'ace_lite_var'):
+                self.project.bus.ace_lite = self.ace_lite_var.get()
+                
+                # Update SD_xUSER widths if ACE-Lite is enabled
+                if self.project.bus.ace_lite and hasattr(self, 'sd_awuser_width_var'):
+                    self.project.bus.sd_awuser_width = self.sd_awuser_width_var.get()
+                    self.project.bus.sd_wuser_width = self.sd_wuser_width_var.get()
+                    self.project.bus.sd_buser_width = self.sd_buser_width_var.get()
+                    self.project.bus.sd_aruser_width = self.sd_aruser_width_var.get()
+                    self.project.bus.sd_ruser_width = self.sd_ruser_width_var.get()
+            
+            # Additional validation
+            if not (8 <= self.project.bus.addr_width <= 64):
+                raise ValueError("Address width must be 8-64")
+            if self.project.bus.data_width not in [8, 16, 32, 64, 128, 256, 512, 1024]:
+                raise ValueError("Data width must be power of 2: 8,16,32,64,128,256,512,1024")
+            if not (1 <= self.project.bus.id_width <= 16):
+                raise ValueError("ID width must be 1-16")
+            if self.project.bus.user_width < 0:
+                raise ValueError("User width must be >= 0")
+            if not (1 <= self.project.bus.burst_length <= 256):
+                raise ValueError("Burst length must be 1-256")
+            
             self.canvas.refresh()
             self.update_summary()
             self.set_status("Bus configuration updated")
-        except Exception as e:
+        except ValueError as e:
             messagebox.showerror("Error", f"Invalid configuration:\n{str(e)}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Configuration error:\n{str(e)}")
+    
+    def toggle_ace_lite(self):
+        """Toggle ACE-Lite configuration visibility"""
+        if self.ace_lite_var.get():
+            # Show ACE-Lite configuration frame
+            self.ace_lite_frame.pack(fill=tk.X, padx=5, pady=5, after=self.ace_lite_frame.master.children['!labelframe3'])  # After QoS frame
+        else:
+            # Hide ACE-Lite configuration frame
+            self.ace_lite_frame.pack_forget()
+        
+        # Update bus configuration
+        self.update_bus_config()
     
     def edit_bus_config(self):
         """Edit bus configuration (placeholder)"""
@@ -660,18 +805,18 @@ class AXI4GeneratorGUI:
     
     def zoom_in(self):
         """Zoom in canvas"""
-        # Placeholder for zoom functionality
-        self.set_status("Zoom in")
+        self.canvas.zoom_in()
+        self.set_status(f"Zoom: {self.canvas.zoom_factor:.1f}x")
     
     def zoom_out(self):
         """Zoom out canvas"""
-        # Placeholder for zoom functionality
-        self.set_status("Zoom out")
+        self.canvas.zoom_out()
+        self.set_status(f"Zoom: {self.canvas.zoom_factor:.1f}x")
     
     def zoom_reset(self):
         """Reset zoom"""
-        # Placeholder for zoom functionality
-        self.set_status("Zoom reset")
+        self.canvas.zoom_reset()
+        self.set_status(f"Zoom: {self.canvas.zoom_factor:.1f}x")
     
     def generate_rtl(self):
         """Generate RTL"""
@@ -790,9 +935,12 @@ for AMBA AXI4 bus matrices
         summary.append("")
         summary.append("BUS CONFIGURATION")
         summary.append(f"Type: AXI4")
-        summary.append(f"Width: {self.project.bus.data_width}-bit data")
-        summary.append(f"       {self.project.bus.addr_width}-bit address")
-        summary.append(f"ID Width: {self.project.bus.id_width}")
+        summary.append(f"Data Width: {self.project.bus.data_width} bits")
+        summary.append(f"Address Width: {self.project.bus.addr_width} bits")
+        summary.append(f"ID Width: {self.project.bus.id_width} bits")
+        if self.project.bus.user_width > 0:
+            summary.append(f"User Width: {self.project.bus.user_width} bits")
+        summary.append(f"Burst Length: {self.project.bus.burst_length}")
         summary.append(f"Arbitration: {self.project.bus.arbitration}")
         
         if self.project.bus.qos:

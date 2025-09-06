@@ -43,7 +43,7 @@ endif
 CC              = gcc
 DEFS            =
 INCDIRS         = -Isrc
-LIBS            =
+LIBS            = -lm
 ifeq ($(PLATFORM),cygwin)
 DEFS            += -DWIN32
 LIBS            +=
@@ -70,11 +70,29 @@ SRC	=\
 	gen_axi_wid.c\
 	gen_axi_qos.c\
 	gen_axi_firewall.c\
+	gen_axi_firewall_optimized.c\
 	gen_axi_cdc.c\
 	gen_axi_ace_lite.c\
 	gen_axi_region.c\
 	gen_axi_optimized.c\
-	gen_axi_verilog_optimized.c
+	gen_axi_verilog_optimized.c\
+	gen_axi_pipeline.c\
+	gen_axi_user_wrapper.c\
+	gen_axi_modular.c\
+	gen_axi_fifo.c\
+	gen_axi_validation.c\
+	ace_lite/coherency/gen_ace_lite_coherency_controller.c\
+	ace_lite/coherency/gen_ace_lite_snoop_filter.c\
+	ace_lite/coherency/gen_ace_lite_barrier_sync.c\
+	ace_lite/coherency/gen_ace_lite_domain_manager.c\
+	ace_lite/coherency/gen_ace_lite_cache_states.c\
+	ace_lite/coherency/gen_ace_lite_exclusive_monitor.c\
+	ace_lite/coherency/gen_ace_lite_signal_arbiter.c\
+	ace_lite/cache_ops/gen_ace_lite_cache_ops.c\
+	ace_lite/interconnect/gen_ace_lite_interconnect.c\
+	ace_lite/dvm/gen_ace_lite_dvm_controller.c\
+	ace_lite/dvm/gen_ace_lite_tlb_manager.c\
+	ace_lite/system/gen_ace_lite_system_coordinator.c
 		
 OBJS	= $(SRC:.c=.o)
 
@@ -88,6 +106,11 @@ vpath %.c	$(C_DIR)
 #-------------------------------------------------------------
 OBJECTDIR = obj
 DUMMY      := $(shell [ -d $(OBJECTDIR) ] || mkdir $(OBJECTDIR) )
+DUMMY      := $(shell [ -d $(OBJECTDIR)/ace_lite/coherency ] || mkdir -p $(OBJECTDIR)/ace_lite/coherency )
+DUMMY      := $(shell [ -d $(OBJECTDIR)/ace_lite/cache_ops ] || mkdir -p $(OBJECTDIR)/ace_lite/cache_ops )
+DUMMY      := $(shell [ -d $(OBJECTDIR)/ace_lite/interconnect ] || mkdir -p $(OBJECTDIR)/ace_lite/interconnect )
+DUMMY      := $(shell [ -d $(OBJECTDIR)/ace_lite/dvm ] || mkdir -p $(OBJECTDIR)/ace_lite/dvm )
+DUMMY      := $(shell [ -d $(OBJECTDIR)/ace_lite/system ] || mkdir -p $(OBJECTDIR)/ace_lite/system )
 
 #-------------------------------------------------------------
 $(OBJECTDIR)/%.o: %.c

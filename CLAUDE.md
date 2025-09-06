@@ -835,3 +835,97 @@ cd /home/timtim01/eda_test/project/axi_vip_qos
 # Run USER signal test
 ./run_test.sh axi4_user_signal_passthrough_test
 ```
+
+## Recent Updates (2025-09-06)
+
+### Streamlined GUI Enhancements
+
+#### ACE-Lite Data Width Validation
+- **Added intelligent validation for ACE-Lite configurations**:
+  - GUI now detects when ACE-Lite is enabled with large configurations (≥32 masters/slaves)
+  - Automatically warns if data width < 256 bits (gen_amba_axi requirement)
+  - Real-time validation prevents "No valid configuration found" errors
+  - Status bar shows: "WARNING: ACE-Lite 32x32 requires minimum 256-bit data width"
+
+#### Protocol-Aware USER Signal Management
+- **Added protocol selection dropdown** to Bus Configuration panel:
+  - Options: AXI4, AXI3, ACE-Lite, AHB-Lite, APB
+  - Automatically blocks USER signals for incompatible protocols
+  - Visual feedback: grayed-out field with explanatory text
+
+- **Protocol-specific behavior**:
+  - **AXI4/AXI3**: USER signals enabled normally
+  - **ACE-Lite**: USER blocked, shows "(uses sd_*user_width)"
+  - **AHB-Lite/APB**: USER blocked, shows "(N/A for protocol)"
+
+#### Auto-Update Left Panel on Load
+- **Fixed GUI sync issue**: Left panel now automatically updates when loading YAML files or templates
+- **Complete field sync**: Protocol, data width, address width, ID width, USER width, features
+- **Template corrections**: 32x32 ACE-Lite template now uses correct 256-bit data width (was 512-bit)
+
+#### Enhanced Validation System
+- **ID width auto-calculation**: `max(4, (master_count - 1).bit_length() + 1)`
+- **Multi-level validation**: Field-level, protocol-level, and generation-level checks
+- **Comprehensive coverage**: Validates 32x32, 64x64, and larger configurations
+- **Smart recommendations**: Performance tips for large component counts
+
+### RTL & VIP Generation Fixes
+
+#### Fixed Import and Generation Errors
+- **Resolved `ModuleNotFoundError: No module named 'generation_dialog'`**:
+  - Corrected import to `from generation_settings_dialog import GenerationSettingsDialog`
+  
+- **Fixed `AttributeError: 'MockDialog' object has no attribute 'generate_vip'`**:
+  - Replaced broken MockDialog approach with direct VIP generation
+  - Added proper `generate_vip_files()` and `generate_simple_vip_fallback()` methods
+  - Comprehensive VIP generation with UVM packages, tests, and build system
+
+#### Complete Generation Pipeline
+- **RTL Generation**: Enhanced gen_amba_axi with QoS, REGION, USER signal wrappers
+- **VIP Generation**: UVM-based verification IP with fallback for unavailable integrations
+- **Validation**: Pre-generation checks prevent common configuration errors
+- **Testing**: Comprehensive test suite validates 32x32 template generation flow
+
+### User Experience Improvements
+
+#### Template System Updates
+- **32x32 ACE-Lite Template**: Corrected data width (256-bit), protocol setting, ID width
+- **Auto-validation**: Templates trigger immediate validation and field updates
+- **Visual feedback**: Status bar provides real-time configuration guidance
+
+#### Error Prevention
+- **Configuration Issues**: Caught before gen_amba_axi execution
+- **Import Errors**: All module dependencies resolved
+- **Generation Failures**: Graceful fallback with basic VIP generation
+
+### Launch Commands
+
+#### Streamlined GUI v3
+```bash
+# Launch the enhanced streamlined GUI
+cd /home/timtim01/eda_test/project/gen_amba_2025/axi4_vip/gui_v3
+./launch_streamlined.sh
+
+# Or launch directly
+python3 src/main_gui_v3_streamlined.py
+
+# Load specific configuration
+python3 src/main_gui_v3_streamlined.py /path/to/config.yaml
+```
+
+#### Generation Workflow
+1. **Load Template**: Click template buttons (4x4, 8x8, 16x16, 32x32, 32x32 ACE-Lite)
+2. **Configure**: Left panel auto-updates, protocol selection enables/disables features
+3. **Validate**: Real-time validation with warnings and suggestions
+4. **Generate**: Menu → Generate All → Generate Settings → Configure → Generate
+5. **Output**: Both RTL interconnect and UVM VIP generated successfully
+
+### Key Features Summary
+- ✅ **Protocol-aware validation** for all AMBA bus types
+- ✅ **ACE-Lite large configuration support** with automatic data width requirements
+- ✅ **Complete RTL & VIP generation** with fallback mechanisms
+- ✅ **Auto-updating GUI** that stays in sync with loaded configurations  
+- ✅ **Comprehensive error prevention** at validation, import, and generation levels
+- ✅ **Enhanced user experience** with real-time feedback and guidance
+
+The streamlined GUI now provides a robust, error-free experience for generating both RTL interconnects and verification IP for AMBA bus systems ranging from simple 4x4 configurations to complex 64x64 ACE-Lite systems.

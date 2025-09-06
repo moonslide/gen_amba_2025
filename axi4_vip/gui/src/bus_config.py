@@ -83,12 +83,23 @@ class BusConfig:
     addr_width: int = 32  # 8-64 bits
     data_width: int = 64  # 8,16,32,64,128,256,512,1024 bits
     id_width: int = 4
-    user_width: int = 0
+    user_width: int = 0  # AXI USER signal width (0 to disable)
+    burst_length: int = 256  # AXI4 burst length (1-256)
     qos: bool = True
     cache: bool = True
     prot: bool = True
     region: bool = True
     qos_default: QoSConfig = field(default_factory=QoSConfig)
+    
+    # ACE-Lite coherency support
+    ace_lite: bool = False  # Enable ACE-Lite coherency
+    
+    # ACE-Lite SD_xUSER signal widths (1-32 bits each)
+    sd_awuser_width: int = 8   # SD_AWUSER width for write address coherency attributes
+    sd_wuser_width: int = 4    # SD_WUSER width for write data coherency attributes  
+    sd_buser_width: int = 4    # SD_BUSER width for write response coherency attributes
+    sd_aruser_width: int = 8   # SD_ARUSER width for read address coherency attributes
+    sd_ruser_width: int = 4    # SD_RUSER width for read response coherency attributes
     
     # Arbitration type: "fixed", "rr" (round-robin), "qos"
     arbitration: str = "qos"
@@ -112,6 +123,19 @@ class BusConfig:
         # Check arbitration type
         if self.arbitration not in ["fixed", "rr", "qos"]:
             raise ValueError(f"arbitration must be 'fixed', 'rr', or 'qos', got {self.arbitration}")
+        
+        # Check ACE-Lite SD_xUSER widths if ACE-Lite is enabled
+        if self.ace_lite:
+            if not (1 <= self.sd_awuser_width <= 32):
+                raise ValueError(f"sd_awuser_width must be 1-32, got {self.sd_awuser_width}")
+            if not (1 <= self.sd_wuser_width <= 32):
+                raise ValueError(f"sd_wuser_width must be 1-32, got {self.sd_wuser_width}")
+            if not (1 <= self.sd_buser_width <= 32):
+                raise ValueError(f"sd_buser_width must be 1-32, got {self.sd_buser_width}")
+            if not (1 <= self.sd_aruser_width <= 32):
+                raise ValueError(f"sd_aruser_width must be 1-32, got {self.sd_aruser_width}")
+            if not (1 <= self.sd_ruser_width <= 32):
+                raise ValueError(f"sd_ruser_width must be 1-32, got {self.sd_ruser_width}")
 
 @dataclass
 class ViewPreferences:

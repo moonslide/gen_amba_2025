@@ -1,0 +1,12 @@
+
+VLOGAN	= vlogan
+VLOGAN_OPT	= -sverilog -full64
+
+all :		_VCSgd_9pOB8d_1.db \
+
+
+
+_VCSgd_9pOB8d_1.db :	axi4_project_m64s64.v 
+		${VLOGAN}  ${VLOGAN_OPT} axi4_project_m64s64.v
+
+

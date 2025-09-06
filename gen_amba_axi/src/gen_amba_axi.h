@@ -31,6 +31,16 @@ typedef struct {
     int width_snoop_aw;  // AWSNOOP width (3 bits)
     int width_snoop_ar;  // ARSNOOP width (4 bits)
     int width_bar;       // Barrier width (2 bits)
+    // ACE-Lite SD_xUSER signal widths
+    int width_sd_awuser; // SD_AWUSER signal width
+    int width_sd_wuser;  // SD_WUSER signal width
+    int width_sd_buser;  // SD_BUSER signal width
+    int width_sd_aruser; // SD_ARUSER signal width
+    int width_sd_ruser;  // SD_RUSER signal width
+    // Pipeline and wrapper features
+    int enable_pipeline; // Enable pipeline stages
+    int pipeline_stages; // Number of pipeline stages (default 1)
+    int enable_user_wrapper; // Enable user signal wrapper generation
 } axi_features_t;
 
 extern int gen_axi_amba( unsigned int numM // num of masters
@@ -71,6 +81,21 @@ extern int gen_axi_default_slave( char* prefix
 extern int gen_axi_wid( char* prefix
                       , FILE* fo );
 
+// Modular AXI4 Generator
+extern int gen_axi_modular(unsigned int numM, unsigned int numS, unsigned int widthAD, unsigned int widthDA,
+                          char *module, char *prefix, int axi4, axi_features_t *features, 
+                          const char *output_dir);
+
+// FIFO buffer generation
+extern int gen_axi_fifo_buffer(unsigned int data_width, unsigned int depth, 
+                               const char *module_name, FILE *fo);
+extern int gen_axi_channel_fifo(const char *channel_name, unsigned int addr_width, unsigned int data_width, 
+                                unsigned int id_width, unsigned int user_width, unsigned int depth,
+                                const char *module_name, FILE *fo);
+extern int gen_axi_pipeline_stage(unsigned int widthAD, unsigned int widthDA, unsigned int widthID, 
+                                 unsigned int userWidth, unsigned int fifo_depth, 
+                                 const char *module_name, FILE *fo);
+
 // Unified testbench generation
 extern void gen_axi_unified_tb( char *prefix
                               , unsigned int num_master
@@ -99,13 +124,18 @@ extern int gen_axi_firewall( unsigned int numM
                            , char *prefix
                            , axi_features_t *features
                            , FILE *fo);
+extern int gen_axi_firewall_optimized( unsigned int numM
+                                     , unsigned int numS
+                                     , char *prefix
+                                     , axi_features_t *features
+                                     , FILE *fo);
 extern int gen_axi_cdc( unsigned int numM
                       , unsigned int numS
                       , char *prefix
                       , axi_features_t *features
                       , FILE *fo);
 
-// ACE-Lite coherency functions
+// ACE-Lite coherency functions (legacy)
 extern int gen_axi_ace_lite( unsigned int numM
                            , unsigned int numS
                            , char *prefix
@@ -119,6 +149,92 @@ extern int gen_axi_ace_lite_sport( char *prefix
                                  , char *otype
                                  , axi_features_t *features
                                  , FILE *fo);
+
+// Modular ACE-Lite functions (new architecture)
+extern int gen_ace_lite_coherency_controller( unsigned int numM
+                                             , unsigned int numS
+                                             , unsigned int widthAD
+                                             , unsigned int widthDA
+                                             , char *prefix
+                                             , axi_features_t *features
+                                             , FILE *fo);
+extern int gen_ace_lite_snoop_filter( unsigned int numM
+                                     , unsigned int numS
+                                     , unsigned int widthAD
+                                     , unsigned int widthDA
+                                     , char *prefix
+                                     , axi_features_t *features
+                                     , FILE *fo);
+extern int gen_ace_lite_barrier_sync( unsigned int numM
+                                     , unsigned int numS
+                                     , unsigned int widthAD
+                                     , unsigned int widthDA
+                                     , char *prefix
+                                     , axi_features_t *features
+                                     , FILE *fo);
+extern int gen_ace_lite_domain_manager( unsigned int numM
+                                       , unsigned int numS
+                                       , unsigned int widthAD
+                                       , unsigned int widthDA
+                                       , char *prefix
+                                       , axi_features_t *features
+                                       , FILE *fo);
+extern int gen_ace_lite_cache_ops( unsigned int numM
+                                 , unsigned int numS
+                                 , unsigned int widthAD
+                                 , unsigned int widthDA
+                                 , char *prefix
+                                 , axi_features_t *features
+                                 , FILE *fo);
+extern int gen_ace_lite_cache_states( unsigned int numM
+                                     , unsigned int numS
+                                     , char *prefix
+                                     , axi_features_t *features
+                                     , FILE *fo);
+extern int gen_ace_lite_interconnect( unsigned int numM
+                                     , unsigned int numS
+                                     , unsigned int widthAD
+                                     , unsigned int widthDA
+                                     , char *prefix
+                                     , axi_features_t *features
+                                     , FILE *fo);
+extern int gen_ace_lite_exclusive_monitor( unsigned int numM
+                                          , unsigned int numS
+                                          , unsigned int widthAD
+                                          , unsigned int widthDA
+                                          , char *prefix
+                                          , axi_features_t *features
+                                          , FILE *fo);
+
+// Phase 4 DVM and System-Level functions (Advanced ACE-Lite)
+extern int gen_ace_lite_dvm_controller( unsigned int numM
+                                       , unsigned int numS
+                                       , unsigned int widthAD
+                                       , unsigned int widthDA
+                                       , char *prefix
+                                       , axi_features_t *features
+                                       , FILE *fo);
+extern int gen_ace_lite_tlb_manager( unsigned int numM
+                                    , unsigned int numS
+                                    , unsigned int widthAD
+                                    , unsigned int widthDA
+                                    , char *prefix
+                                    , axi_features_t *features
+                                    , FILE *fo);
+extern int gen_ace_lite_system_coordinator( unsigned int numM
+                                           , unsigned int numS
+                                           , unsigned int widthAD
+                                           , unsigned int widthDA
+                                           , char *prefix
+                                           , axi_features_t *features
+                                           , FILE *fo);
+extern int gen_ace_lite_signal_arbiter( unsigned int numM
+                                       , unsigned int numS
+                                       , unsigned int widthAD
+                                       , unsigned int widthDA
+                                       , char *prefix
+                                       , axi_features_t *features
+                                       , FILE *fo);
 
 // REGION functions for AXI4
 extern int gen_axi_region( unsigned int numM
@@ -156,6 +272,19 @@ extern int gen_axi_region_sport( char *prefix
                                , char *otype
                                , axi_features_t *features
                                , FILE *fo);
+
+// Pipeline and wrapper generation functions
+extern int gen_axi_pipeline( char *module_name
+                           , unsigned int widthAD
+                           , unsigned int widthDA
+                           , axi_features_t *features
+                           , FILE *fo);
+extern int gen_axi_user_wrapper( char *module_name
+                                , unsigned int widthAD
+                                , unsigned int widthDA
+                                , unsigned int widthID
+                                , axi_features_t *features
+                                , FILE *fo);
 
 //--------------------------------------------------------
 // Revision history

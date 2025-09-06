@@ -15,6 +15,7 @@
 #include <stdarg.h>
 #include "gen_axi_utils.h"
 #include "gen_amba_axi.h"
+#include "gen_axi_validation.h"
 
 //--------------------------------------------------------
 // It returns log_base_two.
@@ -45,18 +46,48 @@ int gen_axi_amba( unsigned int numM // num of masters
     if (numM > 8 || numS > 8) {
         fprintf(fo, "// Using pure Verilog optimized generator for %dx%d matrix\n", numM, numS);
         ret += gen_axi_verilog_optimized(numM, numS, widthAD, widthDA, module, prefix, axi4, features, fo);
-        // Skip component generation for optimized version
+        
+        // Generate additional modules for optimized version if enabled
+        if (features && features->enable_firewall) {
+            ret += gen_axi_firewall_optimized(numM, numS, prefix, features, fo);
+        }
+        // Generate modular ACE-Lite components (new architecture)
+        if (features && features->enable_ace_lite) {
+            // Generate individual ACE-Lite modules
+            ret += gen_ace_lite_coherency_controller(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_snoop_filter(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_barrier_sync(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_domain_manager(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_cache_ops(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_cache_states(numM, numS, prefix, features, fo);
+            ret += gen_ace_lite_exclusive_monitor(numM, numS, widthAD, widthDA, prefix, features, fo);
+            // Phase 4 DVM and System-Level Components
+            ret += gen_ace_lite_dvm_controller(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_tlb_manager(numM, numS, widthAD, widthDA, prefix, features, fo);
+            ret += gen_ace_lite_system_coordinator(numM, numS, widthAD, widthDA, prefix, features, fo);
+            // Signal arbiter to resolve conflicts between modules
+            ret += gen_ace_lite_signal_arbiter(numM, numS, widthAD, widthDA, prefix, features, fo);
+            // Generate unified interconnect (replaces legacy monolithic module)
+            ret += gen_ace_lite_interconnect(numM, numS, widthAD, widthDA, prefix, features, fo);
+        }
+        
+        // Skip other component generation for optimized version
         return ret;
     }
 
-    // Original implementation for smaller matrices
+    // Generate base AXI interconnect (needed for ACE-Lite base_interconnect module)
     ret += gen_axi_amba_core(numM, numS, widthAD, widthDA, module, prefix, axi4, features, fo );
-    ret += gen_axi_arbiter_mtos( numM, prefix, fo );
-    ret += gen_axi_arbiter_stom( numS, prefix, fo );
-    ret += gen_axi_mtos( numM, prefix, axi4, fo );
-    ret += gen_axi_stom( numS, prefix, fo );
-    ret += gen_axi_default_slave( prefix, axi4, fo );
-    ret += gen_axi_wid( prefix, fo );
+    
+    // Skip the additional components if ACE-Lite is enabled (to prevent duplicates)
+    // ACE-Lite provides its own enhanced versions
+    if (!features || !features->enable_ace_lite) {
+        ret += gen_axi_arbiter_mtos( numM, prefix, fo );
+        ret += gen_axi_arbiter_stom( numS, prefix, fo );
+        ret += gen_axi_mtos( numM, prefix, axi4, fo );
+        ret += gen_axi_stom( numS, prefix, fo );
+        ret += gen_axi_default_slave( prefix, axi4, fo );
+        ret += gen_axi_wid( prefix, fo );
+    }
     
     // Generate new feature modules if enabled
     if (features) {
@@ -72,10 +103,42 @@ int gen_axi_amba( unsigned int numM // num of masters
         if (features->enable_ace_lite) {
             // Use optimized version for large matrices
             if (numM > 16 || numS > 16) {
-                // For large matrices, skip detailed ACE-Lite generation to avoid timeout
-                fprintf(fo, "\n// ACE-Lite support enabled for %dx%d matrix\n", numM, numS);
-                fprintf(fo, "// Note: Simplified implementation for large matrices\n\n");
+                // For large matrices, use modular approach with optimizations
+                fprintf(fo, "\n// ACE-Lite modular components for %dx%d matrix\n", numM, numS);
+                fprintf(fo, "// Using optimized modular architecture\n\n");
+                ret += gen_ace_lite_coherency_controller(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_snoop_filter(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_barrier_sync(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_domain_manager(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_cache_ops(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_cache_states(numM, numS, prefix, features, fo);
+                ret += gen_ace_lite_exclusive_monitor(numM, numS, widthAD, widthDA, prefix, features, fo);
+                // Phase 4 DVM and System-Level Components
+                ret += gen_ace_lite_dvm_controller(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_tlb_manager(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_system_coordinator(numM, numS, widthAD, widthDA, prefix, features, fo);
+                // Signal arbiter to resolve conflicts between modules
+                ret += gen_ace_lite_signal_arbiter(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_interconnect(numM, numS, widthAD, widthDA, prefix, features, fo);
+                // Add transaction validation module
+                ret += gen_axi_ace_lite(numM, numS, prefix, features, fo);
             } else {
+                // For smaller matrices, also use modular approach for consistency
+                ret += gen_ace_lite_coherency_controller(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_snoop_filter(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_barrier_sync(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_domain_manager(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_cache_ops(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_cache_states(numM, numS, prefix, features, fo);
+                ret += gen_ace_lite_exclusive_monitor(numM, numS, widthAD, widthDA, prefix, features, fo);
+                // Phase 4 DVM and System-Level Components
+                ret += gen_ace_lite_dvm_controller(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_tlb_manager(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_system_coordinator(numM, numS, widthAD, widthDA, prefix, features, fo);
+                // Signal arbiter to resolve conflicts between modules
+                ret += gen_ace_lite_signal_arbiter(numM, numS, widthAD, widthDA, prefix, features, fo);
+                ret += gen_ace_lite_interconnect(numM, numS, widthAD, widthDA, prefix, features, fo);
+                // Add transaction validation module
                 ret += gen_axi_ace_lite(numM, numS, prefix, features, fo);
             }
         }
@@ -178,6 +241,12 @@ fprintf(fo, "                , WIDTH_DOMAIN = %d // ACE-Lite domain width\n", fe
 fprintf(fo, "                , WIDTH_SNOOP_AW = %d // ACE-Lite write snoop width\n", features->width_snoop_aw);
 fprintf(fo, "                , WIDTH_SNOOP_AR = %d // ACE-Lite read snoop width\n", features->width_snoop_ar);
 fprintf(fo, "                , WIDTH_BAR = %d // ACE-Lite barrier width\n", features->width_bar);
+fprintf(fo, "                // ACE-Lite SD_USER signal width parameters\n");
+fprintf(fo, "                , WIDTH_SD_AWUSER = %d // ACE-Lite write address user signal width\n", features->width_sd_awuser);
+fprintf(fo, "                , WIDTH_SD_WUSER = %d // ACE-Lite write data user signal width\n", features->width_sd_wuser);
+fprintf(fo, "                , WIDTH_SD_BUSER = %d // ACE-Lite write response user signal width\n", features->width_sd_buser);
+fprintf(fo, "                , WIDTH_SD_ARUSER = %d // ACE-Lite read address user signal width\n", features->width_sd_aruser);
+fprintf(fo, "                , WIDTH_SD_RUSER = %d // ACE-Lite read data user signal width\n", features->width_sd_ruser);
 fprintf(fo, "                `endif\n");
 }
 for (i=0; i<numS; i++) {
@@ -592,6 +661,14 @@ fprintf(fo, "     //-----------------------------------------------------------\
             fprintf(fo, "     );\n");
             fprintf(fo, "     `endif\n");
         }
+    }
+
+    // Generate validation assertions inside the main module
+    if (features && features->enable_ace_lite) {
+        fprintf(fo, "\n    //--------------------------------------------------------\n");
+        fprintf(fo, "    // Enhanced Validation Framework - Auto-generated Checks\n");
+        fprintf(fo, "    //--------------------------------------------------------\n");
+        generate_rtl_parameter_checks(numM, numS, widthAD, widthDA, features, fo);
     }
 
 fprintf(fo, "endmodule\n");

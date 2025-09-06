@@ -51,7 +51,17 @@ axi_features_t features = {
     .width_domain = 2,
     .width_snoop_aw = 3,
     .width_snoop_ar = 4,
-    .width_bar = 2
+    .width_bar = 2,
+    // ACE-Lite SD_USER signal width defaults
+    .width_sd_awuser = 8,
+    .width_sd_wuser = 4,
+    .width_sd_buser = 4,
+    .width_sd_aruser = 8,
+    .width_sd_ruser = 4,
+    // Pipeline and wrapper defaults
+    .enable_pipeline = 0,
+    .pipeline_stages = 1,
+    .enable_user_wrapper = 0
 };
 
 //-----------------------------------------------------
@@ -77,6 +87,14 @@ static struct option longopts[] = {
      , {"region-width", required_argument, 0, 'R'}
      , {"user-width", required_argument, 0, 'U'}
      , {"enable-ace-lite", no_argument, 0, 'a'}
+     , {"sd-awuser-width", required_argument, 0, 1001}
+     , {"sd-wuser-width", required_argument, 0, 1002}
+     , {"sd-buser-width", required_argument, 0, 1003}
+     , {"sd-aruser-width", required_argument, 0, 1004}
+     , {"sd-ruser-width", required_argument, 0, 1005}
+     , {"enable-pipeline", no_argument, 0, 'p'}
+     , {"pipeline-stages", required_argument, 0, 'T'}
+     , {"enable-user-wrapper", no_argument, 0, 'w'}
      , {"verbose" , required_argument, 0, 'g'}
      , {"version", no_argument      , 0, 'v'}
      , {"license", no_argument      , 0, 'l'}
@@ -95,7 +113,7 @@ int arg_parser(int argc, char **argv) {
   extern void print_version(void);
 
   //-----------------------------------------------------
-  while ((opt=getopt_long(argc, argv, "M:S:D:P:O:3A:W:qrufcC:Q:R:U:ag:vlh?", longopts, &longidx))!=-1) {
+  while ((opt=getopt_long(argc, argv, "M:S:D:P:O:3A:W:qrufcC:Q:R:U:apT:wg:vlh?", longopts, &longidx))!=-1) {
      switch (opt) {
      case 'M': numM = atoi(optarg); break;
      case 'S': numS = atoi(optarg); break;
@@ -115,6 +133,14 @@ int arg_parser(int argc, char **argv) {
      case 'R': features.width_region = atoi(optarg); break;
      case 'U': features.width_user = atoi(optarg); break;
      case 'a': features.enable_ace_lite = 1; break;
+     case 1001: features.width_sd_awuser = atoi(optarg); break;
+     case 1002: features.width_sd_wuser = atoi(optarg); break;
+     case 1003: features.width_sd_buser = atoi(optarg); break;
+     case 1004: features.width_sd_aruser = atoi(optarg); break;
+     case 1005: features.width_sd_ruser = atoi(optarg); break;
+     case 'p': features.enable_pipeline = 1; break;
+     case 'T': features.pipeline_stages = atoi(optarg); break;
+     case 'w': features.enable_user_wrapper = 1; break;
      case 'g': verbose = atoi(optarg); break;
      case 'v': print_version(); exit(0); break;
      case 'l': print_license(); exit(0); break;
@@ -146,6 +172,30 @@ int arg_parser(int argc, char **argv) {
   if ((widthDA & (widthDA - 1)) != 0) {
       fprintf(stderr, "Data width must be power of 2 (32, 64, 128, 256, 512, 1024), got %d.\n", widthDA);
       return 1;
+  }
+  
+  // Validate ACE-Lite SD_USER signal widths
+  if (features.enable_ace_lite) {
+      if (features.width_sd_awuser < 1 || features.width_sd_awuser > 32) {
+          fprintf(stderr, "SD_AWUSER width must be 1-32 bits, got %d.\n", features.width_sd_awuser);
+          return 1;
+      }
+      if (features.width_sd_wuser < 1 || features.width_sd_wuser > 32) {
+          fprintf(stderr, "SD_WUSER width must be 1-32 bits, got %d.\n", features.width_sd_wuser);
+          return 1;
+      }
+      if (features.width_sd_buser < 1 || features.width_sd_buser > 32) {
+          fprintf(stderr, "SD_BUSER width must be 1-32 bits, got %d.\n", features.width_sd_buser);
+          return 1;
+      }
+      if (features.width_sd_aruser < 1 || features.width_sd_aruser > 32) {
+          fprintf(stderr, "SD_ARUSER width must be 1-32 bits, got %d.\n", features.width_sd_aruser);
+          return 1;
+      }
+      if (features.width_sd_ruser < 1 || features.width_sd_ruser > 32) {
+          fprintf(stderr, "SD_RUSER width must be 1-32 bits, got %d.\n", features.width_sd_ruser);
+          return 1;
+      }
   }
   
   if (prefix[0]!='\0') {
@@ -197,6 +247,14 @@ void help(int argc, char **argv)
   fprintf(stderr, "\t-R,--region-width=num REGION signal width (default: 4)\n");
   fprintf(stderr, "\t-U,--user-width=num USER signal width (default: 1)\n");
   fprintf(stderr, "\t-a,--enable-ace-lite enable ACE-Lite coherency\n");
+  fprintf(stderr, "\t   --sd-awuser-width=num ACE-Lite SD_AWUSER signal width (default: 8)\n");
+  fprintf(stderr, "\t   --sd-wuser-width=num  ACE-Lite SD_WUSER signal width (default: 4)\n");
+  fprintf(stderr, "\t   --sd-buser-width=num  ACE-Lite SD_BUSER signal width (default: 4)\n");
+  fprintf(stderr, "\t   --sd-aruser-width=num ACE-Lite SD_ARUSER signal width (default: 8)\n");
+  fprintf(stderr, "\t   --sd-ruser-width=num  ACE-Lite SD_RUSER signal width (default: 4)\n");
+  fprintf(stderr, "\t-p,--enable-pipeline enable pipeline stages\n");
+  fprintf(stderr, "\t-T,--pipeline-stages=num number of pipeline stages (default: 1)\n");
+  fprintf(stderr, "\t-w,--enable-user-wrapper enable user signal wrapper generation\n");
   fprintf(stderr, "\t-g,--verbose=num  verbose level  (default: %d)\n", verbose);
   fprintf(stderr, "\t-v,--version      print version\n");
   fprintf(stderr, "\t-l,--license      print license message\n");

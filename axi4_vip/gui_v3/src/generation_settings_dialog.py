@@ -29,8 +29,9 @@ class GenerationSettingsDialog(tk.Toplevel):
         
         # Configure window
         self.title("Generation Settings")
-        self.geometry("800x700")
-        self.resizable(False, False)
+        self.geometry("900x800")  # Larger default size
+        self.resizable(True, True)  # Allow user to resize
+        self.minsize(800, 700)  # Minimum size to ensure usability
         
         # Make modal
         self.transient(parent)
@@ -58,6 +59,10 @@ class GenerationSettingsDialog(tk.Toplevel):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
         
+        # Top frame with title and buttons
+        top_frame = ttk.Frame(main_frame)
+        top_frame.pack(fill=tk.X, pady=(0, 10))
+        
         # Title based on mode
         title_text = {
             'rtl': "Generate RTL",
@@ -65,9 +70,19 @@ class GenerationSettingsDialog(tk.Toplevel):
             'both': "Generate RTL & VIP"
         }.get(self.mode, "Generate")
         
-        title_label = ttk.Label(main_frame, text=title_text, 
+        title_label = ttk.Label(top_frame, text=title_text, 
                                font=('Arial', 16, 'bold'))
-        title_label.pack(pady=(0, 10))
+        title_label.pack(side=tk.LEFT)
+        
+        # Button frame at top right
+        button_frame = ttk.Frame(top_frame)
+        button_frame.pack(side=tk.RIGHT)
+        
+        # Buttons
+        ttk.Button(button_frame, text="Generate", 
+                  command=self.generate, width=15).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Cancel", 
+                  command=self.cancel, width=15).pack(side=tk.LEFT)
         
         # Create notebook for tabs
         self.notebook = ttk.Notebook(main_frame)
@@ -84,16 +99,6 @@ class GenerationSettingsDialog(tk.Toplevel):
         
         # Output settings tab
         self.create_output_tab()
-        
-        # Button frame at bottom
-        button_frame = ttk.Frame(main_frame)
-        button_frame.pack(fill=tk.X, pady=(10, 0))
-        
-        # Buttons
-        ttk.Button(button_frame, text="Generate", 
-                  command=self.generate, width=15).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(button_frame, text="Cancel", 
-                  command=self.cancel, width=15).pack(side=tk.RIGHT)
         
     def create_rtl_tab(self):
         """Create RTL generation settings tab"""
@@ -238,8 +243,10 @@ class GenerationSettingsDialog(tk.Toplevel):
         
         row = 0
         ttk.Label(bus_frame, text="Data Width:").grid(row=row, column=0, sticky='w', pady=2)
-        self.data_width = ttk.Combobox(bus_frame, values=[32, 64, 128, 256, 512, 1024], width=10)
-        self.data_width.set(self.project.bus.data_width)
+        self.data_width = ttk.Combobox(bus_frame, values=['8', '16', '32', '64', '128', '256', '512', '1024'], width=10)
+        # Get value from parent's start panel instead of project config
+        data_width_value = self.parent.data_width_var.get() if hasattr(self.parent, 'data_width_var') else str(self.project.bus.data_width)
+        self.data_width.set(data_width_value)
         self.data_width.grid(row=row, column=1, sticky='w', pady=2)
         
         row += 1
@@ -248,7 +255,9 @@ class GenerationSettingsDialog(tk.Toplevel):
         addr_frame.grid(row=row, column=1, sticky='w', pady=2)
         self.addr_width = tk.Spinbox(addr_frame, from_=8, to=64, width=10)
         self.addr_width.delete(0, 'end')
-        self.addr_width.insert(0, str(self.project.bus.addr_width))
+        # Get value from parent's start panel instead of project config
+        addr_width_value = self.parent.addr_width_var.get() if hasattr(self.parent, 'addr_width_var') else str(self.project.bus.addr_width)
+        self.addr_width.insert(0, addr_width_value)
         self.addr_width.pack(side='left')
         ttk.Label(addr_frame, text="bits (8-64)", font=('Arial', 9)).pack(side='left', padx=(5, 0))
         
@@ -256,15 +265,31 @@ class GenerationSettingsDialog(tk.Toplevel):
         ttk.Label(bus_frame, text="ID Width:").grid(row=row, column=0, sticky='w', pady=2)
         self.id_width = tk.Spinbox(bus_frame, from_=1, to=16, width=10)
         self.id_width.delete(0, 'end')
-        self.id_width.insert(0, str(self.project.bus.id_width))
+        # Get value from parent's start panel instead of project config
+        id_width_value = self.parent.id_width_var.get() if hasattr(self.parent, 'id_width_var') else str(self.project.bus.id_width)
+        self.id_width.insert(0, id_width_value)
         self.id_width.grid(row=row, column=1, sticky='w', pady=2)
         
         row += 1
         ttk.Label(bus_frame, text="User Width:").grid(row=row, column=0, sticky='w', pady=2)
         self.user_width = tk.Spinbox(bus_frame, from_=0, to=256, width=10)
         self.user_width.delete(0, 'end')
-        self.user_width.insert(0, str(self.project.bus.user_width))
+        # Get value from parent's start panel instead of project config
+        user_width_value = self.parent.user_width_var.get() if hasattr(self.parent, 'user_width_var') else str(self.project.bus.user_width)
+        self.user_width.insert(0, user_width_value)
         self.user_width.grid(row=row, column=1, sticky='w', pady=2)
+        
+        row += 1
+        ttk.Label(bus_frame, text="Burst Length:").grid(row=row, column=0, sticky='w', pady=2)
+        burst_frame = ttk.Frame(bus_frame)
+        burst_frame.grid(row=row, column=1, sticky='w', pady=2)
+        self.burst_length = tk.Spinbox(burst_frame, from_=1, to=256, width=10)
+        self.burst_length.delete(0, 'end')
+        # Get value from parent's start panel instead of project config
+        burst_length_value = self.parent.burst_length_var.get() if hasattr(self.parent, 'burst_length_var') else str(getattr(self.project.bus, 'burst_length', 256))
+        self.burst_length.insert(0, burst_length_value)
+        self.burst_length.pack(side='left')
+        ttk.Label(burst_frame, text="(1-256)", font=('Arial', 9)).pack(side='left', padx=(5, 0))
         
         # Protocol Features
         protocol_frame = ttk.LabelFrame(common_frame, text="Protocol Features", padding="10")
@@ -289,6 +314,122 @@ class GenerationSettingsDialog(tk.Toplevel):
         self.enable_firewall = tk.BooleanVar(value=False)
         ttk.Checkbutton(protocol_frame, text="Enable Security Firewall", 
                        variable=self.enable_firewall).pack(anchor='w', pady=2)
+        
+        # ACE-Lite Coherency Features
+        ace_frame = ttk.LabelFrame(common_frame, text="ACE-Lite Coherency", padding="10")
+        ace_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # Auto-enable ACE-Lite if project has it enabled
+        ace_lite_default = hasattr(self.project.bus, 'enable_ace_lite') and self.project.bus.enable_ace_lite
+        self.enable_ace_lite = tk.BooleanVar(value=ace_lite_default)
+        ace_enable_cb = ttk.Checkbutton(ace_frame, text="Enable ACE-Lite Coherency Protocol", 
+                       variable=self.enable_ace_lite, command=self.update_ace_lite_widgets)
+        ace_enable_cb.pack(anchor='w', pady=2)
+        
+        # ACE-Lite specific widgets (initially disabled)
+        self.ace_widgets = []
+        
+        # Coherency Features
+        coherency_subframe = ttk.Frame(ace_frame)
+        coherency_subframe.pack(fill='x', padx=(20, 0), pady=(5, 0))
+        
+        # These features are always enabled when ACE-Lite is enabled (no user control)
+        self.enable_snoop_filter = tk.BooleanVar(value=True)
+        snoop_label = ttk.Label(coherency_subframe, text="✓ Enable Snoop Filter (Always enabled)")
+        snoop_label.pack(anchor='w', pady=1)
+        self.ace_widgets.append(snoop_label)
+        
+        self.enable_dvm = tk.BooleanVar(value=True)
+        dvm_label = ttk.Label(coherency_subframe, text="✓ Enable DVM (Distributed Virtual Memory) (Always enabled)")
+        dvm_label.pack(anchor='w', pady=1)
+        self.ace_widgets.append(dvm_label)
+        
+        self.enable_barriers = tk.BooleanVar(value=True)
+        barrier_label = ttk.Label(coherency_subframe, text="✓ Enable Barrier Transactions (Always enabled)")
+        barrier_label.pack(anchor='w', pady=1)
+        self.ace_widgets.append(barrier_label)
+        
+        self.enable_cache_maintenance = tk.BooleanVar(value=True)
+        cache_label = ttk.Label(coherency_subframe, text="✓ Enable Advanced Cache Maintenance (Always enabled)")
+        cache_label.pack(anchor='w', pady=1)
+        self.ace_widgets.append(cache_label)
+        
+        # SD_xUSER Signal Configuration
+        sduser_subframe = ttk.LabelFrame(ace_frame, text="SD_xUSER Signal Widths", padding="5")
+        sduser_subframe.pack(fill='x', padx=(20, 0), pady=(5, 0))
+        
+        # SD_AWUSER Width
+        row = 0
+        sdaw_label = ttk.Label(sduser_subframe, text="SD_AWUSER Width:")
+        sdaw_label.grid(row=row, column=0, sticky='w', pady=2)
+        self.sd_awuser_width = tk.Spinbox(sduser_subframe, from_=1, to=32, width=10)
+        self.sd_awuser_width.delete(0, 'end')
+        # Get value from project config if available
+        sd_awuser_value = str(getattr(self.project.bus, 'sd_awuser_width', 8))
+        self.sd_awuser_width.insert(0, sd_awuser_value)
+        self.sd_awuser_width.grid(row=row, column=1, sticky='w', pady=2, padx=(5, 0))
+        bits_label1 = ttk.Label(sduser_subframe, text="bits", font=('Arial', 9))
+        bits_label1.grid(row=row, column=2, sticky='w', pady=2, padx=(5, 0))
+        self.ace_widgets.extend([sdaw_label, self.sd_awuser_width, bits_label1])
+        
+        # SD_WUSER Width
+        row += 1
+        sdw_label = ttk.Label(sduser_subframe, text="SD_WUSER Width:")
+        sdw_label.grid(row=row, column=0, sticky='w', pady=2)
+        self.sd_wuser_width = tk.Spinbox(sduser_subframe, from_=1, to=32, width=10)
+        self.sd_wuser_width.delete(0, 'end')
+        # Get value from project config if available
+        sd_wuser_value = str(getattr(self.project.bus, 'sd_wuser_width', 8))
+        self.sd_wuser_width.insert(0, sd_wuser_value)
+        self.sd_wuser_width.grid(row=row, column=1, sticky='w', pady=2, padx=(5, 0))
+        bits_label2 = ttk.Label(sduser_subframe, text="bits", font=('Arial', 9))
+        bits_label2.grid(row=row, column=2, sticky='w', pady=2, padx=(5, 0))
+        self.ace_widgets.extend([sdw_label, self.sd_wuser_width, bits_label2])
+        
+        # SD_BUSER Width
+        row += 1
+        sdb_label = ttk.Label(sduser_subframe, text="SD_BUSER Width:")
+        sdb_label.grid(row=row, column=0, sticky='w', pady=2)
+        self.sd_buser_width = tk.Spinbox(sduser_subframe, from_=1, to=32, width=10)
+        self.sd_buser_width.delete(0, 'end')
+        # Get value from project config if available
+        sd_buser_value = str(getattr(self.project.bus, 'sd_buser_width', 8))
+        self.sd_buser_width.insert(0, sd_buser_value)
+        self.sd_buser_width.grid(row=row, column=1, sticky='w', pady=2, padx=(5, 0))
+        bits_label3 = ttk.Label(sduser_subframe, text="bits", font=('Arial', 9))
+        bits_label3.grid(row=row, column=2, sticky='w', pady=2, padx=(5, 0))
+        self.ace_widgets.extend([sdb_label, self.sd_buser_width, bits_label3])
+        
+        # SD_ARUSER Width
+        row += 1
+        sdar_label = ttk.Label(sduser_subframe, text="SD_ARUSER Width:")
+        sdar_label.grid(row=row, column=0, sticky='w', pady=2)
+        self.sd_aruser_width = tk.Spinbox(sduser_subframe, from_=1, to=32, width=10)
+        self.sd_aruser_width.delete(0, 'end')
+        # Get value from project config if available
+        sd_aruser_value = str(getattr(self.project.bus, 'sd_aruser_width', 8))
+        self.sd_aruser_width.insert(0, sd_aruser_value)
+        self.sd_aruser_width.grid(row=row, column=1, sticky='w', pady=2, padx=(5, 0))
+        bits_label4 = ttk.Label(sduser_subframe, text="bits", font=('Arial', 9))
+        bits_label4.grid(row=row, column=2, sticky='w', pady=2, padx=(5, 0))
+        self.ace_widgets.extend([sdar_label, self.sd_aruser_width, bits_label4])
+        
+        # SD_RUSER Width
+        row += 1
+        sdr_label = ttk.Label(sduser_subframe, text="SD_RUSER Width:")
+        sdr_label.grid(row=row, column=0, sticky='w', pady=2)
+        self.sd_ruser_width = tk.Spinbox(sduser_subframe, from_=1, to=32, width=10)
+        self.sd_ruser_width.delete(0, 'end')
+        # Get value from project config if available
+        sd_ruser_value = str(getattr(self.project.bus, 'sd_ruser_width', 8))
+        self.sd_ruser_width.insert(0, sd_ruser_value)
+        self.sd_ruser_width.grid(row=row, column=1, sticky='w', pady=2, padx=(5, 0))
+        bits_label5 = ttk.Label(sduser_subframe, text="bits", font=('Arial', 9))
+        bits_label5.grid(row=row, column=2, sticky='w', pady=2, padx=(5, 0))
+        self.ace_widgets.extend([sdr_label, self.sd_ruser_width, bits_label5])
+        
+        # Initially disable ACE-Lite widgets
+        self.update_ace_lite_widgets()
         
         # File Generation
         files_frame = ttk.LabelFrame(common_frame, text="File Generation", padding="10")
@@ -374,6 +515,16 @@ class GenerationSettingsDialog(tk.Toplevel):
         if dir_path:
             self.output_dir.set(dir_path)
             
+    def update_ace_lite_widgets(self):
+        """Enable/disable ACE-Lite specific widgets based on checkbox state"""
+        state = 'normal' if self.enable_ace_lite.get() else 'disabled'
+        for widget in self.ace_widgets:
+            try:
+                widget.configure(state=state)
+            except:
+                # Some widgets might not support state configuration
+                pass
+    
     def update_summary(self):
         """Update generation summary"""
         self.summary_text.delete(1.0, tk.END)
@@ -384,6 +535,19 @@ class GenerationSettingsDialog(tk.Toplevel):
         summary += f"Masters: {len(self.project.masters)}\n"
         summary += f"Slaves: {len(self.project.slaves)}\n"
         summary += f"Mode: {self.mode.upper()}\n"
+        
+        # Add ACE-Lite status if enabled
+        if hasattr(self, 'enable_ace_lite') and self.enable_ace_lite.get():
+            summary += f"ACE-Lite: ENABLED\n"
+            if hasattr(self, 'enable_dvm') and self.enable_dvm.get():
+                summary += f"  • DVM Support: YES\n"
+            if hasattr(self, 'enable_barriers') and self.enable_barriers.get():
+                summary += f"  • Barrier Transactions: YES\n"
+            if hasattr(self, 'enable_cache_maintenance') and self.enable_cache_maintenance.get():
+                summary += f"  • Cache Maintenance: YES\n"
+        else:
+            summary += f"ACE-Lite: DISABLED\n"
+        
         summary += f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
         
         self.summary_text.insert(1.0, summary)
@@ -442,6 +606,7 @@ class GenerationSettingsDialog(tk.Toplevel):
             'addr_width': int(self.addr_width.get()),
             'id_width': int(self.id_width.get()),
             'user_width': int(self.user_width.get()),
+            'burst_length': int(self.burst_length.get()),
             'enable_qos': self.enable_qos.get(),
             'enable_region': self.enable_region.get(),
             'enable_exclusive': self.enable_exclusive.get(),
@@ -453,6 +618,21 @@ class GenerationSettingsDialog(tk.Toplevel):
             'gen_scripts': self.gen_scripts.get(),
             'gen_documentation': self.gen_documentation.get()
         }
+        
+        # Add ACE-Lite settings if available
+        if hasattr(self, 'enable_ace_lite'):
+            self.result['ace_lite'] = {
+                'enable_ace_lite': self.enable_ace_lite.get(),
+                'enable_snoop_filter': self.enable_snoop_filter.get(),
+                'enable_dvm': self.enable_dvm.get(),
+                'enable_barriers': self.enable_barriers.get(),
+                'enable_cache_maintenance': self.enable_cache_maintenance.get(),
+                'sd_awuser_width': int(self.sd_awuser_width.get()),
+                'sd_wuser_width': int(self.sd_wuser_width.get()),
+                'sd_buser_width': int(self.sd_buser_width.get()),
+                'sd_aruser_width': int(self.sd_aruser_width.get()),
+                'sd_ruser_width': int(self.sd_ruser_width.get())
+            }
         
         self.destroy()
         

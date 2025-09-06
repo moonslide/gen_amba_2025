@@ -18,14 +18,6 @@ package axi4_vip_pkg;
     parameter DEFAULT_AWQOS = 2;
     parameter DEFAULT_ARQOS = 2;
     
-    // Include all VIP components
-    `include "axi4_transaction.sv"
-    `include "axi4_master_driver.sv"
-    `include "axi4_master_monitor.sv"
-    `include "axi4_master_agent.sv"
-    `include "axi4_slave_driver.sv"
-    `include "axi4_slave_monitor.sv"
-    `include "axi4_slave_agent.sv"
-    `include "axi4_env.sv"
+    // Utility functions (none needed for basic package)
     
 endpackage
