@@ -91,7 +91,174 @@ elaboration memory bounded.
 
 ---
 
-## 3. AXI Generator (`gen_amba_axi/src/`)
+## 3. Generated Bus Architecture (Hardware Topology)
+
+The previous section described the C pipeline. This section describes what the pipeline actually
+emits — the Verilog topology you get in the output file.
+
+### 3.1 AXI matrix — `amba_axi_mMsN`
+
+```
+                 ┌─────────────────────── amba_axi_mMsN ────────────────────────┐
+    M0 AXI ─────▶│  M0 port   ┐                                        ┌── S0  │──▶ S0 AXI
+    M1 AXI ─────▶│  M1 port   │                                        │── S1  │──▶ S1 AXI
+      ...        │     ...    ├── broadcast to every mtos ──▶  ...     │  ...  │
+    M{M-1} AXI ─▶│  M{M-1}port┘                                        └── S{N-1}──▶
+                 │                                                                │
+                 │   ┌─────────── address decode + M→S mux (×N) ────────────┐     │
+                 │   │  u_axi_mtos_s0  : SLAVE_ID=0, ADDR_BASE0, LEN0       │     │
+                 │   │  u_axi_mtos_s1  : SLAVE_ID=1, ADDR_BASE1, LEN1       │     │
+                 │   │   ...                                                │     │
+                 │   │  u_axi_mtos_s{N-1}                                   │     │
+                 │   │  u_axi_mtos_sd  : SLAVE_DEFAULT=1 (catch-all)        │     │
+                 │   └──────────────────────────────────────────────────────┘     │
+                 │                                                                │
+                 │   ┌────────── response S→M mux (×M) ────────────────────┐      │
+                 │   │  u_axi_stom_m0 … u_axi_stom_m{M-1}                  │      │
+                 │   └──────────────────────────────────────────────────────┘     │
+                 │                                                                │
+                 │   u_axi_default_slave  (always DECERR)                         │
+                 └────────────────────────────────────────────────────────────────┘
+```
+
+**Instance inventory** (emitted by `gen_axi_amba_core`):
+
+| Instance                  | Count  | Role                                                          |
+| ------------------------- | ------ | ------------------------------------------------------------- |
+| `<prefix>axi_mtos_mM`     | N + 1  | One per real slave (plus one for the default slave)           |
+| `<prefix>axi_stom_sN`     | M      | One per master; collects B/R from all slaves + default slave  |
+| `<prefix>axi_default_slave` | 1    | Accepts any request, returns `DECERR` for every beat          |
+| `<prefix>axi_wid`         | 0 or 1 | Only for `--axi3` (reconstructs the missing AXI4 `WID`)       |
+
+Each `axi_mtos_mM` embeds one `ax_arbiter_mtos_mM` (per-slave arbitration across masters).
+Each `axi_stom_sN` embeds one `axi_arbiter_stom_sN` (per-master arbitration across slave responses).
+
+### 3.2 How a transaction flows through the matrix
+
+**Write address (AW) / Read address (AR):**
+
+1. Every master's `AW*` is fanned out to **every** `axi_mtos_s*` instance, including the default
+   slave mux.
+2. Inside each mtos, the address decoder compares `AWADDR[WIDTH_AD-1:ADDR_LENGTH]` against that
+   slave's `ADDR_BASE` — if it matches and `SLAVE_EN=1`, that master is a candidate.
+3. The internal arbiter picks one candidate master, raises `AWSELECT_OUT[master]`, and forwards
+   the beat on `S_AWVALID`.
+4. The default-slave mtos receives `AWSELECT_IN = OR(AWSELECT_OUT of every real mtos)`. It only
+   claims a master whose bit is **not** set anywhere — i.e., an unmapped address — so exactly one
+   mtos (real or default) accepts each request.
+
+**Write data (W):** after the AW arbitration wins, the chosen slave's mtos also routes this
+master's `WDATA/WSTRB/WLAST` through. On AXI4 the arbiter uses the full `WSID` (`CID || ID`) as the
+match key — this is the 2025 W-channel fix (see §7).
+
+**Response (B) / Read data (R):** the slave returns `BID/RID`, which carries the originating
+master's `CID` in its top `WIDTH_CID` bits. The per-master `axi_stom_sN` decodes the `CID`, picks
+the right slave/default-slave source, and drives `M?_BVALID`/`M?_RVALID` back.
+
+**Ready collapsing:** each destination drives a private `M?_AWREADY_S?` / `M?_WREADY_S?` /
+`M?_ARREADY_S?`; the top module OR-reduces them into `M?_AWREADY`, `M?_WREADY`, `M?_ARREADY`. The
+same OR pattern collapses `S?_BREADY` and `S?_RREADY` back from every master's stom.
+
+### 3.3 ID scheme
+
+```
+   ┌──────────────── WIDTH_SID (slave-visible ID) ────────────────┐
+   │          WIDTH_CID         │          WIDTH_ID               │
+   │   channel (master) index   │   user-facing transaction ID    │
+   └───────────────┬────────────┴────────────────┬────────────────┘
+                   │                             │
+   auto = clog2(NUM_MASTER)        4 if NUM_MASTER≤16 else 8
+```
+
+- `M{i}_MID = i` is a constant tied by `gen_axi_amba_core`, so every request a master emits is
+  tagged with its own channel number before reaching a slave.
+- The slave sees `AWID = {MID, M{i}_AWID}` and must return it unchanged on `BID/RID`.
+- The S→M path routes on the `CID` slice only, so user-level IDs never collide between masters.
+
+### 3.4 Default address map
+
+Unless overridden, `gen_axi_amba_core` assigns `ADDR_BASE0 = 0x0`, `ADDR_BASE1 = 0x2000`,
+`ADDR_BASE{j} = j * 0x2000`, with `ADDR_LENGTH{j} = 12` (4 KB decode window). This is a placeholder
+template — real designs override the parameters at instantiation time.
+
+### 3.5 AHB matrix — multi-master top (generated when `--mst ≥ 2`)
+
+```
+           M0_HBUSREQ ┐                                      ┌─ S0_HSEL ─▶ slave0
+           M1_HBUSREQ │                                      │─ S1_HSEL ─▶ slave1
+            ...       │   u_ahb_arbiter   (HGRANT, HMASTER)  │   ...
+           M{M-1}_..  ┘          │                           └─ S{N-1}_HSEL
+                                 ▼
+           M{i}_HADDR ──▶  u_ahb_m2s  ──▶  S_HADDR/HTRANS/HWDATA/HSIZE/HBURST/HPROT/HWRITE
+                                                      │
+                                                      ▼
+                                            u_ahb_lite (decode + s2m)
+                                            ┌──────────────────────────┐
+                                            │ ahb_decoder → S?_HSEL    │
+                                            │ ahb_s2m     → M_HRDATA / │
+                                            │                M_HRESP / │
+                                            │                M_HREADY  │
+                                            │ ahb_default_slave (ERR)  │
+                                            └──────────────────────────┘
+```
+
+- **Single shared bus**: only one master drives the slave fan-out at a time. `u_ahb_arbiter`
+  computes `HGRANT` from `HBUSREQ`, honours `HLOCK`, and supports `HSPLIT`-driven re-arbitration;
+  the granted master number is exported as `HMASTER` / `HMASTLOCK`.
+- **Address map**: `P_HSEL{j}_START` / `P_HSEL{j}_SIZE` with a stride of `0x1000_0000` (or
+  `0x0100_0000` for >16 slaves). `REMAP` input lets an external boot-ROM re-map slave 0.
+- **Response path**: the slave mux (`ahb_s2m`) OR-selects `HRDATA/HREADY/HRESP` from the selected
+  slave, and routes split-retry to the arbiter via `HSPLIT`.
+- **AHB-Lite collapse**: when `numM == 1` the arbiter and `ahb_m2s` are **not emitted** — the top
+  module is just `ahb_lite` (decoder + s2m + default slave), and the sole master drives the bus
+  directly.
+
+### 3.6 APB bridge — `{axi|ahb}_to_apb_sN`
+
+```
+    upstream (AXI or AHB)
+            │
+            ▼
+    ┌─ axi2apb_bridge / ahb2apb_bridge ─┐
+    │ setup → access state machine,     │
+    │ PSEL/PENABLE/PWRITE/PADDR drive,  │
+    │ PREADY/PSLVERR capture            │
+    └─────────────┬──────────────────────┘
+                  ▼
+          amba_apb_sN
+          ┌──────────────────┐
+          │ apb_decoder      │──▶ S0_PSEL … S{N-1}_PSEL
+          │ (PADDR match →   │
+          │  P_PSEL{j}_START)│
+          └──────────────────┘
+                  ▼
+          apb_mux  ──▶ M_PRDATA / M_PREADY / M_PSLVERR
+```
+
+- APB is single-master by construction, so there is **no arbiter**. The upstream→APB bridge
+  serialises transactions.
+- Default address map starts at `0xC000_0000`, slave stride `0x0000_1000` (4 KB slots).
+- Optional signals are `ifdef`-guarded: `AMBA_APB3` adds `PREADY`/`PSLVERR`; `AMBA_APB4` adds
+  `PPROT`/`PSTRB`.
+
+### 3.7 Feature modules (optional, wired into the matrix when enabled)
+
+| Flag                 | Module emitted                     | What it adds to the matrix                                      |
+| -------------------- | ---------------------------------- | --------------------------------------------------------------- |
+| `--enable-qos`       | `<prefix>axi_qos_arbiter`          | QoS-weighted arbitration inside each mtos (preserves AXI order) |
+| `--enable-region`    | `<prefix>axi_region_*`             | Per-slave `AxREGION` encoding, constant within 4 KB             |
+| `--enable-user`      | (parameters only)                  | `WIDTH_AWUSER/WUSER/BUSER/ARUSER/RUSER` exposed                 |
+| `--enable-firewall`  | `<prefix>axi_firewall`             | Address/PROT-based access gate per master                       |
+| `--enable-cdc`       | `<prefix>axi_cdc`                  | Async-FIFO CDC on each master or slave leg                      |
+| `--enable-ace-lite`  | `<prefix>axi_ace_lite_*`           | `AxDOMAIN` / `AxSNOOP` / `AxBAR` ports and routing              |
+
+All of these are instantiated *alongside* the base mtos/stom fabric — the core topology in §3.1
+does not change; the feature modules slot in on the master legs (firewall/CDC/ACE-Lite) or on the
+arbitration stage (QoS/REGION).
+
+---
+
+## 4. AXI Generator (`gen_amba_axi/src/`)
 
 ### 3.1 Call graph
 
@@ -169,7 +336,7 @@ Feature macros (ifdef-guarded in emitted RTL): `AMBA_AXI_AWUSER`, `AMBA_AXI_WUSE
 
 ---
 
-## 4. AHB Generator (`gen_amba_ahb/src/`)
+## 5. AHB Generator (`gen_amba_ahb/src/`)
 
 ### 4.1 Call graph
 
@@ -199,7 +366,7 @@ design.
 
 ---
 
-## 5. APB Bridge Generator (`gen_amba_apb/src/`)
+## 6. APB Bridge Generator (`gen_amba_apb/src/`)
 
 ### 5.1 Call graph
 
@@ -223,7 +390,7 @@ for converting the upstream AXI/AHB handshake into the APB setup/access sequence
 
 ---
 
-## 6. 2025 Enhancements
+## 7. 2025 Enhancements
 
 - **W-channel routing fix** (`gen_axi_arbiter_mtos.c:438-441`) — write-data steering now compares
   the full arbitrated `WSID` instead of only the `CID` slice, eliminating the multi-slave write
@@ -240,7 +407,7 @@ for converting the upstream AXI/AHB handshake into the APB setup/access sequence
 
 ---
 
-## 7. Build & Run
+## 8. Build & Run
 
 ### 7.1 Build all generators
 
@@ -284,7 +451,7 @@ Change `WIDTH_AD` / `WIDTH_DA` in `sim_define.v`, and enable individual scenario
 
 ---
 
-## 8. Verification IP (UVM) and GUI
+## 9. Verification IP (UVM) and GUI
 
 The generated RTL is designed to drop straight into the AXI4 VIP under `axi4_vip/`, which provides
 UVM agents, sequences, scoreboard, coverage, and a Python GUI for visual bus-matrix design and
@@ -306,7 +473,7 @@ CI/CD hooks) are documented in `CLAUDE.md` and `TECHNICAL_DOCUMENTATION.md`.
 
 ---
 
-## 9. Prerequisites
+## 10. Prerequisites
 
 - Bash
 - GNU GCC
@@ -315,7 +482,7 @@ CI/CD hooks) are documented in `CLAUDE.md` and `TECHNICAL_DOCUMENTATION.md`.
 
 ---
 
-## 10. References
+## 11. References
 
 - ARM IHI 0022D — AMBA AXI Protocol Specification (`IHI0022D_amba_axi_protocol_spec.pdf`)
 - GEM_AMBA v0.3 (July 2021) — `doc/gen_amba_20210710.pdf`
