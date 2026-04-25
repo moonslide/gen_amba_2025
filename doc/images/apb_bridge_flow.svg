@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 560" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0ea5e9"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#22c55e"/>
+    </marker>
+    <linearGradient id="upGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="brGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/><stop offset="100%" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="decGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe"/><stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+    <linearGradient id="muxGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/><stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="sGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ede9fe"/><stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.5" result="o"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <text x="525" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">APB Bridge Topology — {axi|ahb}_to_apb_sN</text>
+  <text x="525" y="52" text-anchor="middle" font-size="12" fill="#64748b">gen_amba_apb : upstream→APB bridge serialises transactions, apb_decoder drives PSEL, apb_mux collects PRDATA / PREADY / PSLVERR</text>
+
+  <rect x="30" y="72" width="990" height="420" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="6 4"/>
+  <text x="48" y="92" font-size="12" font-weight="600" fill="#475569">module axi_to_apb_s4 / ahb_to_apb_s4</text>
+
+  <!-- upstream master -->
+  <g filter="url(#soft)">
+    <rect x="50" y="195" width="160" height="100" rx="10" fill="url(#upGrad)" stroke="#d97706"/>
+  </g>
+  <text x="130" y="221" text-anchor="middle" font-weight="700" fill="#7c2d12">Upstream master</text>
+  <text x="130" y="240" text-anchor="middle" fill="#7c2d12" font-size="11">AXI3/AXI4 or AHB</text>
+  <text x="130" y="260" text-anchor="middle" fill="#7c2d12" font-size="10">--axi ⇒ axi_to_apb_bridge</text>
+  <text x="130" y="275" text-anchor="middle" fill="#7c2d12" font-size="10">--ahb ⇒ ahb_to_apb_bridge</text>
+
+  <!-- bridge FSM -->
+  <g filter="url(#soft)">
+    <rect x="260" y="145" width="210" height="200" rx="12" fill="url(#brGrad)" stroke="#b91c1c"/>
+  </g>
+  <text x="365" y="172" text-anchor="middle" font-weight="700" fill="#7f1d1d">{axi|ahb}_to_apb_bridge</text>
+  <text x="365" y="191" text-anchor="middle" fill="#7f1d1d" font-size="11">upstream → APB FSM</text>
+  <text x="365" y="215" text-anchor="middle" font-family="monospace" font-size="11" fill="#7f1d1d">IDLE → SETUP → ACCESS</text>
+  <text x="365" y="240" text-anchor="middle" font-size="10" fill="#7f1d1d">drives PSEL/PENABLE/PADDR/</text>
+  <text x="365" y="255" text-anchor="middle" font-size="10" fill="#7f1d1d">PWRITE/PWDATA · captures PREADY</text>
+  <text x="365" y="282" text-anchor="middle" font-size="11" font-style="italic" fill="#7f1d1d">single-master: no arbiter</text>
+  <text x="365" y="302" text-anchor="middle" font-size="10" fill="#7f1d1d">waits PREADY from apb_mux before</text>
+  <text x="365" y="317" text-anchor="middle" font-size="10" fill="#7f1d1d">completing upstream handshake</text>
+
+  <!-- amba_apb_sN group -->
+  <rect x="500" y="105" width="510" height="280" rx="12" fill="#ffffff" stroke="#334155" stroke-dasharray="5 3"/>
+  <text x="520" y="125" font-weight="600" fill="#334155" font-size="12">amba_apb_sN (APB fabric)</text>
+
+  <!-- apb_decoder -->
+  <g filter="url(#soft)">
+    <rect x="525" y="150" width="170" height="95" rx="10" fill="url(#decGrad)" stroke="#0369a1"/>
+  </g>
+  <text x="610" y="175" text-anchor="middle" font-weight="700" fill="#075985">apb_decoder</text>
+  <text x="610" y="194" text-anchor="middle" fill="#075985" font-size="11">PADDR → S?_PSEL</text>
+  <text x="610" y="214" text-anchor="middle" fill="#075985" font-size="10">P_PSEL{j}_START /</text>
+  <text x="610" y="228" text-anchor="middle" fill="#075985" font-size="10">P_PSEL{j}_SIZE (4 KB slots)</text>
+
+  <!-- apb_mux -->
+  <g filter="url(#soft)">
+    <rect x="525" y="260" width="170" height="95" rx="10" fill="url(#muxGrad)" stroke="#16a34a"/>
+  </g>
+  <text x="610" y="285" text-anchor="middle" font-weight="700" fill="#14532d">apb_mux</text>
+  <text x="610" y="303" text-anchor="middle" fill="#14532d" font-size="11">PRDATA / PREADY /</text>
+  <text x="610" y="318" text-anchor="middle" fill="#14532d" font-size="11">PSLVERR mux</text>
+  <text x="610" y="340" text-anchor="middle" fill="#14532d" font-size="10">selected by active S?_PSEL</text>
+
+  <!-- peripherals -->
+  <g filter="url(#soft)">
+    <rect x="740" y="140" width="140" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="740" y="205" width="140" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="740" y="270" width="140" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="740" y="335" width="140" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+  </g>
+  <text x="810" y="162" text-anchor="middle" font-weight="700" fill="#4c1d95">APB peripheral 0</text>
+  <text x="810" y="178" text-anchor="middle" fill="#4c1d95" font-size="10">PSEL/PENABLE/PWRITE/PADDR</text>
+  <text x="810" y="228" text-anchor="middle" font-weight="700" fill="#4c1d95">APB peripheral 1</text>
+  <text x="810" y="243" text-anchor="middle" fill="#4c1d95" font-size="10">PRDATA back to mux</text>
+  <text x="810" y="292" text-anchor="middle" font-weight="700" fill="#4c1d95">APB peripheral 2</text>
+  <text x="810" y="308" text-anchor="middle" fill="#4c1d95" font-size="10">APB3: +PREADY/PSLVERR</text>
+  <text x="810" y="357" text-anchor="middle" font-weight="700" fill="#4c1d95">APB peripheral 3</text>
+  <text x="810" y="372" text-anchor="middle" fill="#4c1d95" font-size="10">APB4: +PPROT/PSTRB</text>
+
+  <!-- flows -->
+  <g stroke="#0ea5e9" stroke-width="1.6" fill="none">
+    <path d="M210 225 L 260 205" marker-end="url(#arrB)"/>
+    <path d="M470 200 L 525 190" marker-end="url(#arrB)"/>
+    <path d="M695 175 L 740 160" marker-end="url(#arrB)"/>
+    <path d="M695 195 L 740 230" marker-end="url(#arrB)"/>
+    <path d="M695 215 L 740 295" marker-end="url(#arrB)"/>
+    <path d="M695 235 L 740 360" marker-end="url(#arrB)"/>
+  </g>
+  <text x="270" y="180" font-size="11" fill="#0284c7" font-weight="600">upstream beat (AXI/AHB)</text>
+  <text x="470" y="185" font-size="10" fill="#0284c7" font-weight="600">PADDR</text>
+  <text x="715" y="130" font-size="10" fill="#0284c7" font-weight="600">S?_PSEL</text>
+
+  <!-- responses back -->
+  <g stroke="#22c55e" stroke-width="1.5" fill="none">
+    <path d="M740 170 C 705 170, 705 270, 695 280" marker-end="url(#arrG)"/>
+    <path d="M740 230 C 705 230, 705 285, 695 295" marker-end="url(#arrG)"/>
+    <path d="M740 295 C 705 295, 705 305, 695 310" marker-end="url(#arrG)"/>
+    <path d="M740 360 C 705 360, 705 320, 695 320" marker-end="url(#arrG)"/>
+  </g>
+  <text x="715" y="405" font-size="10" fill="#15803d" font-weight="600">PRDATA/PREADY/PSLVERR</text>
+
+  <g stroke="#22c55e" stroke-width="1.6" fill="none">
+    <path d="M525 310 L 470 305" marker-end="url(#arrG)"/>
+    <path d="M260 280 L 210 260" marker-end="url(#arrG)"/>
+  </g>
+  <text x="280" y="300" font-size="11" fill="#15803d" font-weight="600">upstream response</text>
+
+  <!-- Address-map banner -->
+  <rect x="50" y="400" width="960" height="70" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="65" y="422" font-weight="700" fill="#0f172a" font-size="12">Default map</text>
+  <text x="65" y="442" font-size="11" fill="#334155" font-family="monospace">P_PSEL0_START=0xC000_0000, stride 0x0000_1000 (4 KB per slot)</text>
+  <text x="65" y="460" font-size="11" fill="#334155">APB is single-master by construction ⇒ no arbiter. Only one peripheral has PSEL=1 at any time. APB3 adds PREADY/PSLVERR; APB4 adds PPROT/PSTRB — all ifdef-gated.</text>
+
+  <!-- legend -->
+  <rect x="30" y="500" width="990" height="50" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="45"  y="515" width="14" height="14" fill="url(#upGrad)" stroke="#d97706"/><text x="65" y="527" font-size="11" fill="#334155">Upstream master (AXI/AHB)</text>
+  <rect x="230" y="515" width="14" height="14" fill="url(#brGrad)" stroke="#b91c1c"/><text x="250" y="527" font-size="11" fill="#334155">Bridge FSM (SETUP/ACCESS)</text>
+  <rect x="430" y="515" width="14" height="14" fill="url(#decGrad)" stroke="#0369a1"/><text x="450" y="527" font-size="11" fill="#334155">apb_decoder</text>
+  <rect x="560" y="515" width="14" height="14" fill="url(#muxGrad)" stroke="#16a34a"/><text x="580" y="527" font-size="11" fill="#334155">apb_mux</text>
+  <rect x="680" y="515" width="14" height="14" fill="url(#sGrad)" stroke="#6d28d9"/><text x="700" y="527" font-size="11" fill="#334155">APB peripheral</text>
+  <line x1="820" y1="522" x2="860" y2="522" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrB)"/><text x="868" y="527" font-size="11" fill="#334155">request</text>
+  <line x1="930" y1="522" x2="970" y2="522" stroke="#22c55e" stroke-width="2" marker-end="url(#arrG)"/><text x="938" y="540" font-size="11" fill="#334155">response</text>
+</svg>

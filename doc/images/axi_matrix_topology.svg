@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrL" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0ea5e9"/>
+    </marker>
+    <marker id="arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#22c55e"/>
+    </marker>
+    <linearGradient id="mtosGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+    <linearGradient id="stomGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="mGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="sGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ede9fe"/>
+      <stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.5" result="o"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- title -->
+  <text x="550" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">AXI Matrix Topology — amba_axi_mMsN (M=3, N=3 shown)</text>
+  <text x="550" y="50" text-anchor="middle" font-size="12" fill="#64748b">Produced by gen_amba_axi : per-slave M→S mux, per-master S→M mux, default slave, OR-network for SELECT/READY</text>
+
+  <!-- dashed top-module border -->
+  <rect x="40" y="70" width="1020" height="620" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="6 4"/>
+  <text x="60" y="92" font-size="12" font-weight="600" fill="#475569">module amba_axi_m3s3</text>
+
+  <!-- MASTERS -->
+  <g filter="url(#soft)">
+    <rect x="70"  y="120" width="140" height="60" rx="8" fill="url(#mGrad)" stroke="#d97706"/>
+    <rect x="70"  y="205" width="140" height="60" rx="8" fill="url(#mGrad)" stroke="#d97706"/>
+    <rect x="70"  y="290" width="140" height="60" rx="8" fill="url(#mGrad)" stroke="#d97706"/>
+  </g>
+  <text x="140" y="145" text-anchor="middle" font-weight="700" fill="#7c2d12">Master 0</text>
+  <text x="140" y="163" text-anchor="middle" fill="#7c2d12" font-size="11">MID=2'd0 · AW/W/AR · B/R</text>
+  <text x="140" y="230" text-anchor="middle" font-weight="700" fill="#7c2d12">Master 1</text>
+  <text x="140" y="248" text-anchor="middle" fill="#7c2d12" font-size="11">MID=2'd1</text>
+  <text x="140" y="315" text-anchor="middle" font-weight="700" fill="#7c2d12">Master 2</text>
+  <text x="140" y="333" text-anchor="middle" fill="#7c2d12" font-size="11">MID=2'd2</text>
+
+  <!-- M→S MUX COLUMN (one per slave + default) -->
+  <g filter="url(#soft)">
+    <rect x="300" y="120" width="170" height="70" rx="8" fill="url(#mtosGrad)" stroke="#0369a1"/>
+    <rect x="300" y="210" width="170" height="70" rx="8" fill="url(#mtosGrad)" stroke="#0369a1"/>
+    <rect x="300" y="300" width="170" height="70" rx="8" fill="url(#mtosGrad)" stroke="#0369a1"/>
+    <rect x="300" y="400" width="170" height="70" rx="8" fill="url(#mtosGrad)" stroke="#0369a1" stroke-dasharray="4 3"/>
+  </g>
+  <text x="385" y="145" text-anchor="middle" font-weight="700" fill="#075985">axi_mtos_m3 · s0</text>
+  <text x="385" y="163" text-anchor="middle" fill="#075985" font-size="11">decode + arbiter</text>
+  <text x="385" y="180" text-anchor="middle" fill="#075985" font-size="10">ADDR_BASE0 / LEN0</text>
+
+  <text x="385" y="235" text-anchor="middle" font-weight="700" fill="#075985">axi_mtos_m3 · s1</text>
+  <text x="385" y="253" text-anchor="middle" fill="#075985" font-size="11">decode + arbiter</text>
+  <text x="385" y="270" text-anchor="middle" fill="#075985" font-size="10">ADDR_BASE1 / LEN1</text>
+
+  <text x="385" y="325" text-anchor="middle" font-weight="700" fill="#075985">axi_mtos_m3 · s2</text>
+  <text x="385" y="343" text-anchor="middle" fill="#075985" font-size="11">decode + arbiter</text>
+  <text x="385" y="360" text-anchor="middle" fill="#075985" font-size="10">ADDR_BASE2 / LEN2</text>
+
+  <text x="385" y="425" text-anchor="middle" font-weight="700" fill="#075985">axi_mtos_m3 · sd</text>
+  <text x="385" y="443" text-anchor="middle" fill="#075985" font-size="11">SLAVE_DEFAULT=1</text>
+  <text x="385" y="460" text-anchor="middle" fill="#075985" font-size="10">catch-all (unmapped)</text>
+
+  <!-- Master fan-out to every mtos -->
+  <g stroke="#0ea5e9" stroke-width="1.4" fill="none" opacity="0.85">
+    <path d="M210 150 C 255 150, 255 155, 300 155" marker-end="url(#arrL)"/>
+    <path d="M210 150 C 255 150, 255 245, 300 245" marker-end="url(#arrL)"/>
+    <path d="M210 150 C 255 150, 255 335, 300 335" marker-end="url(#arrL)"/>
+    <path d="M210 150 C 255 150, 255 435, 300 435" marker-end="url(#arrL)"/>
+
+    <path d="M210 235 C 255 235, 255 165, 300 165" marker-end="url(#arrL)"/>
+    <path d="M210 235 C 255 235, 255 255, 300 255" marker-end="url(#arrL)"/>
+    <path d="M210 235 C 255 235, 255 345, 300 345" marker-end="url(#arrL)"/>
+    <path d="M210 235 C 255 235, 255 445, 300 445" marker-end="url(#arrL)"/>
+
+    <path d="M210 320 C 255 320, 255 175, 300 175" marker-end="url(#arrL)"/>
+    <path d="M210 320 C 255 320, 255 265, 300 265" marker-end="url(#arrL)"/>
+    <path d="M210 320 C 255 320, 255 355, 300 355" marker-end="url(#arrL)"/>
+    <path d="M210 320 C 255 320, 255 455, 300 455" marker-end="url(#arrL)"/>
+  </g>
+  <text x="255" y="105" font-size="11" fill="#0284c7" font-weight="600">AW / W / AR broadcast</text>
+
+  <!-- SELECT OR cloud -->
+  <rect x="500" y="135" width="125" height="220" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-dasharray="3 3"/>
+  <text x="562" y="155" text-anchor="middle" font-weight="700" fill="#334155" font-size="12">AWSELECT / ARSELECT</text>
+  <text x="562" y="172" text-anchor="middle" fill="#334155" font-size="10">OR-reduction over mtos</text>
+  <text x="562" y="188" text-anchor="middle" fill="#334155" font-size="10">fed back to default mtos</text>
+  <text x="562" y="210" text-anchor="middle" font-size="11" font-family="monospace" fill="#1e293b">AWSELECT[i] =</text>
+  <text x="562" y="226" text-anchor="middle" font-size="11" font-family="monospace" fill="#1e293b">  OR(AWSELECT_OUT[*][i])</text>
+  <text x="562" y="260" text-anchor="middle" font-size="10" fill="#334155">default slave claims</text>
+  <text x="562" y="275" text-anchor="middle" font-size="10" fill="#334155">master i only when</text>
+  <text x="562" y="290" text-anchor="middle" font-size="10" fill="#334155">AWSELECT[i]=0</text>
+
+  <!-- SELECT feeders -->
+  <g stroke="#64748b" stroke-dasharray="3 3" fill="none" opacity="0.85">
+    <path d="M470 155 L 500 175" marker-end="url(#arr)"/>
+    <path d="M470 245 L 500 205" marker-end="url(#arr)"/>
+    <path d="M470 335 L 500 235" marker-end="url(#arr)"/>
+    <path d="M562 355 C 562 400, 470 420, 470 435" marker-end="url(#arr)"/>
+  </g>
+
+  <!-- SLAVES -->
+  <g filter="url(#soft)">
+    <rect x="930" y="120" width="130" height="60" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="930" y="210" width="130" height="60" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="930" y="300" width="130" height="60" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="930" y="400" width="130" height="60" rx="8" fill="url(#sGrad)" stroke="#6d28d9" stroke-dasharray="4 3"/>
+  </g>
+  <text x="995" y="145" text-anchor="middle" font-weight="700" fill="#4c1d95">Slave 0</text>
+  <text x="995" y="163" text-anchor="middle" fill="#4c1d95" font-size="11">S0 AXI port</text>
+  <text x="995" y="235" text-anchor="middle" font-weight="700" fill="#4c1d95">Slave 1</text>
+  <text x="995" y="325" text-anchor="middle" font-weight="700" fill="#4c1d95">Slave 2</text>
+  <text x="995" y="425" text-anchor="middle" font-weight="700" fill="#4c1d95">axi_default_slave</text>
+  <text x="995" y="443" text-anchor="middle" fill="#4c1d95" font-size="11">DECERR on every beat</text>
+
+  <!-- mtos → slave AW/W/AR -->
+  <g stroke="#0ea5e9" stroke-width="1.6" fill="none">
+    <path d="M470 155 L 930 150" marker-end="url(#arrL)"/>
+    <path d="M470 245 L 930 240" marker-end="url(#arrL)"/>
+    <path d="M470 335 L 930 330" marker-end="url(#arrL)"/>
+    <path d="M470 435 L 930 430" marker-end="url(#arrL)"/>
+  </g>
+
+  <!-- S→M MUX ROW (per master) -->
+  <g filter="url(#soft)">
+    <rect x="700" y="520" width="160" height="70" rx="8" fill="url(#stomGrad)" stroke="#16a34a"/>
+    <rect x="700" y="600" width="160" height="70" rx="8" fill="url(#stomGrad)" stroke="#16a34a" opacity="0.55"/>
+  </g>
+  <text x="780" y="545" text-anchor="middle" font-weight="700" fill="#14532d">axi_stom_s3 · m0</text>
+  <text x="780" y="563" text-anchor="middle" fill="#14532d" font-size="11">B/R mux + arbiter</text>
+  <text x="780" y="580" text-anchor="middle" fill="#14532d" font-size="10">routes on BID/RID[CID]</text>
+  <text x="780" y="625" text-anchor="middle" font-weight="700" fill="#14532d" opacity="0.75">… · m1, m2</text>
+  <text x="780" y="643" text-anchor="middle" fill="#14532d" font-size="11" opacity="0.75">(one per master)</text>
+
+  <!-- slave B/R → stom -->
+  <g stroke="#22c55e" stroke-width="1.5" fill="none">
+    <path d="M930 180 C 870 180, 870 515, 860 535" marker-end="url(#arrR)"/>
+    <path d="M930 270 C 870 270, 870 525, 860 545" marker-end="url(#arrR)"/>
+    <path d="M930 360 C 870 360, 870 535, 860 555" marker-end="url(#arrR)"/>
+    <path d="M930 460 C 870 460, 870 545, 860 565" marker-end="url(#arrR)"/>
+  </g>
+  <text x="760" y="495" font-size="11" fill="#15803d" font-weight="600">B / R responses (from every slave + default)</text>
+
+  <!-- stom → master -->
+  <g stroke="#22c55e" stroke-width="1.6" fill="none">
+    <path d="M700 555 C 400 555, 400 340, 210 340" marker-end="url(#arrR)"/>
+  </g>
+  <text x="430" y="580" font-size="11" fill="#15803d" font-weight="600">M{i}_B* / M{i}_R*</text>
+
+  <!-- ID scheme box -->
+  <rect x="70" y="420" width="215" height="110" rx="10" fill="#fff" stroke="#1e293b"/>
+  <text x="177" y="442" text-anchor="middle" font-weight="700" fill="#0f172a" font-size="12">Slave-side ID: WIDTH_SID</text>
+  <text x="177" y="462" text-anchor="middle" font-family="monospace" font-size="12" fill="#1e293b">{ MID[WIDTH_CID-1:0],</text>
+  <text x="177" y="478" text-anchor="middle" font-family="monospace" font-size="12" fill="#1e293b">  ID[WIDTH_ID-1:0]   }</text>
+  <text x="177" y="500" text-anchor="middle" font-size="10" fill="#475569">WIDTH_CID = ⌈log₂(NUM_MASTER)⌉</text>
+  <text x="177" y="515" text-anchor="middle" font-size="10" fill="#475569">M{i}_MID tied to i · CID used by stom</text>
+
+  <!-- legend -->
+  <rect x="70" y="600" width="600" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="85" y="622" font-weight="700" fill="#0f172a" font-size="12">Legend</text>
+  <rect x="85"  y="634" width="14" height="14" fill="url(#mGrad)"    stroke="#d97706"/><text x="105" y="646" font-size="11" fill="#334155">Master port</text>
+  <rect x="200" y="634" width="14" height="14" fill="url(#mtosGrad)" stroke="#0369a1"/><text x="220" y="646" font-size="11" fill="#334155">axi_mtos_mM (M→S, one per slave + default)</text>
+  <rect x="85"  y="655" width="14" height="14" fill="url(#stomGrad)" stroke="#16a34a"/><text x="105" y="667" font-size="11" fill="#334155">axi_stom_sN (S→M, one per master)</text>
+  <rect x="420" y="655" width="14" height="14" fill="url(#sGrad)"    stroke="#6d28d9"/><text x="440" y="667" font-size="11" fill="#334155">Slave port / default slave</text>
+  <line x1="420" y1="640" x2="460" y2="640" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrL)"/><text x="470" y="645" font-size="11" fill="#334155">AW / W / AR</text>
+  <line x1="555" y1="640" x2="595" y2="640" stroke="#22c55e" stroke-width="2" marker-end="url(#arrR)"/><text x="605" y="645" font-size="11" fill="#334155">B / R</text>
+</svg>

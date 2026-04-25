@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0ea5e9"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#22c55e"/>
+    </marker>
+    <linearGradient id="mGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="arbGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/><stop offset="100%" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="muxGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe"/><stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+    <linearGradient id="liteGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/><stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="sGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ede9fe"/><stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+      <feOffset dx="0" dy="1.5" result="o"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <text x="500" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">AHB Matrix Topology — amba_ahb_mMsN (shared single bus)</text>
+  <text x="500" y="52" text-anchor="middle" font-size="12" fill="#64748b">gen_amba_ahb : one arbiter, one M→S mux, one ahb_lite (decode + s2m + default slave); AHB-Lite when numM=1</text>
+
+  <rect x="30" y="72" width="940" height="480" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="6 4"/>
+  <text x="48" y="92" font-size="12" font-weight="600" fill="#475569">module amba_ahb_m3s3</text>
+
+  <!-- Masters -->
+  <g filter="url(#soft)">
+    <rect x="60" y="120" width="150" height="55" rx="8" fill="url(#mGrad)" stroke="#d97706"/>
+    <rect x="60" y="205" width="150" height="55" rx="8" fill="url(#mGrad)" stroke="#d97706"/>
+    <rect x="60" y="290" width="150" height="55" rx="8" fill="url(#mGrad)" stroke="#d97706"/>
+  </g>
+  <text x="135" y="142" text-anchor="middle" font-weight="700" fill="#7c2d12">Master 0</text>
+  <text x="135" y="160" text-anchor="middle" fill="#7c2d12" font-size="10">HBUSREQ/HADDR/HWDATA/HLOCK</text>
+  <text x="135" y="227" text-anchor="middle" font-weight="700" fill="#7c2d12">Master 1</text>
+  <text x="135" y="245" text-anchor="middle" fill="#7c2d12" font-size="10">HBUSREQ/HADDR/HWDATA/HLOCK</text>
+  <text x="135" y="312" text-anchor="middle" font-weight="700" fill="#7c2d12">Master 2</text>
+  <text x="135" y="330" text-anchor="middle" fill="#7c2d12" font-size="10">HBUSREQ/HADDR/HWDATA/HLOCK</text>
+
+  <!-- Arbiter -->
+  <g filter="url(#soft)">
+    <rect x="275" y="130" width="150" height="215" rx="10" fill="url(#arbGrad)" stroke="#b91c1c"/>
+  </g>
+  <text x="350" y="156" text-anchor="middle" font-weight="700" fill="#7f1d1d">ahb_arbiter</text>
+  <text x="350" y="174" text-anchor="middle" fill="#7f1d1d" font-size="11">HBUSREQ → HGRANT</text>
+  <text x="350" y="190" text-anchor="middle" fill="#7f1d1d" font-size="10">HLOCK / HSPLIT aware</text>
+  <text x="350" y="215" text-anchor="middle" fill="#7f1d1d" font-size="10" font-family="monospace">HMASTER[3:0]</text>
+  <text x="350" y="231" text-anchor="middle" fill="#7f1d1d" font-size="10" font-family="monospace">HMASTLOCK</text>
+  <text x="350" y="260" text-anchor="middle" fill="#7f1d1d" font-size="10">fixed-priority / split-retry</text>
+  <text x="350" y="310" text-anchor="middle" fill="#7f1d1d" font-size="10" font-style="italic">(omitted when numM = 1</text>
+  <text x="350" y="325" text-anchor="middle" fill="#7f1d1d" font-size="10" font-style="italic">→ AHB-Lite)</text>
+
+  <!-- Arbiter arrows -->
+  <g stroke="#0ea5e9" stroke-width="1.4" fill="none">
+    <path d="M210 147 L 275 170" marker-end="url(#arrB)"/>
+    <path d="M210 232 L 275 220" marker-end="url(#arrB)"/>
+    <path d="M210 317 L 275 270" marker-end="url(#arrB)"/>
+  </g>
+  <text x="217" y="108" font-size="11" fill="#0284c7" font-weight="600">HBUSREQ</text>
+  <g stroke="#22c55e" stroke-width="1.4" fill="none">
+    <path d="M275 188 L 210 158" marker-end="url(#arrG)"/>
+    <path d="M275 233 L 210 243" marker-end="url(#arrG)"/>
+    <path d="M275 285 L 210 328" marker-end="url(#arrG)"/>
+  </g>
+  <text x="217" y="362" font-size="11" fill="#15803d" font-weight="600">HGRANT (back to granted master)</text>
+
+  <!-- M→S mux (ahb_m2s) -->
+  <g filter="url(#soft)">
+    <rect x="460" y="130" width="170" height="215" rx="10" fill="url(#muxGrad)" stroke="#0369a1"/>
+  </g>
+  <text x="545" y="156" text-anchor="middle" font-weight="700" fill="#075985">ahb_m2s</text>
+  <text x="545" y="174" text-anchor="middle" fill="#075985" font-size="11">granted master → shared bus</text>
+  <text x="545" y="205" text-anchor="middle" fill="#075985" font-size="10" font-family="monospace">S_HADDR / S_HTRANS</text>
+  <text x="545" y="221" text-anchor="middle" fill="#075985" font-size="10" font-family="monospace">S_HWDATA / S_HWRITE</text>
+  <text x="545" y="237" text-anchor="middle" fill="#075985" font-size="10" font-family="monospace">S_HSIZE / S_HBURST</text>
+  <text x="545" y="253" text-anchor="middle" fill="#075985" font-size="10" font-family="monospace">S_HPROT / S_HREADY</text>
+  <text x="545" y="283" text-anchor="middle" fill="#075985" font-size="11" font-style="italic">one master drives at a time</text>
+  <text x="545" y="303" text-anchor="middle" fill="#075985" font-size="10">two-phase pipeline (addr/data)</text>
+
+  <g stroke="#334155" stroke-width="1.2" fill="none" opacity="0.6">
+    <path d="M425 220 L 460 225" marker-end="url(#arr)"/>
+  </g>
+  <text x="428" y="215" font-size="10" fill="#334155">HMASTER</text>
+
+  <!-- ahb_lite: decoder + s2m + default slave -->
+  <g filter="url(#soft)">
+    <rect x="680" y="130" width="220" height="215" rx="10" fill="url(#liteGrad)" stroke="#16a34a"/>
+  </g>
+  <text x="790" y="156" text-anchor="middle" font-weight="700" fill="#14532d">ahb_lite</text>
+  <text x="790" y="174" text-anchor="middle" fill="#14532d" font-size="11">decode + s2m + default slave</text>
+  <rect x="695" y="190" width="95" height="55" rx="6" fill="#ffffff" stroke="#16a34a"/>
+  <text x="743" y="208" text-anchor="middle" font-weight="600" fill="#14532d" font-size="11">ahb_decoder</text>
+  <text x="743" y="224" text-anchor="middle" fill="#14532d" font-size="10">HADDR →</text>
+  <text x="743" y="238" text-anchor="middle" fill="#14532d" font-size="10">S?_HSEL</text>
+  <rect x="795" y="190" width="95" height="55" rx="6" fill="#ffffff" stroke="#16a34a"/>
+  <text x="843" y="208" text-anchor="middle" font-weight="600" fill="#14532d" font-size="11">ahb_s2m</text>
+  <text x="843" y="224" text-anchor="middle" fill="#14532d" font-size="10">HRDATA/HRESP/</text>
+  <text x="843" y="238" text-anchor="middle" fill="#14532d" font-size="10">HREADY mux</text>
+  <rect x="695" y="255" width="195" height="50" rx="6" fill="#ffffff" stroke="#16a34a" stroke-dasharray="4 3"/>
+  <text x="792" y="273" text-anchor="middle" font-weight="600" fill="#14532d" font-size="11">ahb_default_slave</text>
+  <text x="792" y="290" text-anchor="middle" fill="#14532d" font-size="10">ERROR response on unmapped HADDR</text>
+  <text x="790" y="325" text-anchor="middle" fill="#14532d" font-size="10">address map: P_HSEL{j}_START / P_HSEL{j}_SIZE · REMAP input</text>
+
+  <!-- arrow m2s → lite -->
+  <g stroke="#0ea5e9" stroke-width="1.6" fill="none">
+    <path d="M630 237 L 680 220" marker-end="url(#arrB)"/>
+  </g>
+
+  <!-- Slaves -->
+  <g filter="url(#soft)">
+    <rect x="60" y="400" width="150" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="240" y="400" width="150" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="420" y="400" width="150" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9"/>
+    <rect x="600" y="400" width="150" height="50" rx="8" fill="url(#sGrad)" stroke="#6d28d9" stroke-dasharray="4 3"/>
+  </g>
+  <text x="135" y="423" text-anchor="middle" font-weight="700" fill="#4c1d95">Slave 0</text>
+  <text x="135" y="440" text-anchor="middle" fill="#4c1d95" font-size="10">HSEL/HREADY/HRESP/HRDATA</text>
+  <text x="315" y="423" text-anchor="middle" font-weight="700" fill="#4c1d95">Slave 1</text>
+  <text x="315" y="440" text-anchor="middle" fill="#4c1d95" font-size="10">HSEL/HREADY/HRESP/HRDATA</text>
+  <text x="495" y="423" text-anchor="middle" font-weight="700" fill="#4c1d95">Slave 2</text>
+  <text x="495" y="440" text-anchor="middle" fill="#4c1d95" font-size="10">HSEL/HREADY/HRESP/HRDATA</text>
+  <text x="675" y="423" text-anchor="middle" font-weight="700" fill="#4c1d95">default slave</text>
+  <text x="675" y="440" text-anchor="middle" fill="#4c1d95" font-size="10">ERROR</text>
+
+  <!-- shared bus rail to slaves (from lite/decoder) -->
+  <g stroke="#0ea5e9" stroke-width="1.6" fill="none">
+    <path d="M743 345 L 743 375 L 135 375 L 135 400" marker-end="url(#arrB)"/>
+    <path d="M743 345 L 743 375 L 315 375 L 315 400" marker-end="url(#arrB)"/>
+    <path d="M743 345 L 743 375 L 495 375 L 495 400" marker-end="url(#arrB)"/>
+    <path d="M743 345 L 675 400" marker-end="url(#arrB)"/>
+  </g>
+  <text x="395" y="368" font-size="11" fill="#0284c7" font-weight="600">shared address/data/control rail · S?_HSEL per slave</text>
+
+  <!-- slave responses up to s2m -->
+  <g stroke="#22c55e" stroke-width="1.5" fill="none">
+    <path d="M135 400 L 135 490 L 843 490 L 843 305" marker-end="url(#arrG)"/>
+    <path d="M315 450 L 315 480 L 843 480" fill="none"/>
+    <path d="M495 450 L 495 470 L 843 470" fill="none"/>
+    <path d="M675 450 L 675 460 L 843 460" fill="none"/>
+  </g>
+  <text x="460" y="510" font-size="11" fill="#15803d" font-weight="600">HRDATA / HRESP / HREADY ← ahb_s2m ← winning slave</text>
+
+  <!-- to master -->
+  <g stroke="#22c55e" stroke-width="1.5" fill="none">
+    <path d="M680 210 L 210 180" marker-end="url(#arrG)"/>
+  </g>
+  <text x="450" y="195" font-size="10" fill="#15803d">M_HRDATA / M_HRESP / M_HREADY → granted master</text>
+
+  <!-- legend -->
+  <rect x="30" y="560" width="940" height="50" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="45"  y="575" width="14" height="14" fill="url(#mGrad)"    stroke="#d97706"/><text x="65" y="587" font-size="11" fill="#334155">Master</text>
+  <rect x="130" y="575" width="14" height="14" fill="url(#arbGrad)"  stroke="#b91c1c"/><text x="150" y="587" font-size="11" fill="#334155">Arbiter (omitted for AHB-Lite)</text>
+  <rect x="340" y="575" width="14" height="14" fill="url(#muxGrad)"  stroke="#0369a1"/><text x="360" y="587" font-size="11" fill="#334155">M→S mux (ahb_m2s)</text>
+  <rect x="500" y="575" width="14" height="14" fill="url(#liteGrad)" stroke="#16a34a"/><text x="520" y="587" font-size="11" fill="#334155">ahb_lite (decoder + s2m + default)</text>
+  <rect x="730" y="575" width="14" height="14" fill="url(#sGrad)"    stroke="#6d28d9"/><text x="750" y="587" font-size="11" fill="#334155">Slave</text>
+  <line x1="810" y1="582" x2="850" y2="582" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrB)"/><text x="858" y="587" font-size="11" fill="#334155">request</text>
+  <line x1="910" y1="582" x2="950" y2="582" stroke="#22c55e" stroke-width="2" marker-end="url(#arrG)"/><text x="918" y="600" font-size="11" fill="#334155">response</text>
+</svg>

@@ -98,6 +98,8 @@ emits — the Verilog topology you get in the output file.
 
 ### 3.1 AXI matrix — `amba_axi_mMsN`
 
+![AXI matrix topology](doc/images/axi_matrix_topology.svg)
+
 ```
                  ┌─────────────────────── amba_axi_mMsN ────────────────────────┐
     M0 AXI ─────▶│  M0 port   ┐                                        ┌── S0  │──▶ S0 AXI
@@ -183,6 +185,8 @@ template — real designs override the parameters at instantiation time.
 
 ### 3.5 AHB matrix — multi-master top (generated when `--mst ≥ 2`)
 
+![AHB shared-bus topology](doc/images/ahb_shared_bus.svg)
+
 ```
            M0_HBUSREQ ┐                                      ┌─ S0_HSEL ─▶ slave0
            M1_HBUSREQ │                                      │─ S1_HSEL ─▶ slave1
@@ -214,6 +218,8 @@ template — real designs override the parameters at instantiation time.
   directly.
 
 ### 3.6 APB bridge — `{axi|ahb}_to_apb_sN`
+
+![APB bridge topology](doc/images/apb_bridge_flow.svg)
 
 ```
     upstream (AXI or AHB)
